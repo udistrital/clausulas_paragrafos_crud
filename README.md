@@ -1,0 +1,1 @@
+# clausulas_paragrafos_crud
