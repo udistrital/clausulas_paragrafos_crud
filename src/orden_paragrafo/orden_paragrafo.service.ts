@@ -1,26 +1,82 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateOrdenParagrafoDto } from './dto/create-orden_paragrafo.dto';
-import { UpdateOrdenParagrafoDto } from './dto/update-orden_paragrafo.dto';
+import { OrdenParagrafo } from './schemas/orden_paragrafo.schema';
+import { FilterDto } from 'src/filters/dto/filters.dto';
+import { FiltersService } from 'src/filters/filters.service';
 
 @Injectable()
 export class OrdenParagrafoService {
-  create(createOrdenParagrafoDto: CreateOrdenParagrafoDto) {
-    return 'This action adds a new ordenParagrafo';
+  constructor(
+    @InjectModel(OrdenParagrafo.name)
+    private readonly ordenParagrafoModel: Model<OrdenParagrafo>,
+  ) {}
+
+  private populateFields(): any[] {
+    // Define the fields to be populated, if any
+    return [];
   }
 
-  findAll() {
-    return `This action returns all ordenParagrafo`;
+  async post(ordenParagrafoDto: CreateOrdenParagrafoDto): Promise<OrdenParagrafo> {
+    const fecha = new Date();
+    const ordenParagrafoData = {
+      ...ordenParagrafoDto,
+      fecha_creacion: fecha,
+      fecha_modificacion: fecha,
+    };
+    return await this.ordenParagrafoModel.create(ordenParagrafoData);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} ordenParagrafo`;
+  async getAll(filterDto: FilterDto): Promise<OrdenParagrafo[]> {
+    const filtersService = new FiltersService(filterDto);
+    let populateFields = [];
+    if (filtersService.isPopulated()) {
+      populateFields = this.populateFields();
+    }
+    return await this.ordenParagrafoModel
+      .find(
+        filtersService.getQuery(),
+        filtersService.getFields(),
+        filtersService.getLimitAndOffset(),
+      )
+      .sort(filtersService.getSortBy())
+      .populate(populateFields)
+      .exec();
   }
 
-  update(id: number, updateOrdenParagrafoDto: UpdateOrdenParagrafoDto) {
-    return `This action updates a #${id} ordenParagrafo`;
+  async getById(id: string): Promise<OrdenParagrafo> {
+    const ordenParagrafo = await this.ordenParagrafoModel.findById(id).exec();
+    if (!ordenParagrafo) {
+      throw new Error(`${id} doesn't exist`);
+    }
+    return ordenParagrafo;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} ordenParagrafo`;
+  async put(
+    id: string,
+    ordenParagrafoDto: CreateOrdenParagrafoDto,
+  ): Promise<OrdenParagrafo> {
+    ordenParagrafoDto.fecha_modificacion = new Date();
+    if (ordenParagrafoDto.fecha_creacion) {
+      delete ordenParagrafoDto.fecha_creacion;
+    }
+    const update = await this.ordenParagrafoModel
+      .findByIdAndUpdate(id, ordenParagrafoDto, { new: true })
+      .exec();
+    if (!update) {
+      throw new Error(`${id} doesn't exist`);
+    }
+    return update;
+  }
+
+  async delete(id: string): Promise<OrdenParagrafo> {
+    const deleted = await this.ordenParagrafoModel
+      .findByIdAndUpdate(id, { activo: false }, { new: true })
+      .exec();
+    if (!deleted) {
+      throw new Error(`${id} doesn't exist`);
+    }
+    return deleted;
   }
 }

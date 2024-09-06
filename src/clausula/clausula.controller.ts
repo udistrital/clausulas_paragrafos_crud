@@ -1,34 +1,112 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Query, Res } from '@nestjs/common';
 import { ClausulaService } from './clausula.service';
 import { CreateClausulaDto } from './dto/create-clausula.dto';
-import { UpdateClausulaDto } from './dto/update-clausula.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { FilterDto } from 'src/filters/dto/filters.dto';
 
+@ApiTags('clausula')
 @Controller('clausula')
 export class ClausulaController {
-  constructor(private readonly clausulaService: ClausulaService) {}
+    constructor(
+        private clausulaService: ClausulaService
+    ) { }
 
-  @Post()
-  create(@Body() createClausulaDto: CreateClausulaDto) {
-    return this.clausulaService.create(createClausulaDto);
-  }
+    @Post()
+    async post(@Res() res, @Body() clausulaDto: CreateClausulaDto) {
+        const clausula = await this.clausulaService.post(clausulaDto);
+        if (!clausula) {
+            throw new HttpException({
+                Success: false,
+                Status: "400",
+                Message: "Error service Post: The request contains an incorrect data type or an invalid parameter",
+                Data: null
+            }, HttpStatus.BAD_REQUEST)
+        }
+        res.status(HttpStatus.CREATED).json({
+            Success: true,
+            Status: "201",
+            Message: "Registration successful",
+            Data: clausula
+        });
+    }
 
-  @Get()
-  findAll() {
-    return this.clausulaService.findAll();
-  }
+    @Get()
+    async getAll(@Res() res, @Query() filterDto: FilterDto) {
+        try {
+            const clausula = await this.clausulaService.getAll(filterDto);
+            res.status(HttpStatus.OK).json({
+                Success: true,
+                Status: "200",
+                Message: "Request successful",
+                Data: clausula || []
+            });
+        } catch (error) {
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+                Success: false,
+                Status: "500",
+                Message: "An unexpected error occurred",
+                Data: null
+            });
+        }
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.clausulaService.findOne(+id);
-  }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateClausulaDto: UpdateClausulaDto) {
-    return this.clausulaService.update(+id, updateClausulaDto);
-  }
+    @Get('/:id')
+    async getById(@Res() res, @Param('id') id: string) {
+        const clausula = await this.clausulaService.getById(id);
+        if (!clausula) {
+            throw new HttpException({
+                Success: false,
+                Status: "404",
+                Message: "Error service GetOne: The request contains an incorrect parameter or no record exist",
+                Data: null
+            }, HttpStatus.NOT_FOUND)
+        }
+        res.status(HttpStatus.OK).json({
+            Success: true,
+            Status: "200",
+            Message: "Request successful",
+            Data: clausula
+        });
+    }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.clausulaService.remove(+id);
-  }
+    @Put('/:id')
+    async put(@Res() res, @Param('id') id: string, @Body() clausulaDto: CreateClausulaDto) {
+        const clausula = await this.clausulaService.put(id, clausulaDto);
+        if (!clausula) {
+            throw new HttpException({
+                Success: false,
+                Status: "400",
+                Message: "Error service Put: The request contains an incorrect data type or an invalid parameter",
+                Data: null
+            }, HttpStatus.BAD_REQUEST)
+        }
+        res.status(HttpStatus.OK).json({
+            Success: true,
+            Status: "200",
+            Message: "Update successful",
+            Data: clausula
+        });
+    }
+
+    @Delete('/:id')
+    async delete(@Res() res, @Param('id') id: string) {
+        const clausula = await this.clausulaService.delete(id);
+        if (!clausula) {
+            throw new HttpException({
+                Sucess: false,
+                Status: "404",
+                Message: "Error service Delete: Request contains incorrect parameter",
+                Data: null
+            }, HttpStatus.NOT_FOUND)
+        }
+        res.status(HttpStatus.OK).json({
+            Success: true,
+            Status: "200",
+            Message: "Delete successful",
+            Data: {
+                _id: id
+            }
+        });
+    }
 }

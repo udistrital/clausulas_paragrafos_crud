@@ -1,26 +1,82 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreatePlantillaTipoContratoDto } from './dto/create-plantilla_tipo_contrato.dto';
-import { UpdatePlantillaTipoContratoDto } from './dto/update-plantilla_tipo_contrato.dto';
+import { PlantillaTipoContrato } from './schemas/plantilla_tipo_contrato.schema';
+import { FilterDto } from 'src/filters/dto/filters.dto';
+import { FiltersService } from 'src/filters/filters.service';
 
 @Injectable()
 export class PlantillaTipoContratoService {
-  create(createPlantillaTipoContratoDto: CreatePlantillaTipoContratoDto) {
-    return 'This action adds a new plantillaTipoContrato';
+  constructor(
+    @InjectModel(PlantillaTipoContrato.name)
+    private readonly plantillaTipoContratoModel: Model<PlantillaTipoContrato>,
+  ) {}
+
+  private populateFields(): any[] {
+    // Define the fields to be populated, if any
+    return [];
   }
 
-  findAll() {
-    return `This action returns all plantillaTipoContrato`;
+  async post(plantillaTipoContratoDto: CreatePlantillaTipoContratoDto): Promise<PlantillaTipoContrato> {
+    const fecha = new Date();
+    const plantillaTipoContratoData = {
+      ...plantillaTipoContratoDto,
+      fecha_creacion: fecha,
+      fecha_modificacion: fecha,
+    };
+    return await this.plantillaTipoContratoModel.create(plantillaTipoContratoData);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} plantillaTipoContrato`;
+  async getAll(filterDto: FilterDto): Promise<PlantillaTipoContrato[]> {
+    const filtersService = new FiltersService(filterDto);
+    let populateFields = [];
+    if (filtersService.isPopulated()) {
+      populateFields = this.populateFields();
+    }
+    return await this.plantillaTipoContratoModel
+      .find(
+        filtersService.getQuery(),
+        filtersService.getFields(),
+        filtersService.getLimitAndOffset(),
+      )
+      .sort(filtersService.getSortBy())
+      .populate(populateFields)
+      .exec();
   }
 
-  update(id: number, updatePlantillaTipoContratoDto: UpdatePlantillaTipoContratoDto) {
-    return `This action updates a #${id} plantillaTipoContrato`;
+  async getById(id: string): Promise<PlantillaTipoContrato> {
+    const plantillaTipoContrato = await this.plantillaTipoContratoModel.findById(id).exec();
+    if (!plantillaTipoContrato) {
+      throw new Error(`${id} doesn't exist`);
+    }
+    return plantillaTipoContrato;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} plantillaTipoContrato`;
+  async put(
+    id: string,
+    plantillaTipoContratoDto: CreatePlantillaTipoContratoDto,
+  ): Promise<PlantillaTipoContrato> {
+    plantillaTipoContratoDto.fecha_modificacion = new Date();
+    if (plantillaTipoContratoDto.fecha_creacion) {
+      delete plantillaTipoContratoDto.fecha_creacion;
+    }
+    const update = await this.plantillaTipoContratoModel
+      .findByIdAndUpdate(id, plantillaTipoContratoDto, { new: true })
+      .exec();
+    if (!update) {
+      throw new Error(`${id} doesn't exist`);
+    }
+    return update;
+  }
+
+  async delete(id: string): Promise<PlantillaTipoContrato> {
+    const deleted = await this.plantillaTipoContratoModel
+      .findByIdAndUpdate(id, { activo: false }, { new: true })
+      .exec();
+    if (!deleted) {
+      throw new Error(`${id} doesn't exist`);
+    }
+    return deleted;
   }
 }
