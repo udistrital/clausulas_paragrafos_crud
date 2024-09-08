@@ -1,52 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateOrdenParagrafoDto } from './dto/create-orden_paragrafo.dto';
 import { OrdenParagrafo } from './schemas/orden_paragrafo.schema';
 import { FilterDto } from 'src/filters/dto/filters.dto';
-import { FiltersService } from 'src/filters/filters.service';
 
 @Injectable()
 export class OrdenParagrafoService {
   constructor(
     @InjectModel(OrdenParagrafo.name)
     private readonly ordenParagrafoModel: Model<OrdenParagrafo>,
-  ) {}
-
-  private populateFields(): any[] {
-    // Define the fields to be populated, if any
-    return [];
-  }
+  ) { }
 
   async post(ordenParagrafoDto: CreateOrdenParagrafoDto): Promise<OrdenParagrafo> {
-    const fecha = new Date();
     const ordenParagrafoData = {
       ...ordenParagrafoDto,
-      fecha_creacion: fecha,
-      fecha_modificacion: fecha,
+      paragrafo_ids: ordenParagrafoDto.paragrafo_ids.map(id => new Types.ObjectId(id)),
+      contrato_id: new Types.ObjectId(ordenParagrafoDto.contrato_id),
+      clausula_id: new Types.ObjectId(ordenParagrafoDto.clausula_id),
     };
     return await this.ordenParagrafoModel.create(ordenParagrafoData);
   }
 
   async getAll(filterDto: FilterDto): Promise<OrdenParagrafo[]> {
-    const filtersService = new FiltersService(filterDto);
-    let populateFields = [];
-    if (filtersService.isPopulated()) {
-      populateFields = this.populateFields();
-    }
-    return await this.ordenParagrafoModel
-      .find(
-        filtersService.getQuery(),
-        filtersService.getFields(),
-        filtersService.getLimitAndOffset(),
-      )
-      .sort(filtersService.getSortBy())
-      .populate(populateFields)
+    return await this.ordenParagrafoModel.find()
+      .populate('paragrafo_ids')
+      .populate('clausula_id')
       .exec();
   }
 
   async getById(id: string): Promise<OrdenParagrafo> {
-    const ordenParagrafo = await this.ordenParagrafoModel.findById(id).exec();
+    const ordenParagrafo = await this.ordenParagrafoModel.findById(id)
+      .populate('paragrafo_ids')
+      .populate('clausula_id')
+      .exec();
     if (!ordenParagrafo) {
       throw new Error(`${id} doesn't exist`);
     }
@@ -58,9 +45,6 @@ export class OrdenParagrafoService {
     ordenParagrafoDto: CreateOrdenParagrafoDto,
   ): Promise<OrdenParagrafo> {
     ordenParagrafoDto.fecha_modificacion = new Date();
-    if (ordenParagrafoDto.fecha_creacion) {
-      delete ordenParagrafoDto.fecha_creacion;
-    }
     const update = await this.ordenParagrafoModel
       .findByIdAndUpdate(id, ordenParagrafoDto, { new: true })
       .exec();

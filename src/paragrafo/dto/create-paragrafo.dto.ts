@@ -1,22 +1,32 @@
 import { ApiProperty } from '@nestjs/swagger';
+import {IsNotEmpty,IsOptional,IsString,IsNumber,IsBoolean,IsDate,} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateParagrafoDto {
 
     @ApiProperty()
-    readonly nombre: string;
+    @IsOptional()
+    @IsString()
+    nombre?: string;
 
     @ApiProperty()
-    readonly descripcion: string;
+    @IsOptional()
+    @IsString()
+    descripcion?: string;
 
     @ApiProperty()
-    readonly predeterminado: boolean;
+    @IsNotEmpty()
+    @IsBoolean()
+    predeterminado: boolean;
 
     @ApiProperty()
-    activo: boolean;
-
-    @ApiProperty()
+    @IsDate()
+    @Type(() => Date)
     fecha_creacion: Date;
 
     @ApiProperty()
+    @IsDate()
+    @Type(() => Date)
     fecha_modificacion: Date;
+
 }

@@ -16,10 +16,10 @@ export class Clausula extends Document {
     @Prop({required: true})
     activo: boolean
 
-    @Prop({required: true})
+    @Prop({required: true, default: Date.now})
     fecha_creacion: Date
 
-    @Prop({required: true})
+    @Prop({required: true, default: Date.now})
     fecha_modificacion: Date
     
 }

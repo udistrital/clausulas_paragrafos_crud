@@ -4,7 +4,6 @@ import { Model } from 'mongoose';
 import { CreateParagrafoDto } from './dto/create-paragrafo.dto';
 import { Paragrafo } from './schemas/paragrafo.schema';
 import { FilterDto } from 'src/filters/dto/filters.dto';
-import { FiltersService } from 'src/filters/filters.service';
 
 @Injectable()
 export class ParagrafoService {
@@ -19,30 +18,15 @@ export class ParagrafoService {
   }
 
   async post(paragrafoDto: CreateParagrafoDto): Promise<Paragrafo> {
-    const fecha = new Date();
     const paragrafoData = {
       ...paragrafoDto,
-      fecha_creacion: fecha,
-      fecha_modificacion: fecha,
+      activo : true,
     };
     return await this.paragrafoModel.create(paragrafoData);
   }
 
   async getAll(filterDto: FilterDto): Promise<Paragrafo[]> {
-    const filtersService = new FiltersService(filterDto);
-    let populateFields = [];
-    if (filtersService.isPopulated()) {
-      populateFields = this.populateFields();
-    }
-    return await this.paragrafoModel
-      .find(
-        filtersService.getQuery(),
-        filtersService.getFields(),
-        filtersService.getLimitAndOffset(),
-      )
-      .sort(filtersService.getSortBy())
-      .populate(populateFields)
-      .exec();
+    return await this.paragrafoModel.find().exec();
   }
 
   async getById(id: string): Promise<Paragrafo> {
@@ -58,9 +42,6 @@ export class ParagrafoService {
     paragrafoDto: CreateParagrafoDto,
   ): Promise<Paragrafo> {
     paragrafoDto.fecha_modificacion = new Date();
-    if (paragrafoDto.fecha_creacion) {
-      delete paragrafoDto.fecha_creacion;
-    }
     const update = await this.paragrafoModel
       .findByIdAndUpdate(id, paragrafoDto, { new: true })
       .exec();

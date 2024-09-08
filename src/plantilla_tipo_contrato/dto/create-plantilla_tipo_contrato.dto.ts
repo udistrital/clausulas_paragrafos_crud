@@ -1,42 +1,44 @@
-import { Prop } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import mongoose from 'mongoose';
+import {IsNotEmpty,IsOptional,IsString,IsNumber,IsBoolean,IsDate, IsArray,} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreatePlantillaTipoContratoDto {
 
     @ApiProperty()
-    readonly version: number;
+    @IsNotEmpty()
+    @IsNumber()
+    version: number;
 
     @ApiProperty()
-    readonly version_actual: boolean;
+    @IsNotEmpty()
+    @IsBoolean()
+    version_actual: boolean;
 
     @ApiProperty()
-    readonly tipo_contrato_id: number;
+    @IsNotEmpty()
+    @IsNumber()
+    tipo_contrato_id: number;
 
-    @Prop({
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'orden_clausula_id',
-        required: true,
-    })
+    @ApiProperty({ type: String, description: 'Orden Clausula ID' })
+    @IsNotEmpty()
+    @IsString()
     orden_clausula_id: string;
 
-    @Prop({
-        ref: 'orden_paragrafo_id',
-    })
-    orden_paragrafo_ids: [
-        {
-            type: mongoose.Schema.Types.ObjectId;
-            ref: 'orden_paragrafo_id';
-        },
-    ];
+    
+    @ApiProperty({ type: [String], description: 'Lista de Orden Paragrafo IDs' })
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    orden_paragrafo_ids: string[];
 
     @ApiProperty()
-    activo: boolean;
-
-    @ApiProperty()
+    @IsDate()
+    @Type(() => Date)
     fecha_creacion: Date;
 
     @ApiProperty()
+    @IsDate()
+    @Type(() => Date)
     fecha_modificacion: Date;
 
 }

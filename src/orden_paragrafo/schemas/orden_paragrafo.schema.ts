@@ -4,34 +4,27 @@ import mongoose, { Document } from 'mongoose';
 @Schema({collection: 'orden_paragrafo'})
 export class OrdenParagrafo extends Document {
 
-    @Prop({
-        ref: 'paragrafo_id',
-    })
-    paragrafo_ids: [
-        {
-            type: mongoose.Schema.Types.ObjectId;
-            ref: 'paragrafo_id';
-        },
-    ];
+    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Paragrafo' }] })
+    paragrafo_ids: mongoose.Types.ObjectId[];
 
     @Prop({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'contrato_id',
     })
-    contrato_id: string;
+    contrato_id: mongoose.Types.ObjectId;
 
     @Prop({
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'contrato_id',
+        ref: 'Clausula',
     })
-    clausula_id: string;
+    clausula_id: mongoose.Types.ObjectId;
 
-    @Prop({required: true})
+    @Prop({required: true, default: Date.now})
     fecha_creacion: Date
 
-    @Prop({required: true})
+    @Prop({required: true, default: Date.now})
     fecha_modificacion: Date
 
 }
 
-export const OrdenParagrafoSchema = SchemaFactory.createForClass(OrdenParagrafo)
+export const OrdenParagrafoSchema = SchemaFactory.createForClass(OrdenParagrafo);

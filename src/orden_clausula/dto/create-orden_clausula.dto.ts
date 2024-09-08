@@ -1,29 +1,28 @@
-import { Prop } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import mongoose from 'mongoose';
+import {IsNotEmpty,IsString,IsDate, IsArray,} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateOrdenClausulaDto {
 
-    @Prop({
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'contrato_id',
-    })
+    @ApiProperty({ type: [String], description: 'Lista de Clausula IDs' })
+    @IsNotEmpty()
+    @IsArray()
+    @IsString({ each: true })
+    clausula_ids: string[];
+
+    @ApiProperty({ type: String, description: 'Contrato ID' })
+    @IsNotEmpty()
+    @IsString()
     contrato_id: string;
 
-    @Prop({
-        ref: 'clausula_id',
-    })
-    clausula_ids: [
-        {
-            type: mongoose.Schema.Types.ObjectId;
-            ref: 'clausula_id';
-        },
-    ];
-
     @ApiProperty()
+    @IsDate()
+    @Type(() => Date)
     fecha_creacion: Date;
 
     @ApiProperty()
+    @IsDate()
+    @Type(() => Date)
     fecha_modificacion: Date;
 
 }
