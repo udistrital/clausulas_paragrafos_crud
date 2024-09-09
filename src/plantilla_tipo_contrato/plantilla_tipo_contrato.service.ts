@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { isValidObjectId, Model, Types } from 'mongoose';
 import { CreatePlantillaTipoContratoDto } from './dto/create-plantilla_tipo_contrato.dto';
 import { PlantillaTipoContrato } from './schemas/plantilla_tipo_contrato.schema';
 import { FilterDto } from 'src/filters/dto/filters.dto';
@@ -40,6 +40,21 @@ export class PlantillaTipoContratoService {
     return plantillaTipoContrato;
   }
 
+  async getByTipoContrato(tipoContratoId : number){
+    const plantillaTipoContrato = await this.plantillaTipoContratoModel.find(
+      {
+        tipo_contrato_id: tipoContratoId
+      }
+    )
+      .populate('orden_paragrafo_ids')
+      .populate('orden_clausula_id')
+      .exec();
+    if (!plantillaTipoContrato) {
+      throw new Error(`${tipoContratoId} doesn't exist`);
+    }
+    return plantillaTipoContrato;
+  }
+
   async put(
     id: string,
     plantillaTipoContratoDto: CreatePlantillaTipoContratoDto,
@@ -54,12 +69,36 @@ export class PlantillaTipoContratoService {
     return update;
   }
 
+  async putTipoContrato(
+    tipoContratoId: number,
+    plantillaTipoContratoDto: CreatePlantillaTipoContratoDto,
+  ){
+    plantillaTipoContratoDto.fecha_modificacion = new Date();
+    const update = await this.plantillaTipoContratoModel
+      .updateOne({tipo_contrato_id : tipoContratoId}, plantillaTipoContratoDto)
+      .exec();
+    if (!update) {
+      throw new Error(`${tipoContratoId} doesn't exist`);
+    }
+    return update;
+  }
+
   async delete(id: string): Promise<PlantillaTipoContrato> {
     const deleted = await this.plantillaTipoContratoModel
       .findByIdAndUpdate(id, { activo: false }, { new: true })
       .exec();
     if (!deleted) {
       throw new Error(`${id} doesn't exist`);
+    }
+    return deleted;
+  }
+
+  async deleteTipoContrato(tipoContratoId: number){
+    const deleted = await this.plantillaTipoContratoModel
+      .updateOne({tipo_contrato_id : tipoContratoId}, { activo: false })
+      .exec();
+    if (!deleted) {
+      throw new Error(`${tipoContratoId} doesn't exist`);
     }
     return deleted;
   }

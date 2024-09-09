@@ -886,6 +886,81 @@
           "plantilla_tipo_contrato"
         ]
       }
+    },
+    "/plantilla_tipo_contrato/tipo-contrato/{tipo_contrato_id}": {
+      "get": {
+        "operationId": "PlantillaTipoContratoController_getByTipoContrato",
+        "parameters": [
+          {
+            "name": "tipo_contrato_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "plantilla_tipo_contrato"
+        ]
+      },
+      "put": {
+        "operationId": "PlantillaTipoContratoController_putTipoContrato",
+        "parameters": [
+          {
+            "name": "tipo_contrato_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePlantillaTipoContratoDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "plantilla_tipo_contrato"
+        ]
+      },
+      "delete": {
+        "operationId": "PlantillaTipoContratoController_deleteTipoContrato",
+        "parameters": [
+          {
+            "name": "tipo_contrato_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "plantilla_tipo_contrato"
+        ]
+      }
     }
   },
   "info": {

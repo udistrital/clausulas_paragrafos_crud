@@ -15,7 +15,7 @@ export class PlantillaTipoContrato extends Document {
 
     @Prop({
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Clausula',
+        ref: 'OrdenClausula',
     })
     orden_clausula_id: mongoose.Types.ObjectId;
 
