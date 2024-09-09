@@ -22,6 +22,9 @@ export class PlantillaTipoContrato extends Document {
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'OrdenParagrafo' }] })
     orden_paragrafo_ids: mongoose.Types.ObjectId[];
 
+    @Prop({required: true})
+    activo: boolean
+
     @Prop({required: true, default: Date.now})
     fecha_creacion: Date
 
