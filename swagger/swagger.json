@@ -3,7 +3,7 @@
   "paths": {
     "/": {
       "get": {
-        "operationId": "AppController_getHello",
+        "operationId": "AppController_healthCheck",
         "parameters": [],
         "responses": {
           "200": {
@@ -12,7 +12,7 @@
         }
       }
     },
-    "/clausula": {
+    "/clausulas": {
       "post": {
         "operationId": "ClausulaController_post",
         "parameters": [],
@@ -32,7 +32,7 @@
           }
         },
         "tags": [
-          "clausula"
+          "clausulas"
         ]
       },
       "get": {
@@ -108,11 +108,11 @@
           }
         },
         "tags": [
-          "clausula"
+          "clausulas"
         ]
       }
     },
-    "/clausula/{id}": {
+    "/clausulas/{id}": {
       "get": {
         "operationId": "ClausulaController_getById",
         "parameters": [
@@ -131,7 +131,7 @@
           }
         },
         "tags": [
-          "clausula"
+          "clausulas"
         ]
       },
       "put": {
@@ -162,7 +162,7 @@
           }
         },
         "tags": [
-          "clausula"
+          "clausulas"
         ]
       },
       "delete": {
@@ -183,11 +183,11 @@
           }
         },
         "tags": [
-          "clausula"
+          "clausulas"
         ]
       }
     },
-    "/paragrafo": {
+    "/paragrafos": {
       "post": {
         "operationId": "ParagrafoController_post",
         "parameters": [],
@@ -207,7 +207,7 @@
           }
         },
         "tags": [
-          "paragrafo"
+          "paragrafos"
         ]
       },
       "get": {
@@ -283,11 +283,11 @@
           }
         },
         "tags": [
-          "paragrafo"
+          "paragrafos"
         ]
       }
     },
-    "/paragrafo/{id}": {
+    "/paragrafos/{id}": {
       "get": {
         "operationId": "ParagrafoController_getById",
         "parameters": [
@@ -306,7 +306,7 @@
           }
         },
         "tags": [
-          "paragrafo"
+          "paragrafos"
         ]
       },
       "put": {
@@ -337,7 +337,7 @@
           }
         },
         "tags": [
-          "paragrafo"
+          "paragrafos"
         ]
       },
       "delete": {
@@ -358,11 +358,11 @@
           }
         },
         "tags": [
-          "paragrafo"
+          "paragrafos"
         ]
       }
     },
-    "/orden_clausula": {
+    "/orden-clausulas": {
       "post": {
         "operationId": "OrdenClausulaController_post",
         "parameters": [],
@@ -382,7 +382,7 @@
           }
         },
         "tags": [
-          "orden_clausula"
+          "orden-clausulas"
         ]
       },
       "get": {
@@ -458,11 +458,11 @@
           }
         },
         "tags": [
-          "orden_clausula"
+          "orden-clausulas"
         ]
       }
     },
-    "/orden_clausula/{id}": {
+    "/orden-clausulas/{id}": {
       "get": {
         "operationId": "OrdenClausulaController_getById",
         "parameters": [
@@ -481,7 +481,7 @@
           }
         },
         "tags": [
-          "orden_clausula"
+          "orden-clausulas"
         ]
       },
       "put": {
@@ -512,7 +512,7 @@
           }
         },
         "tags": [
-          "orden_clausula"
+          "orden-clausulas"
         ]
       },
       "delete": {
@@ -533,11 +533,11 @@
           }
         },
         "tags": [
-          "orden_clausula"
+          "orden-clausulas"
         ]
       }
     },
-    "/orden_paragrafo": {
+    "/orden-paragrafos": {
       "post": {
         "operationId": "OrdenParagrafoController_post",
         "parameters": [],
@@ -557,7 +557,7 @@
           }
         },
         "tags": [
-          "orden_paragrafo"
+          "orden-paragrafos"
         ]
       },
       "get": {
@@ -633,11 +633,11 @@
           }
         },
         "tags": [
-          "orden_paragrafo"
+          "orden-paragrafos"
         ]
       }
     },
-    "/orden_paragrafo/{id}": {
+    "/orden-paragrafos/{id}": {
       "get": {
         "operationId": "OrdenParagrafoController_getById",
         "parameters": [
@@ -656,7 +656,7 @@
           }
         },
         "tags": [
-          "orden_paragrafo"
+          "orden-paragrafos"
         ]
       },
       "put": {
@@ -687,7 +687,7 @@
           }
         },
         "tags": [
-          "orden_paragrafo"
+          "orden-paragrafos"
         ]
       },
       "delete": {
@@ -708,11 +708,11 @@
           }
         },
         "tags": [
-          "orden_paragrafo"
+          "orden-paragrafos"
         ]
       }
     },
-    "/plantilla_tipo_contrato": {
+    "/plantilla-tipo-contratos": {
       "post": {
         "operationId": "PlantillaTipoContratoController_post",
         "parameters": [],
@@ -732,7 +732,7 @@
           }
         },
         "tags": [
-          "plantilla_tipo_contrato"
+          "plantilla-tipo-contratos"
         ]
       },
       "get": {
@@ -808,11 +808,11 @@
           }
         },
         "tags": [
-          "plantilla_tipo_contrato"
+          "plantilla-tipo-contratos"
         ]
       }
     },
-    "/plantilla_tipo_contrato/{id}": {
+    "/plantilla-tipo-contratos/{id}": {
       "get": {
         "operationId": "PlantillaTipoContratoController_getById",
         "parameters": [
@@ -831,7 +831,7 @@
           }
         },
         "tags": [
-          "plantilla_tipo_contrato"
+          "plantilla-tipo-contratos"
         ]
       },
       "put": {
@@ -862,7 +862,7 @@
           }
         },
         "tags": [
-          "plantilla_tipo_contrato"
+          "plantilla-tipo-contratos"
         ]
       },
       "delete": {
@@ -883,11 +883,11 @@
           }
         },
         "tags": [
-          "plantilla_tipo_contrato"
+          "plantilla-tipo-contratos"
         ]
       }
     },
-    "/plantilla_tipo_contrato/tipo-contrato/{tipo_contrato_id}": {
+    "/plantilla-tipo-contratos/tipo-contratos/{tipo_contrato_id}": {
       "get": {
         "operationId": "PlantillaTipoContratoController_getByTipoContrato",
         "parameters": [
@@ -906,7 +906,7 @@
           }
         },
         "tags": [
-          "plantilla_tipo_contrato"
+          "plantilla-tipo-contratos"
         ]
       },
       "put": {
@@ -937,7 +937,7 @@
           }
         },
         "tags": [
-          "plantilla_tipo_contrato"
+          "plantilla-tipo-contratos"
         ]
       },
       "delete": {
@@ -958,7 +958,7 @@
           }
         },
         "tags": [
-          "plantilla_tipo_contrato"
+          "plantilla-tipo-contratos"
         ]
       }
     }

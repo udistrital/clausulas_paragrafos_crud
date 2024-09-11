@@ -4,8 +4,8 @@ import { CreateOrdenClausulaDto } from './dto/create-orden_clausula.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { FilterDto } from 'src/filters/dto/filters.dto';
 
-@ApiTags('orden_clausula')
-@Controller('orden_clausula')
+@ApiTags('orden-clausulas')
+@Controller('orden-clausulas')
 export class OrdenClausulaController {
 
   constructor(
@@ -18,14 +18,14 @@ async post(@Res() res, @Body() ordenClausulaDto: CreateOrdenClausulaDto) {
     if (!ordenClausula) {
         throw new HttpException({
             Success: false,
-            Status: "400",
+            Status: 400,
             Message: "Error service Post: The request contains an incorrect data type or an invalid parameter",
             Data: null
         }, HttpStatus.BAD_REQUEST)
     }
     res.status(HttpStatus.CREATED).json({
         Success: true,
-        Status: "201",
+        Status: 201,
         Message: "Registration successful",
         Data: ordenClausula
     });
@@ -37,14 +37,14 @@ async getAll(@Res() res, @Query() filterDto: FilterDto) {
         const ordenClausula = await this.ordenClausulaService.getAll(filterDto);
         res.status(HttpStatus.OK).json({
             Success: true,
-            Status: "200",
+            Status: 200,
             Message: "Request successful",
             Data: ordenClausula || []
         });
     } catch (error) {
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
             Success: false,
-            Status: "500",
+            Status: 500,
             Message: "An unexpected error occurred",
             Data: null
         });
@@ -58,14 +58,14 @@ async getById(@Res() res, @Param('id') id: string) {
     if (!ordenClausula) {
         throw new HttpException({
             Success: false,
-            Status: "404",
+            Status: 404,
             Message: "Error service GetOne: The request contains an incorrect parameter or no record exist",
             Data: null
         }, HttpStatus.NOT_FOUND)
     }
     res.status(HttpStatus.OK).json({
         Success: true,
-        Status: "200",
+        Status: 200,
         Message: "Request successful",
         Data: ordenClausula
     });
@@ -77,14 +77,14 @@ async put(@Res() res, @Param('id') id: string, @Body() ordenClausulaDto: CreateO
     if (!ordenClausula) {
         throw new HttpException({
             Success: false,
-            Status: "400",
+            Status: 400,
             Message: "Error service Put: The request contains an incorrect data type or an invalid parameter",
             Data: null
         }, HttpStatus.BAD_REQUEST)
     }
     res.status(HttpStatus.OK).json({
         Success: true,
-        Status: "200",
+        Status: 200,
         Message: "Update successful",
         Data: ordenClausula
     });
@@ -96,14 +96,14 @@ async delete(@Res() res, @Param('id') id: string) {
     if (!ordenClausula) {
         throw new HttpException({
             Sucess: false,
-            Status: "404",
+            Status: 404,
             Message: "Error service Delete: Request contains incorrect parameter",
             Data: null
         }, HttpStatus.NOT_FOUND)
     }
     res.status(HttpStatus.OK).json({
         Success: true,
-        Status: "200",
+        Status: 200,
         Message: "Delete successful",
         Data: {
             _id: id

@@ -2,12 +2,12 @@ openapi: 3.0.0
 paths:
   /:
     get:
-      operationId: AppController_getHello
+      operationId: AppController_healthCheck
       parameters: []
       responses:
         '200':
           description: ''
-  /clausula:
+  /clausulas:
     post:
       operationId: ClausulaController_post
       parameters: []
@@ -21,7 +21,7 @@ paths:
         '201':
           description: ''
       tags: &ref_0
-        - clausula
+        - clausulas
     get:
       operationId: ClausulaController_getAll
       parameters:
@@ -73,7 +73,7 @@ paths:
         '200':
           description: ''
       tags: *ref_0
-  /clausula/{id}:
+  /clausulas/{id}:
     get:
       operationId: ClausulaController_getById
       parameters:
@@ -116,7 +116,7 @@ paths:
         '200':
           description: ''
       tags: *ref_0
-  /paragrafo:
+  /paragrafos:
     post:
       operationId: ParagrafoController_post
       parameters: []
@@ -130,7 +130,7 @@ paths:
         '201':
           description: ''
       tags: &ref_1
-        - paragrafo
+        - paragrafos
     get:
       operationId: ParagrafoController_getAll
       parameters:
@@ -182,7 +182,7 @@ paths:
         '200':
           description: ''
       tags: *ref_1
-  /paragrafo/{id}:
+  /paragrafos/{id}:
     get:
       operationId: ParagrafoController_getById
       parameters:
@@ -225,7 +225,7 @@ paths:
         '200':
           description: ''
       tags: *ref_1
-  /orden_clausula:
+  /orden-clausulas:
     post:
       operationId: OrdenClausulaController_post
       parameters: []
@@ -239,7 +239,7 @@ paths:
         '201':
           description: ''
       tags: &ref_2
-        - orden_clausula
+        - orden-clausulas
     get:
       operationId: OrdenClausulaController_getAll
       parameters:
@@ -291,7 +291,7 @@ paths:
         '200':
           description: ''
       tags: *ref_2
-  /orden_clausula/{id}:
+  /orden-clausulas/{id}:
     get:
       operationId: OrdenClausulaController_getById
       parameters:
@@ -334,7 +334,7 @@ paths:
         '200':
           description: ''
       tags: *ref_2
-  /orden_paragrafo:
+  /orden-paragrafos:
     post:
       operationId: OrdenParagrafoController_post
       parameters: []
@@ -348,7 +348,7 @@ paths:
         '201':
           description: ''
       tags: &ref_3
-        - orden_paragrafo
+        - orden-paragrafos
     get:
       operationId: OrdenParagrafoController_getAll
       parameters:
@@ -400,7 +400,7 @@ paths:
         '200':
           description: ''
       tags: *ref_3
-  /orden_paragrafo/{id}:
+  /orden-paragrafos/{id}:
     get:
       operationId: OrdenParagrafoController_getById
       parameters:
@@ -443,7 +443,7 @@ paths:
         '200':
           description: ''
       tags: *ref_3
-  /plantilla_tipo_contrato:
+  /plantilla-tipo-contratos:
     post:
       operationId: PlantillaTipoContratoController_post
       parameters: []
@@ -457,7 +457,7 @@ paths:
         '201':
           description: ''
       tags: &ref_4
-        - plantilla_tipo_contrato
+        - plantilla-tipo-contratos
     get:
       operationId: PlantillaTipoContratoController_getAll
       parameters:
@@ -509,7 +509,7 @@ paths:
         '200':
           description: ''
       tags: *ref_4
-  /plantilla_tipo_contrato/{id}:
+  /plantilla-tipo-contratos/{id}:
     get:
       operationId: PlantillaTipoContratoController_getById
       parameters:
@@ -552,7 +552,7 @@ paths:
         '200':
           description: ''
       tags: *ref_4
-  /plantilla_tipo_contrato/tipo-contrato/{tipo_contrato_id}:
+  /plantilla-tipo-contratos/tipo-contratos/{tipo_contrato_id}:
     get:
       operationId: PlantillaTipoContratoController_getByTipoContrato
       parameters:
