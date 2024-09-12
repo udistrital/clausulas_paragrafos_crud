@@ -4,12 +4,14 @@ import { Model, Types } from 'mongoose';
 import { CreateOrdenClausulaDto } from './dto/create-orden_clausula.dto';
 import { OrdenClausula } from './schemas/orden_clausula.schema';
 import { FilterDto } from 'src/filters/dto/filters.dto';
+import { FiltersService } from 'src/filters/filters.service';
 
 @Injectable()
 export class OrdenClausulaService {
   constructor(
     @InjectModel(OrdenClausula.name)
     private readonly ordenClausulaModel: Model<OrdenClausula>,
+    private readonly filtersService : FiltersService,
   ) { }
 
   async post(ordenClausulaDto: CreateOrdenClausulaDto): Promise<OrdenClausula> {
@@ -21,8 +23,14 @@ export class OrdenClausulaService {
     return await this.ordenClausulaModel.create(ordenClausulaData);
   }
 
-  async getAll(filterDto: FilterDto): Promise<OrdenClausula[]> {
-    return await this.ordenClausulaModel.find()
+  async getAll(filtersDto: FilterDto): Promise<OrdenClausula[]> {
+    const{offset, limit} = filtersDto;
+    const {filterObject, sortObject}= this.filtersService.createObjects(filtersDto)
+    return await this.ordenClausulaModel
+    .find(filterObject)
+      .sort(sortObject)
+      .skip(offset)
+      .limit(limit)
       .populate('clausula_ids')
       .exec();
   }

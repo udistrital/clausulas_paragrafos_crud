@@ -4,12 +4,14 @@ import { isValidObjectId, Model, Types } from 'mongoose';
 import { CreatePlantillaTipoContratoDto } from './dto/create-plantilla_tipo_contrato.dto';
 import { PlantillaTipoContrato } from './schemas/plantilla_tipo_contrato.schema';
 import { FilterDto } from 'src/filters/dto/filters.dto';
+import { FiltersService } from 'src/filters/filters.service';
 
 @Injectable()
 export class PlantillaTipoContratoService {
   constructor(
     @InjectModel(PlantillaTipoContrato.name)
     private readonly plantillaTipoContratoModel: Model<PlantillaTipoContrato>,
+    private readonly filtersService : FiltersService,
   ) { }
 
   async post(plantillaTipoContratoDto: CreatePlantillaTipoContratoDto): Promise<PlantillaTipoContrato> {
@@ -22,8 +24,14 @@ export class PlantillaTipoContratoService {
     return await this.plantillaTipoContratoModel.create(plantillaTipoContratoData);
   }
 
-  async getAll(filterDto: FilterDto): Promise<PlantillaTipoContrato[]> {
-    return await this.plantillaTipoContratoModel.find()
+  async getAll(filtersDto: FilterDto): Promise<PlantillaTipoContrato[]> {
+    const{offset, limit} = filtersDto;
+    const {filterObject, sortObject}= this.filtersService.createObjects(filtersDto)
+    return await this.plantillaTipoContratoModel
+      .find(filterObject)
+      .sort(sortObject)
+      .skip(offset)
+      .limit(limit)
       .populate('orden_paragrafo_ids')
       .populate('orden_clausula_id')
       .exec();
@@ -36,21 +44,6 @@ export class PlantillaTipoContratoService {
       .exec();
     if (!plantillaTipoContrato) {
       throw new Error(`${id} doesn't exist`);
-    }
-    return plantillaTipoContrato;
-  }
-
-  async getByTipoContrato(tipoContratoId : number){
-    const plantillaTipoContrato = await this.plantillaTipoContratoModel.find(
-      {
-        tipo_contrato_id: tipoContratoId
-      }
-    )
-      .populate('orden_paragrafo_ids')
-      .populate('orden_clausula_id')
-      .exec();
-    if (!plantillaTipoContrato) {
-      throw new Error(`${tipoContratoId} doesn't exist`);
     }
     return plantillaTipoContrato;
   }
@@ -69,36 +62,12 @@ export class PlantillaTipoContratoService {
     return update;
   }
 
-  async putTipoContrato(
-    tipoContratoId: number,
-    plantillaTipoContratoDto: CreatePlantillaTipoContratoDto,
-  ){
-    plantillaTipoContratoDto.fecha_modificacion = new Date();
-    const update = await this.plantillaTipoContratoModel
-      .updateOne({tipo_contrato_id : tipoContratoId}, plantillaTipoContratoDto)
-      .exec();
-    if (!update) {
-      throw new Error(`${tipoContratoId} doesn't exist`);
-    }
-    return update;
-  }
-
   async delete(id: string): Promise<PlantillaTipoContrato> {
     const deleted = await this.plantillaTipoContratoModel
       .findByIdAndUpdate(id, { activo: false }, { new: true })
       .exec();
     if (!deleted) {
       throw new Error(`${id} doesn't exist`);
-    }
-    return deleted;
-  }
-
-  async deleteTipoContrato(tipoContratoId: number){
-    const deleted = await this.plantillaTipoContratoModel
-      .updateOne({tipo_contrato_id : tipoContratoId}, { activo: false })
-      .exec();
-    if (!deleted) {
-      throw new Error(`${tipoContratoId} doesn't exist`);
     }
     return deleted;
   }

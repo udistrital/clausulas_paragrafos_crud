@@ -70,47 +70,9 @@ export class PlantillaTipoContratoController {
         });
     }
 
-    @Get('/tipo-contratos/:tipo_contrato_id')
-    async getByTipoContrato(@Res() res, @Param('tipo_contrato_id') tipoContratoId: number) {
-        const result = await this.plantillaTipoContratoService.getByTipoContrato(tipoContratoId);
-        if (!result) {
-            throw new HttpException({
-                Success: false,
-                Status: 404,
-                Message: "Error service GetOne: The request contains an incorrect parameter or no record exist",
-                Data: null
-            }, HttpStatus.NOT_FOUND)
-        }
-        res.status(HttpStatus.OK).json({
-            Success: true,
-            Status: 200,
-            Message: "Request successful",
-            Data: result
-        });
-    }
-
     @Put('/:id')
     async put(@Res() res, @Param('id') id: string, @Body() plantillaTipoContratoDto: CreatePlantillaTipoContratoDto) {
         const plantillaTipoContrato = await this.plantillaTipoContratoService.put(id, plantillaTipoContratoDto);
-        if (!plantillaTipoContrato) {
-            throw new HttpException({
-                Success: false,
-                Status: 400,
-                Message: "Error service Put: The request contains an incorrect data type or an invalid parameter",
-                Data: null
-            }, HttpStatus.BAD_REQUEST)
-        }
-        res.status(HttpStatus.OK).json({
-            Success: true,
-            Status: 200,
-            Message: "Update successful",
-            Data: plantillaTipoContrato
-        });
-    }
-
-    @Put('tipo-contratos/:tipo_contrato_id')
-    async putTipoContrato(@Res() res, @Param('tipo_contrato_id') tipoContratoId: number, @Body() plantillaTipoContratoDto: CreatePlantillaTipoContratoDto) {
-        const plantillaTipoContrato = await this.plantillaTipoContratoService.putTipoContrato(tipoContratoId, plantillaTipoContratoDto);
         if (!plantillaTipoContrato) {
             throw new HttpException({
                 Success: false,
@@ -144,27 +106,6 @@ export class PlantillaTipoContratoController {
             Message: "Delete successful",
             Data: {
                 _id: id
-            }
-        });
-    }
-
-    @Delete('tipo-contratos/:tipo_contrato_id')
-    async deleteTipoContrato(@Res() res, @Param('tipo_contrato_id') tipoContratoId: number) {
-        const plantillaTipoContrato = await this.plantillaTipoContratoService.deleteTipoContrato(tipoContratoId);
-        if (!plantillaTipoContrato) {
-            throw new HttpException({
-                Sucess: false,
-                Status: 404,
-                Message: "Error service Delete: Request contains incorrect parameter",
-                Data: null
-            }, HttpStatus.NOT_FOUND)
-        }
-        res.status(HttpStatus.OK).json({
-            Success: true,
-            Status: 200,
-            Message: "Delete successful",
-            Data: {
-                tipo_contrato_id: tipoContratoId
             }
         });
     }

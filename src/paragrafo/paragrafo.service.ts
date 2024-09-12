@@ -4,18 +4,15 @@ import { Model } from 'mongoose';
 import { CreateParagrafoDto } from './dto/create-paragrafo.dto';
 import { Paragrafo } from './schemas/paragrafo.schema';
 import { FilterDto } from 'src/filters/dto/filters.dto';
+import { FiltersService } from 'src/filters/filters.service';
 
 @Injectable()
 export class ParagrafoService {
   constructor(
     @InjectModel(Paragrafo.name)
     private readonly paragrafoModel: Model<Paragrafo>,
+    private readonly filtersService : FiltersService,
   ) {}
-
-  private populateFields(): any[] {
-    // Define the fields to be populated, if any
-    return [];
-  }
 
   async post(paragrafoDto: CreateParagrafoDto): Promise<Paragrafo> {
     const paragrafoData = {
@@ -25,8 +22,15 @@ export class ParagrafoService {
     return await this.paragrafoModel.create(paragrafoData);
   }
 
-  async getAll(filterDto: FilterDto): Promise<Paragrafo[]> {
-    return await this.paragrafoModel.find().exec();
+  async getAll(filtersDto: FilterDto): Promise<Paragrafo[]> {
+    const{offset, limit} = filtersDto;
+    const {filterObject, sortObject}= this.filtersService.createObjects(filtersDto)
+    return await this.paragrafoModel
+      .find(filterObject)
+      .sort(sortObject)
+      .skip(offset)
+      .limit(limit)
+      .exec();
   }
 
   async getById(id: string): Promise<Paragrafo> {

@@ -48,28 +48,28 @@
             }
           },
           {
-            "name": "fields",
+            "name": "filter",
             "required": false,
             "in": "query",
-            "description": "fields - Fields returned. e.g. col1,col2 …",
+            "description": "filter - Filter returned. e.g. col1,col2 …",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "sortby",
+            "name": "sort",
             "required": false,
             "in": "query",
-            "description": "sortby - Sorted-by fields. e.g. col1,col2 …",
+            "description": "sort - Sorted-by corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc …",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "order",
+            "name": "orderBy",
             "required": false,
             "in": "query",
-            "description": "order - Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc …",
+            "description": "orderBy - OrderBy fields. e.g. col1,col2 …",
             "schema": {
               "type": "string"
             }
@@ -80,7 +80,7 @@
             "in": "query",
             "description": "limit - Limit the size of result set. Must be an integer",
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           },
           {
@@ -89,16 +89,7 @@
             "in": "query",
             "description": "offset - Start position of result set. Must be an integer",
             "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "populate",
-            "required": false,
-            "in": "query",
-            "description": "populate - show subqueries. Must be a boolean",
-            "schema": {
-              "type": "string"
+              "type": "number"
             }
           }
         ],
@@ -223,28 +214,28 @@
             }
           },
           {
-            "name": "fields",
+            "name": "filter",
             "required": false,
             "in": "query",
-            "description": "fields - Fields returned. e.g. col1,col2 …",
+            "description": "filter - Filter returned. e.g. col1,col2 …",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "sortby",
+            "name": "sort",
             "required": false,
             "in": "query",
-            "description": "sortby - Sorted-by fields. e.g. col1,col2 …",
+            "description": "sort - Sorted-by corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc …",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "order",
+            "name": "orderBy",
             "required": false,
             "in": "query",
-            "description": "order - Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc …",
+            "description": "orderBy - OrderBy fields. e.g. col1,col2 …",
             "schema": {
               "type": "string"
             }
@@ -255,7 +246,7 @@
             "in": "query",
             "description": "limit - Limit the size of result set. Must be an integer",
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           },
           {
@@ -264,16 +255,7 @@
             "in": "query",
             "description": "offset - Start position of result set. Must be an integer",
             "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "populate",
-            "required": false,
-            "in": "query",
-            "description": "populate - show subqueries. Must be a boolean",
-            "schema": {
-              "type": "string"
+              "type": "number"
             }
           }
         ],
@@ -398,28 +380,28 @@
             }
           },
           {
-            "name": "fields",
+            "name": "filter",
             "required": false,
             "in": "query",
-            "description": "fields - Fields returned. e.g. col1,col2 …",
+            "description": "filter - Filter returned. e.g. col1,col2 …",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "sortby",
+            "name": "sort",
             "required": false,
             "in": "query",
-            "description": "sortby - Sorted-by fields. e.g. col1,col2 …",
+            "description": "sort - Sorted-by corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc …",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "order",
+            "name": "orderBy",
             "required": false,
             "in": "query",
-            "description": "order - Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc …",
+            "description": "orderBy - OrderBy fields. e.g. col1,col2 …",
             "schema": {
               "type": "string"
             }
@@ -430,7 +412,7 @@
             "in": "query",
             "description": "limit - Limit the size of result set. Must be an integer",
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           },
           {
@@ -439,16 +421,7 @@
             "in": "query",
             "description": "offset - Start position of result set. Must be an integer",
             "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "populate",
-            "required": false,
-            "in": "query",
-            "description": "populate - show subqueries. Must be a boolean",
-            "schema": {
-              "type": "string"
+              "type": "number"
             }
           }
         ],
@@ -573,28 +546,28 @@
             }
           },
           {
-            "name": "fields",
+            "name": "filter",
             "required": false,
             "in": "query",
-            "description": "fields - Fields returned. e.g. col1,col2 …",
+            "description": "filter - Filter returned. e.g. col1,col2 …",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "sortby",
+            "name": "sort",
             "required": false,
             "in": "query",
-            "description": "sortby - Sorted-by fields. e.g. col1,col2 …",
+            "description": "sort - Sorted-by corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc …",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "order",
+            "name": "orderBy",
             "required": false,
             "in": "query",
-            "description": "order - Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc …",
+            "description": "orderBy - OrderBy fields. e.g. col1,col2 …",
             "schema": {
               "type": "string"
             }
@@ -605,7 +578,7 @@
             "in": "query",
             "description": "limit - Limit the size of result set. Must be an integer",
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           },
           {
@@ -614,16 +587,7 @@
             "in": "query",
             "description": "offset - Start position of result set. Must be an integer",
             "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "populate",
-            "required": false,
-            "in": "query",
-            "description": "populate - show subqueries. Must be a boolean",
-            "schema": {
-              "type": "string"
+              "type": "number"
             }
           }
         ],
@@ -748,28 +712,28 @@
             }
           },
           {
-            "name": "fields",
+            "name": "filter",
             "required": false,
             "in": "query",
-            "description": "fields - Fields returned. e.g. col1,col2 …",
+            "description": "filter - Filter returned. e.g. col1,col2 …",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "sortby",
+            "name": "sort",
             "required": false,
             "in": "query",
-            "description": "sortby - Sorted-by fields. e.g. col1,col2 …",
+            "description": "sort - Sorted-by corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc …",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "order",
+            "name": "orderBy",
             "required": false,
             "in": "query",
-            "description": "order - Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc …",
+            "description": "orderBy - OrderBy fields. e.g. col1,col2 …",
             "schema": {
               "type": "string"
             }
@@ -780,7 +744,7 @@
             "in": "query",
             "description": "limit - Limit the size of result set. Must be an integer",
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           },
           {
@@ -789,16 +753,7 @@
             "in": "query",
             "description": "offset - Start position of result set. Must be an integer",
             "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "populate",
-            "required": false,
-            "in": "query",
-            "description": "populate - show subqueries. Must be a boolean",
-            "schema": {
-              "type": "string"
+              "type": "number"
             }
           }
         ],
@@ -874,81 +829,6 @@
             "in": "path",
             "schema": {
               "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "plantilla-tipo-contratos"
-        ]
-      }
-    },
-    "/plantilla-tipo-contratos/tipo-contratos/{tipo_contrato_id}": {
-      "get": {
-        "operationId": "PlantillaTipoContratoController_getByTipoContrato",
-        "parameters": [
-          {
-            "name": "tipo_contrato_id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "plantilla-tipo-contratos"
-        ]
-      },
-      "put": {
-        "operationId": "PlantillaTipoContratoController_putTipoContrato",
-        "parameters": [
-          {
-            "name": "tipo_contrato_id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePlantillaTipoContratoDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "plantilla-tipo-contratos"
-        ]
-      },
-      "delete": {
-        "operationId": "PlantillaTipoContratoController_deleteTipoContrato",
-        "parameters": [
-          {
-            "name": "tipo_contrato_id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
             }
           }
         ],

@@ -4,12 +4,14 @@ import { Model } from 'mongoose';
 import { CreateClausulaDto } from './dto/create-clausula.dto';
 import { Clausula } from './schemas/clausula.schema';
 import { FilterDto } from 'src/filters/dto/filters.dto';
+import { FiltersService } from 'src/filters/filters.service';
 
 @Injectable()
 export class ClausulaService {
   constructor(
     @InjectModel(Clausula.name)
     private readonly clausulaModel: Model<Clausula>,
+    private readonly filtersService : FiltersService,
   ) {}
 
   async post(clausulaDto: CreateClausulaDto): Promise<Clausula> {
@@ -20,8 +22,15 @@ export class ClausulaService {
     return await this.clausulaModel.create(clausulaData);
   }
 
-  async getAll(filterDto: FilterDto): Promise<Clausula[]> {
-    return await this.clausulaModel.find().exec();
+  async getAll(filtersDto: FilterDto): Promise<Clausula[]> {
+    const{offset, limit} = filtersDto;
+    const {filterObject, sortObject}= this.filtersService.createObjects(filtersDto)
+    return await this.clausulaModel
+      .find(filterObject)
+      .sort(sortObject)
+      .skip(offset)
+      .limit(limit)
+      .exec();
   }
 
   async getById(id: string): Promise<Clausula> {

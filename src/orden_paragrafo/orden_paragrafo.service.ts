@@ -4,12 +4,14 @@ import { Model, Types } from 'mongoose';
 import { CreateOrdenParagrafoDto } from './dto/create-orden_paragrafo.dto';
 import { OrdenParagrafo } from './schemas/orden_paragrafo.schema';
 import { FilterDto } from 'src/filters/dto/filters.dto';
+import { FiltersService } from 'src/filters/filters.service';
 
 @Injectable()
 export class OrdenParagrafoService {
   constructor(
     @InjectModel(OrdenParagrafo.name)
     private readonly ordenParagrafoModel: Model<OrdenParagrafo>,
+    private readonly filtersService : FiltersService,
   ) { }
 
   async post(ordenParagrafoDto: CreateOrdenParagrafoDto): Promise<OrdenParagrafo> {
@@ -22,8 +24,14 @@ export class OrdenParagrafoService {
     return await this.ordenParagrafoModel.create(ordenParagrafoData);
   }
 
-  async getAll(filterDto: FilterDto): Promise<OrdenParagrafo[]> {
-    return await this.ordenParagrafoModel.find()
+  async getAll(filtersDto: FilterDto): Promise<OrdenParagrafo[]> {
+    const{offset, limit} = filtersDto;
+    const {filterObject, sortObject}= this.filtersService.createObjects(filtersDto)
+    return await this.ordenParagrafoModel
+      .find(filterObject)
+      .sort(sortObject)
+      .skip(offset)
+      .limit(limit)
       .populate('paragrafo_ids')
       .populate('clausula_id')
       .exec();

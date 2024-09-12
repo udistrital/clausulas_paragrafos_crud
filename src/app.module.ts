@@ -8,6 +8,7 @@ import { OrdenParagrafoModule } from './orden_paragrafo/orden_paragrafo.module';
 import { OrdenClausulaModule } from './orden_clausula/orden_clausula.module';
 import { PlantillaTipoContratoModule } from './plantilla_tipo_contrato/plantilla_tipo_contrato.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { FiltersModule } from './filters/filters.module';
 
 
 @Module({
@@ -26,6 +27,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     OrdenClausulaModule,
     OrdenParagrafoModule,
     PlantillaTipoContratoModule,
+    FiltersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
