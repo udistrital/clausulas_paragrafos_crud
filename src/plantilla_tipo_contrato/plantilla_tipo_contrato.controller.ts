@@ -9,7 +9,7 @@ import { FilterDto } from 'src/filters/dto/filters.dto';
 export class PlantillaTipoContratoController {
     constructor(
         private plantillaTipoContratoService: PlantillaTipoContratoService
-    ) { }
+    ) {}
 
     @Post()
     async post(@Res() res, @Body() plantillaTipoContratoDto: CreatePlantillaTipoContratoDto) {
@@ -33,19 +33,23 @@ export class PlantillaTipoContratoController {
     @Get()
     async getAll(@Res() res, @Query() filterDto: FilterDto) {
         try {
-            const plantillaTipoContrato = await this.plantillaTipoContratoService.getAll(filterDto);
+            const { data, total } = await this.plantillaTipoContratoService.getAll(filterDto);
             res.status(HttpStatus.OK).json({
                 Success: true,
                 Status: 200,
                 Message: "Request successful",
-                Data: plantillaTipoContrato || []
+                Metadata: {
+                    count: total
+                },
+                Data: data || []
             });
         } catch (error) {
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
                 Success: false,
                 Status: 500,
                 Message: "An unexpected error occurred",
-                Data: null
+                Metadata: null,
+                Data: null                
             });
         }
     }

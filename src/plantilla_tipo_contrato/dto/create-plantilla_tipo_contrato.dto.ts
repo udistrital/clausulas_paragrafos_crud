@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {IsNotEmpty,IsOptional,IsString,IsNumber,IsBoolean,IsDate, IsArray,} from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsNumber, IsBoolean, IsDate, IsArray,} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreatePlantillaTipoContratoDto {

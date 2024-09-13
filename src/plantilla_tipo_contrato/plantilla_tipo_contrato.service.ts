@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { isValidObjectId, Model, Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreatePlantillaTipoContratoDto } from './dto/create-plantilla_tipo_contrato.dto';
 import { PlantillaTipoContrato } from './schemas/plantilla_tipo_contrato.schema';
 import { FilterDto } from 'src/filters/dto/filters.dto';
@@ -24,17 +24,23 @@ export class PlantillaTipoContratoService {
     return await this.plantillaTipoContratoModel.create(plantillaTipoContratoData);
   }
 
-  async getAll(filtersDto: FilterDto): Promise<PlantillaTipoContrato[]> {
-    const{offset, limit} = filtersDto;
-    const {filterObject, sortObject}= this.filtersService.createObjects(filtersDto)
-    return await this.plantillaTipoContratoModel
-      .find(filterObject)
-      .sort(sortObject)
-      .skip(offset)
-      .limit(limit)
-      .populate('orden_paragrafo_ids')
-      .populate('orden_clausula_id')
-      .exec();
+  async getAll(filtersDto: FilterDto): Promise<{ data: PlantillaTipoContrato[], total: number }> {
+    const { offset, limit } = filtersDto;
+    const { queryObject, sortObject } = this.filtersService.createObjects(filtersDto);
+
+    const [data, total] = await Promise.all([
+      this.plantillaTipoContratoModel
+        .find(queryObject)
+        .sort(sortObject)
+        .skip(offset)
+        .limit(limit)
+        .populate('orden_paragrafo_ids')
+        .populate('orden_clausula_id')
+        .exec(),
+      this.plantillaTipoContratoModel.countDocuments(queryObject)
+    ]);
+
+    return { data, total };
   }
 
   async getById(id: string): Promise<PlantillaTipoContrato> {

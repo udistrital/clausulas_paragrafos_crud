@@ -31,12 +31,6 @@ paths:
           description: query - Filter. e.g. col1:v1,col2:v2 …
           schema:
             type: string
-        - name: filter
-          required: false
-          in: query
-          description: filter - Filter returned. e.g. col1,col2 …
-          schema:
-            type: string
         - name: sort
           required: false
           in: query
@@ -132,12 +126,6 @@ paths:
           required: false
           in: query
           description: query - Filter. e.g. col1:v1,col2:v2 …
-          schema:
-            type: string
-        - name: filter
-          required: false
-          in: query
-          description: filter - Filter returned. e.g. col1,col2 …
           schema:
             type: string
         - name: sort
@@ -237,12 +225,6 @@ paths:
           description: query - Filter. e.g. col1:v1,col2:v2 …
           schema:
             type: string
-        - name: filter
-          required: false
-          in: query
-          description: filter - Filter returned. e.g. col1,col2 …
-          schema:
-            type: string
         - name: sort
           required: false
           in: query
@@ -338,12 +320,6 @@ paths:
           required: false
           in: query
           description: query - Filter. e.g. col1:v1,col2:v2 …
-          schema:
-            type: string
-        - name: filter
-          required: false
-          in: query
-          description: filter - Filter returned. e.g. col1,col2 …
           schema:
             type: string
         - name: sort
@@ -443,12 +419,6 @@ paths:
           description: query - Filter. e.g. col1:v1,col2:v2 …
           schema:
             type: string
-        - name: filter
-          required: false
-          in: query
-          description: filter - Filter returned. e.g. col1,col2 …
-          schema:
-            type: string
         - name: sort
           required: false
           in: query
@@ -522,6 +492,56 @@ paths:
         '200':
           description: ''
       tags: *ref_4
+  /contratos/{id}:
+    post:
+      operationId: ContratoController_post
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContratoDto'
+      responses:
+        '201':
+          description: ''
+      tags: &ref_5
+        - contratos
+    get:
+      operationId: ContratoController_getById
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+    put:
+      operationId: ContratoController_put
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContratoDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
 info:
   title: Polizas API CRUD
   description: API
@@ -652,5 +672,27 @@ components:
         - tipo_contrato_id
         - orden_clausula_id
         - orden_paragrafo_ids
+        - fecha_creacion
+        - fecha_modificacion
+    CreateContratoDto:
+      type: object
+      properties:
+        orden_clausula_id:
+          type: string
+          description: Orden Clausula ID
+        orden_paragrafos_ids:
+          description: Lista de Orden Paragrafos IDs
+          type: array
+          items:
+            type: string
+        fecha_creacion:
+          format: date-time
+          type: string
+        fecha_modificacion:
+          format: date-time
+          type: string
+      required:
+        - orden_clausula_id
+        - orden_paragrafos_ids
         - fecha_creacion
         - fecha_modificacion

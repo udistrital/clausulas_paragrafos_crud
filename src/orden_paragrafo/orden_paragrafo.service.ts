@@ -26,9 +26,9 @@ export class OrdenParagrafoService {
 
   async getAll(filtersDto: FilterDto): Promise<OrdenParagrafo[]> {
     const{offset, limit} = filtersDto;
-    const {filterObject, sortObject}= this.filtersService.createObjects(filtersDto)
+    const {queryObject, sortObject}= this.filtersService.createObjects(filtersDto)
     return await this.ordenParagrafoModel
-      .find(filterObject)
+      .find(queryObject)
       .sort(sortObject)
       .skip(offset)
       .limit(limit)

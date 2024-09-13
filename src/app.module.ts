@@ -9,6 +9,7 @@ import { OrdenClausulaModule } from './orden_clausula/orden_clausula.module';
 import { PlantillaTipoContratoModule } from './plantilla_tipo_contrato/plantilla_tipo_contrato.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { FiltersModule } from './filters/filters.module';
+import { ContratoModule } from './contrato/contrato.module';
 
 
 @Module({
@@ -28,6 +29,7 @@ import { FiltersModule } from './filters/filters.module';
     OrdenParagrafoModule,
     PlantillaTipoContratoModule,
     FiltersModule,
+    ContratoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

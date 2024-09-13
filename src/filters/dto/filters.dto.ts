@@ -8,11 +8,6 @@ export class FilterDto{
   @IsString()
   readonly query?: string;
 
-  @ApiProperty({required: false, description:'filter - Filter returned. e.g. col1,col2 …'})
-  @IsOptional()
-  @IsString()
-  readonly filter?: string;
-
   @ApiProperty({required: false, description:'sort - Sorted-by corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc …'})
   @IsOptional()
   @IsIn(['asc', 'desc'])
