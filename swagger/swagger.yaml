@@ -506,7 +506,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateContratoDto'
+              $ref: '#/components/schemas/CreateContratoEstructuraDto'
       responses:
         '201':
           description: ''
@@ -537,13 +537,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateContratoDto'
+              $ref: '#/components/schemas/CreateContratoEstructuraDto'
       responses:
         '200':
           description: ''
       tags: *ref_5
 info:
-  title: Polizas API CRUD
+  title: Cláusulas y Parágrafos API CRUD
   description: API
   version: '1.0'
   contact: {}
@@ -674,25 +674,33 @@ components:
         - orden_paragrafo_ids
         - fecha_creacion
         - fecha_modificacion
-    CreateContratoDto:
+    ParagrafoEstructuraDto:
       type: object
       properties:
-        orden_clausula_id:
+        clausula_id:
           type: string
-          description: Orden Clausula ID
-        orden_paragrafos_ids:
-          description: Lista de Orden Paragrafos IDs
+          description: Clausula ID
+        paragrafo_ids:
+          description: Lista de Paragrafo IDs
           type: array
           items:
             type: string
-        fecha_creacion:
-          format: date-time
-          type: string
-        fecha_modificacion:
-          format: date-time
-          type: string
       required:
-        - orden_clausula_id
-        - orden_paragrafos_ids
-        - fecha_creacion
-        - fecha_modificacion
+        - clausula_id
+        - paragrafo_ids
+    CreateContratoEstructuraDto:
+      type: object
+      properties:
+        clausula_ids:
+          description: Lista de Clausula IDs
+          type: array
+          items:
+            type: string
+        paragrafos:
+          description: Estructura de párrafos por cláusula
+          type: array
+          items:
+            $ref: '#/components/schemas/ParagrafoEstructuraDto'
+      required:
+        - clausula_ids
+        - paragrafos

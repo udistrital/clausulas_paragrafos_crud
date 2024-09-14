@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Put, Body, Param, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, Param, Res, HttpStatus, ConflictException } from '@nestjs/common';
 import { ContratoService } from './contrato.service';
 import { ApiTags } from '@nestjs/swagger';
-import { CreateContratoDto } from './dto/create-contrato.dto';
+import { CreateContratoEstructuraDto } from './dto/create-contrato.dto';
 
 @ApiTags('contratos')
 @Controller('contratos')
@@ -11,9 +11,9 @@ export class ContratoController {
     ) {}
 
     @Post('/:id')
-    async post(@Res() res, @Param('id') id: string, @Body() contratoDto: CreateContratoDto) {
+    async post(@Res() res, @Param('id') id: string, @Body() estructuraDto: CreateContratoEstructuraDto) {
         try {
-            const contrato = await this.contratoService.post(id, contratoDto);
+            const contrato = await this.contratoService.post(id, estructuraDto);
             res.status(HttpStatus.CREATED).json({
                 Success: true,
                 Status: 201,
@@ -21,12 +21,21 @@ export class ContratoController {
                 Data: contrato
             });
         } catch (error) {
-            res.status(HttpStatus.BAD_REQUEST).json({
-                Success: false,
-                Status: 400,
-                Message: "Error service Post: The request contains an incorrect data type or an invalid parameter",
-                Data: null
-            });
+            if (error instanceof ConflictException) {
+                res.status(HttpStatus.CONFLICT).json({
+                    Success: false,
+                    Status: 409,
+                    Message: error.message,
+                    Data: null
+                });
+            } else {
+                res.status(HttpStatus.BAD_REQUEST).json({
+                    Success: false,
+                    Status: 400,
+                    Message: "Error service Post: The request contains an incorrect data type or an invalid parameter",
+                    Data: null
+                });
+            }
         }
     }
 
@@ -51,9 +60,9 @@ export class ContratoController {
     }
 
     @Put('/:id')
-    async put(@Res() res, @Param('id') id: string, @Body() contratoDto: CreateContratoDto) {
+    async put(@Res() res, @Param('id') id: string, @Body() estructuraDto: CreateContratoEstructuraDto) {
         try {
-            const contrato = await this.contratoService.put(id, contratoDto);
+            const contrato = await this.contratoService.put(id, estructuraDto);
             res.status(HttpStatus.OK).json({
                 Success: true,
                 Status: 200,

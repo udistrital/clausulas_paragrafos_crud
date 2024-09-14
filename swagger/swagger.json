@@ -815,7 +815,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateContratoDto"
+                "$ref": "#/components/schemas/CreateContratoEstructuraDto"
               }
             }
           }
@@ -867,7 +867,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateContratoDto"
+                "$ref": "#/components/schemas/CreateContratoEstructuraDto"
               }
             }
           }
@@ -884,7 +884,7 @@
     }
   },
   "info": {
-    "title": "Polizas API CRUD",
+    "title": "Cláusulas y Parágrafos API CRUD",
     "description": "API",
     "version": "1.0",
     "contact": {}
@@ -1063,34 +1063,47 @@
           "fecha_modificacion"
         ]
       },
-      "CreateContratoDto": {
+      "ParagrafoEstructuraDto": {
         "type": "object",
         "properties": {
-          "orden_clausula_id": {
+          "clausula_id": {
             "type": "string",
-            "description": "Orden Clausula ID"
+            "description": "Clausula ID"
           },
-          "orden_paragrafos_ids": {
-            "description": "Lista de Orden Paragrafos IDs",
+          "paragrafo_ids": {
+            "description": "Lista de Paragrafo IDs",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "clausula_id",
+          "paragrafo_ids"
+        ]
+      },
+      "CreateContratoEstructuraDto": {
+        "type": "object",
+        "properties": {
+          "clausula_ids": {
+            "description": "Lista de Clausula IDs",
             "type": "array",
             "items": {
               "type": "string"
             }
           },
-          "fecha_creacion": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "fecha_modificacion": {
-            "format": "date-time",
-            "type": "string"
+          "paragrafos": {
+            "description": "Estructura de párrafos por cláusula",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ParagrafoEstructuraDto"
+            }
           }
         },
         "required": [
-          "orden_clausula_id",
-          "orden_paragrafos_ids",
-          "fecha_creacion",
-          "fecha_modificacion"
+          "clausula_ids",
+          "paragrafos"
         ]
       }
     }

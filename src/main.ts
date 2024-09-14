@@ -9,7 +9,7 @@ import * as yaml from 'js-yaml';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder()
-    .setTitle('Polizas API CRUD')
+    .setTitle('Cláusulas y Parágrafos API CRUD')
     .setDescription('API')
     .setVersion('1.0')
     .addTag('API')
