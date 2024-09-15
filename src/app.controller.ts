@@ -7,6 +7,13 @@ export class AppController {
 
   @Get()
   healthCheck() {
-    return this.appService.healthCheck();
+    try {
+      return this.appService.healthCheck();
+    } catch (error) {
+      return {
+        Status: 'error',
+        error: error.message,
+      };
+    }
   }
 }
