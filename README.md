@@ -1,85 +1,71 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# clausulas_paragrafos_crud
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API CRUD desarrollada en NestJS para la gestión de base de datos no relacional (MongoDB).
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# Especificaciones Técnicas
 
-## Description
+## Tecnologías Implementadas y Versiones
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [NestJS](https://github.com/nestjs/nest): 20.17.0
+- Nest CLI: 10.4.5
+- [MongoDB](https://github.com/mongodb/mongo): 7.0.14
+- NPM: 10.8.2
 
-## Project setup
 
-```bash
-$ npm install
+## Variables de Entorno
+
+```shell
+DB_HOST=CLAUSUAS_PARAGRAFOS_HOST
+DB_PORT=CLAUSUAS_PARAGRAFOS_PORT
+DB_NAME=CLAUSUAS_PARAGRAFOS_NAME
 ```
 
-## Compile and run the project
+**NOTA:** Las variables se asignan en una archivo privado .env
 
-```bash
-# development
-$ npm run start
+## Ejecución del Proyecto
 
-# watch mode
-$ npm run start:dev
+```shell
+#1. Clonar el repositorio
+git clone  https://github.com/udistrital/clausulas_paragrafos_crud.git #Opcion 1: Via HTTPS
+git clone  git@github.com:udistrital/clausulas_paragrafos_crud.git #Opcion 2: Via SSH
 
-# production mode
-$ npm run start:prod
+
+#2. Moverse a la carpeta del repositorio
+cd clausulas_paragrafos_crud
+
+#3. Moverse a la rama **develop**
+git pull origin develop && git checkout develop
+
+#4. Instalar dependencias
+npm install
+
+# Si no se instalan en su totalidad, ejecutar:
+npm install --save @nestjs/mongoose mongoose
+npm install --save @nestjs/swagger swagger-ui-express
+
+# 5. Crear el archivo .env y asignar las variables de entorno
+touch .env
 ```
 
-## Run tests
+### Ejecución Pruebas
 
-```bash
-# unit tests
-$ npm run test
+Pruebas unitarias
+```shell
+# Test
+npm test
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+# Se ejecutará jest, validando los casos de prueba en los archivos .spec.ts
 ```
 
-## Resources
 
-Check out a few resources that may come in handy when working with NestJS:
+# Modelo de Datos
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+![Modelo de datos Formularios dinámicos](/database/Modelo%20de%20datos%20Clausulas%20y%20Paragrafos.png)
 
-## Support
+# Licencia
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+clausulas_paragrafos_crud is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-## Stay in touch
+clausulas_paragrafos_crud is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+You should have received a copy of the GNU General Public License along with novedades_crud. If not, see https://www.gnu.org/licenses/.
