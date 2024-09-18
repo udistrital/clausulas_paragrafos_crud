@@ -57,21 +57,42 @@ export class PlantillaTipoContratoController {
 
     @Get('/:id')
     async getById(@Res() res, @Param('id') id: string) {
-        const plantillaTipoContrato = await this.plantillaTipoContratoService.getById(id);
-        if (!plantillaTipoContrato) {
+        try {
+            const plantillaTipoContrato = await this.plantillaTipoContratoService.getById(id);
+            res.status(HttpStatus.OK).json({
+                Success: true,
+                Status: 200,
+                Message: "Request successful",
+                Data: plantillaTipoContrato
+            });
+        } catch (error) {
             throw new HttpException({
                 Success: false,
                 Status: 404,
-                Message: "Error service GetOne: The request contains an incorrect parameter or no record exist",
+                Message: error.message,
                 Data: null
-            }, HttpStatus.NOT_FOUND)
+            }, HttpStatus.NOT_FOUND);
         }
-        res.status(HttpStatus.OK).json({
-            Success: true,
-            Status: 200,
-            Message: "Request successful",
-            Data: plantillaTipoContrato
-        });
+    }
+
+    @Get('/tipo-contrato/:tipo_contrato_id')
+    async getByTipoContrato(@Res() res, @Param('tipo_contrato_id') tipoContratoId: number) {
+        try {
+            const plantillaTipoContrato = await this.plantillaTipoContratoService.getByTipoContrato(tipoContratoId);
+            res.status(HttpStatus.OK).json({
+                Success: true,
+                Status: 200,
+                Message: "Request successful",
+                Data: plantillaTipoContrato
+            });
+        } catch (error) {
+            throw new HttpException({
+                Success: false,
+                Status: 404,
+                Message: error.message,
+                Data: null
+            }, HttpStatus.NOT_FOUND);
+        }
     }
 
     @Put('/:id')

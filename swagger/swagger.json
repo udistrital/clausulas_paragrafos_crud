@@ -797,6 +797,29 @@
         ]
       }
     },
+    "/plantilla-tipo-contratos/tipo-contrato/{tipo_contrato_id}": {
+      "get": {
+        "operationId": "PlantillaTipoContratoController_getByTipoContrato",
+        "parameters": [
+          {
+            "name": "tipo_contrato_id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "plantilla-tipo-contratos"
+        ]
+      }
+    },
     "/contratos/{id}": {
       "post": {
         "operationId": "ContratoController_post",
