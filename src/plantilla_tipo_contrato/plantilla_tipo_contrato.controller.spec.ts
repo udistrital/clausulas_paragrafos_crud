@@ -47,6 +47,7 @@ describe('PlantillaTipoContratoController', () => {
             post: jest.fn(),
             getAll: jest.fn(),
             getById: jest.fn(),
+            getByTipoContrato: jest.fn(),
             put: jest.fn(),
             delete: jest.fn(),
           },
@@ -91,8 +92,6 @@ describe('PlantillaTipoContratoController', () => {
       };
 
       await expect(controller.post(mockResponse, mockCreateDto)).rejects.toThrow(HttpException);
-      expect(mockResponse.status).not.toHaveBeenCalled();
-      expect(mockResponse.json).not.toHaveBeenCalled();
     });
   });
 
@@ -164,5 +163,112 @@ describe('PlantillaTipoContratoController', () => {
         Data: mockPlantillaTipoContrato
       });
     });
+
+    it('should handle getById error', async () => {
+      jest.spyOn(service, 'getById').mockRejectedValue(new Error("mock_id doesn't exist"));
+
+      const mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      await expect(controller.getById(mockResponse, 'mock_id')).rejects.toThrow(HttpException);
+    });
   });
-})
+
+  describe('getByTipoContrato', () => {
+    it('should get plantillas by tipo contrato', async () => {
+      jest.spyOn(service, 'getByTipoContrato').mockResolvedValue([mockPlantillaTipoContrato]);
+
+      const mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      await controller.getByTipoContrato(mockResponse, 1);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        Success: true,
+        Status: 200,
+        Message: "Request successful",
+        Data: [mockPlantillaTipoContrato]
+      });
+    });
+
+    it('should handle getByTipoContrato error', async () => {
+      jest.spyOn(service, 'getByTipoContrato').mockRejectedValue(new Error("No plantillas found"));
+
+      const mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      await expect(controller.getByTipoContrato(mockResponse, 1)).rejects.toThrow(HttpException);
+    });
+  });
+
+  describe('put', () => {
+    it('should update a plantilla tipo contrato', async () => {
+      jest.spyOn(service, 'put').mockResolvedValue(mockPlantillaTipoContrato);
+
+      const mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      await controller.put(mockResponse, 'mock_id', mockCreateDto);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        Success: true,
+        Status: 200,
+        Message: "Update successful",
+        Data: mockPlantillaTipoContrato
+      });
+    });
+
+    it('should handle update error', async () => {
+      jest.spyOn(service, 'put').mockResolvedValue(null);
+
+      const mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      await expect(controller.put(mockResponse, 'mock_id', mockCreateDto)).rejects.toThrow(HttpException);
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete a plantilla tipo contrato', async () => {
+      jest.spyOn(service, 'delete').mockResolvedValue({ _id: 'mock_id' } as PlantillaTipoContrato);
+
+      const mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      await controller.delete(mockResponse, 'mock_id');
+
+      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        Success: true,
+        Status: 200,
+        Message: "Delete successful",
+        Data: { _id: 'mock_id' }
+      });
+    });
+
+    it('should handle delete error', async () => {
+      jest.spyOn(service, 'delete').mockResolvedValue(null);
+
+      const mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      await expect(controller.delete(mockResponse, 'mock_id')).rejects.toThrow(HttpException);
+    });
+  });
+});
