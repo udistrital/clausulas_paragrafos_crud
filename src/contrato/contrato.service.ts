@@ -4,14 +4,16 @@ import { Model } from 'mongoose';
 import { OrdenClausula } from 'src/orden_clausula/schemas/orden_clausula.schema';
 import { OrdenParagrafo } from 'src/orden_paragrafo/schemas/orden_paragrafo.schema';
 import { CreateContratoEstructuraDto } from './dto/create-contrato.dto';
+import { Clausula } from 'src/clausula/schemas/clausula.schema';
+import { Paragrafo } from 'src/paragrafo/schemas/paragrafo.schema';
 
 @Injectable()
 export class ContratoService {
   constructor(
-    @InjectModel(OrdenClausula.name)
-    private readonly ordenClausulaModel: Model<OrdenClausula>,
-    @InjectModel(OrdenParagrafo.name)
-    private readonly ordenParagrafoModel: Model<OrdenParagrafo>
+    @InjectModel(OrdenClausula.name) private readonly ordenClausulaModel: Model<OrdenClausula>,
+    @InjectModel(OrdenParagrafo.name) private readonly ordenParagrafoModel: Model<OrdenParagrafo>,
+    @InjectModel(Clausula.name) private readonly clausulaModel: Model<Clausula>,
+    @InjectModel(Paragrafo.name) private readonly paragrafoModel: Model<Paragrafo>,
   ) {}
 
   async post(contratoId: string, estructuraDto: CreateContratoEstructuraDto): Promise<any> {
@@ -43,17 +45,63 @@ export class ContratoService {
   }
 
   async getById(contratoId: string): Promise<any> {
-    const ordenClausula = await this.ordenClausulaModel.findOne({ contrato_id: contratoId }).exec();
+    const ordenClausula = await this.ordenClausulaModel.findOne({ contrato_id: contratoId }).lean();
     if (!ordenClausula) {
       throw new NotFoundException('No se encontró la estructura de cláusulas para este contrato');
     }
 
-    const ordenParagrafos = await this.ordenParagrafoModel.find({ contrato_id: contratoId }).exec();
+    const ordenParagrafos = await this.ordenParagrafoModel.find({ contrato_id: contratoId }).lean();
     if (ordenParagrafos.length === 0) {
       throw new NotFoundException('No se encontraron estructuras de párrafos para este contrato');
     }
 
-    return { ordenClausula, ordenParagrafos };
+    return this.getDetailedContrato(ordenClausula, ordenParagrafos);
+  }
+
+  private async getDetailedContrato(ordenClausula: any, ordenParagrafos: any[]): Promise<any> {
+    const clausulasConParagrafos = await Promise.all(
+      ordenClausula.clausula_ids.map(async (clausulaId, index) => {
+        const clausula = await this.clausulaModel.findById(clausulaId).lean();
+        if (!clausula) {
+          throw new Error(`Cláusula con id ${clausulaId} no encontrada`);
+        }
+
+        const ordenParagrafo = ordenParagrafos.find(op => 
+          op.clausula_id.toString() === clausulaId.toString()
+        );
+
+        let paragrafos = [];
+        if (ordenParagrafo) {
+          paragrafos = await Promise.all(
+            ordenParagrafo.paragrafo_ids.map(async (paragrafoId, pIndex) => {
+              const paragrafo = await this.paragrafoModel.findById(paragrafoId).lean();
+              if (paragrafo) {
+                return {
+                  ...paragrafo,
+                  order: pIndex + 1
+                };
+              }
+              return null;
+            })
+          );
+          paragrafos = paragrafos.filter(p => p !== null);
+        }
+
+        return {
+          ...clausula,
+          order: index + 1,
+          paragrafos
+        };
+      })
+    );
+
+    return {
+      _id: ordenClausula._id,
+      contrato_id: ordenClausula.contrato_id,
+      clausulas: clausulasConParagrafos,
+      fecha_creacion: ordenClausula.fecha_creacion,
+      fecha_modificacion: ordenClausula.fecha_modificacion
+    };
   }
 
   async put(contratoId: string, estructuraDto: CreateContratoEstructuraDto): Promise<any> {
