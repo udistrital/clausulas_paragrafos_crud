@@ -15,16 +15,21 @@ describe('PlantillaTipoContratoController', () => {
     version: 1,
     version_actual: true,
     tipo_contrato_id: 1,
-    orden_clausula_id: 'orden_clausula1',
-    orden_paragrafo_ids: ['orden_paragrafo1', 'orden_paragrafo2'],
-    activo: true,
+    clausulas: [
+      {
+        _id: 'clausula1',
+        nombre: 'Mock Clausula',
+        descripcion: 'Mock descripción',
+        paragrafos: [
+          {
+            _id: 'paragrafo1',
+            descripcion: 'Mock párrafo'
+          }
+        ]
+      }
+    ],
     fecha_creacion: new Date(),
     fecha_modificacion: new Date(),
-
-    $assertPopulated: jest.fn(),
-    $clearModifiedPaths: jest.fn(),
-    $clone: jest.fn(),
-    $createModifiedPathsSnapshot: jest.fn(),
   } as unknown as PlantillaTipoContrato;
 
   const mockCreateDto: CreatePlantillaTipoContratoDto = {
@@ -84,14 +89,22 @@ describe('PlantillaTipoContratoController', () => {
     });
 
     it('should handle creation error', async () => {
-      jest.spyOn(service, 'post').mockResolvedValue(null);
+      jest.spyOn(service, 'post').mockRejectedValue(new Error('Creation error'));
 
       const mockResponse = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       };
 
-      await expect(controller.post(mockResponse, mockCreateDto)).rejects.toThrow(HttpException);
+      await controller.post(mockResponse, mockCreateDto);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        Success: false,
+        Status: 400,
+        Message: "Error service Post: The request contains an incorrect data type or an invalid parameter",
+        Data: null
+      });
     });
   });
 
@@ -172,7 +185,15 @@ describe('PlantillaTipoContratoController', () => {
         json: jest.fn(),
       };
 
-      await expect(controller.getById(mockResponse, 'mock_id')).rejects.toThrow(HttpException);
+      await controller.getById(mockResponse, 'mock_id');
+
+      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        Success: false,
+        Status: 404,
+        Message: "mock_id doesn't exist",
+        Data: null
+      });
     });
   });
 
@@ -204,7 +225,15 @@ describe('PlantillaTipoContratoController', () => {
         json: jest.fn(),
       };
 
-      await expect(controller.getByTipoContrato(mockResponse, 1)).rejects.toThrow(HttpException);
+      await controller.getByTipoContrato(mockResponse, 1);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        Success: false,
+        Status: 404,
+        Message: "No plantillas found",
+        Data: null
+      });
     });
   });
 
@@ -229,14 +258,22 @@ describe('PlantillaTipoContratoController', () => {
     });
 
     it('should handle update error', async () => {
-      jest.spyOn(service, 'put').mockResolvedValue(null);
+      jest.spyOn(service, 'put').mockRejectedValue(new Error('Update error'));
 
       const mockResponse = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       };
 
-      await expect(controller.put(mockResponse, 'mock_id', mockCreateDto)).rejects.toThrow(HttpException);
+      await controller.put(mockResponse, 'mock_id', mockCreateDto);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        Success: false,
+        Status: 400,
+        Message: "Error service Put: The request contains an incorrect data type or an invalid parameter",
+        Data: null
+      });
     });
   });
 
@@ -261,14 +298,22 @@ describe('PlantillaTipoContratoController', () => {
     });
 
     it('should handle delete error', async () => {
-      jest.spyOn(service, 'delete').mockResolvedValue(null);
+      jest.spyOn(service, 'delete').mockRejectedValue(new Error('Delete error'));
 
       const mockResponse = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       };
 
-      await expect(controller.delete(mockResponse, 'mock_id')).rejects.toThrow(HttpException);
+      await controller.delete(mockResponse, 'mock_id');
+
+      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        Success: false,
+        Status: 404,
+        Message: "Error service Delete: Request contains incorrect parameter",
+        Data: null
+      });
     });
   });
 });
