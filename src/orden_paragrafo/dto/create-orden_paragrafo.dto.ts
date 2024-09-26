@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsDate, IsArray } from 'class-validator';
+import { IsNotEmpty, IsString, IsDate, IsArray, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateOrdenParagrafoDto {
@@ -9,10 +9,10 @@ export class CreateOrdenParagrafoDto {
     @IsString({ each: true })
     paragrafo_ids: string[];
 
-    @ApiProperty({ type: String, description: 'Contrato ID' })
+    @ApiProperty({ type: Number, description: 'Contrato ID' })
     @IsNotEmpty()
-    @IsString()
-    contrato_id: string;
+    @IsNumber()
+    contrato_id: number;
 
     @ApiProperty({ type: String, description: 'Clausula ID' })
     @IsNotEmpty()

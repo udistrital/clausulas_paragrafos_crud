@@ -617,7 +617,7 @@ components:
           items:
             type: string
         contrato_id:
-          type: string
+          type: number
           description: Contrato ID
         fecha_creacion:
           format: date-time
@@ -639,7 +639,7 @@ components:
           items:
             type: string
         contrato_id:
-          type: string
+          type: number
           description: Contrato ID
         clausula_id:
           type: string

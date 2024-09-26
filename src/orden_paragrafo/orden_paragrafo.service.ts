@@ -18,8 +18,8 @@ export class OrdenParagrafoService {
     const ordenParagrafoData = {
       ...ordenParagrafoDto,
       paragrafo_ids: ordenParagrafoDto.paragrafo_ids.map(id => new Types.ObjectId(id)),
-      contrato_id: new Types.ObjectId(ordenParagrafoDto.contrato_id),
       clausula_id: new Types.ObjectId(ordenParagrafoDto.clausula_id),
+      contrato_id: ordenParagrafoDto.contrato_id
     };
     return await this.ordenParagrafoModel.create(ordenParagrafoData);
   }

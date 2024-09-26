@@ -61,6 +61,7 @@ npm test
 # Modelo de Datos
 
 ![Modelo de datos Formularios dinámicos](/database/Modelo%20de%20datos%20Clausulas%20y%20Paragrafos.png)
+![Archivo de modelo de datos](/database/modelo-datos-no-relacional-clausulas-paragrafos.drawio)
 
 # Licencia
 

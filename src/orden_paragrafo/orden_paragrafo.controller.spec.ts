@@ -13,7 +13,7 @@ describe('OrdenParagrafoController', () => {
   const mockOrdenParagrafo = {
     _id: 'mock_id',
     paragrafo_ids: ['paragrafo1', 'paragrafo2'],
-    contrato_id: 'contrato1',
+    contrato_id: 12345,
     clausula_id: 'clausula1',
     fecha_creacion: new Date(),
     fecha_modificacion: new Date(),
@@ -26,7 +26,7 @@ describe('OrdenParagrafoController', () => {
 
   const mockCreateDto: CreateOrdenParagrafoDto = {
     paragrafo_ids: ['paragrafo1', 'paragrafo2'],
-    contrato_id: 'contrato1',
+    contrato_id: 12345,
     clausula_id: 'clausula1',
     fecha_creacion: new Date(),
     fecha_modificacion: new Date(),

@@ -15,7 +15,7 @@ describe('OrdenParagrafoService', () => {
   const mockOrdenParagrafo = {
     _id: new Types.ObjectId().toHexString(),
     paragrafo_ids: [new Types.ObjectId().toHexString(), new Types.ObjectId().toHexString()],
-    contrato_id: new Types.ObjectId().toHexString(),
+    contrato_id: 12345,
     clausula_id: new Types.ObjectId().toHexString(),
     fecha_creacion: new Date(),
     fecha_modificacion: new Date(),
@@ -23,7 +23,7 @@ describe('OrdenParagrafoService', () => {
 
   const mockCreateDto: CreateOrdenParagrafoDto = {
     paragrafo_ids: [new Types.ObjectId().toHexString(), new Types.ObjectId().toHexString()],
-    contrato_id: new Types.ObjectId().toHexString(),
+    contrato_id: 12345,
     clausula_id: new Types.ObjectId().toHexString(),
     fecha_creacion: new Date(),
     fecha_modificacion: new Date(),
