@@ -13,7 +13,7 @@ describe('OrdenClausulaController', () => {
   const mockOrdenClausula = {
     _id: 'mock_id',
     clausula_ids: ['clausula1', 'clausula2'],
-    contrato_id: 'contrato1',
+    contrato_id: 12345,
     fecha_creacion: new Date(),
     fecha_modificacion: new Date(),
 
@@ -25,7 +25,7 @@ describe('OrdenClausulaController', () => {
 
   const mockCreateDto: CreateOrdenClausulaDto = {
     clausula_ids: ['clausula1', 'clausula2'],
-    contrato_id: 'contrato1',
+    contrato_id: 12345,
     fecha_creacion: new Date(),
     fecha_modificacion: new Date(),
   };

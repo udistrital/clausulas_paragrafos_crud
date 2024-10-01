@@ -62,6 +62,8 @@ npm test
 
 ![Modelo de datos Formularios dinámicos](/database/Modelo%20de%20datos%20Clausulas%20y%20Paragrafos.png)
 
+[Archivo de modelo de datos](/database/modelo-datos-no-relacional-clausulas-paragrafos.drawio)
+
 # Licencia
 
 clausulas_paragrafos_crud is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.

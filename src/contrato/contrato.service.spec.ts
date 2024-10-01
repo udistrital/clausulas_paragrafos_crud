@@ -35,13 +35,13 @@ describe('ContratoService', () => {
 
   const mockClausula = {
     _id: 'clausula1',
-    titulo: 'Mock Clausula',
-    contenido: 'Mock contenido de clausula',
+    nombre: 'Mock Clausula',
+    descripcion: 'Mock contenido de clausula',
   };
 
   const mockParagrafo = {
     _id: 'paragrafo1',
-    contenido: 'Mock contenido de paragrafo',
+    descripcion: 'Mock contenido de paragrafo',
   };
 
   const mockCreateDto: CreateContratoEstructuraDto = {
@@ -63,6 +63,7 @@ describe('ContratoService', () => {
           useValue: {
             findOne: jest.fn().mockReturnThis(),
             create: jest.fn(),
+            aggregate: jest.fn(),
             findOneAndUpdate: jest.fn().mockReturnThis(),
             exec: jest.fn(),
           },
@@ -80,14 +81,14 @@ describe('ContratoService', () => {
           provide: getModelToken(Clausula.name),
           useValue: {
             findById: jest.fn().mockReturnThis(),
-            lean: jest.fn(),
+            exec: jest.fn(),
           },
         },
         {
           provide: getModelToken(Paragrafo.name),
           useValue: {
             findById: jest.fn().mockReturnThis(),
-            lean: jest.fn(),
+            exec: jest.fn(),
           },
         },
       ],
@@ -128,17 +129,23 @@ describe('ContratoService', () => {
 
   describe('getById', () => {
     it('should return detailed contrato estructura', async () => {
-      jest.spyOn(ordenClausulaModel, 'findOne').mockReturnValue({
-        lean: jest.fn().mockResolvedValue(mockOrdenClausula),
-      } as any);
-      jest.spyOn(ordenParagrafoModel, 'find').mockReturnValue({
-        lean: jest.fn().mockResolvedValue([mockOrdenParagrafo]),
-      } as any);
-      jest.spyOn(clausulaModel, 'findById').mockReturnValue({
-        lean: jest.fn().mockResolvedValue(mockClausula),
-      } as any);
-      jest.spyOn(paragrafoModel, 'findById').mockReturnValue({
-        lean: jest.fn().mockResolvedValue(mockParagrafo),
+      const mockAggregateResult = [{
+        _id: 'mock_id',
+        contrato_id: 'mock_contrato_id',
+        clausulas: [
+          {
+            _id: 'clausula1',
+            nombre: 'Mock Clausula',
+            descripcion: 'Mock contenido de clausula',
+            paragrafos: [mockParagrafo]
+          }
+        ],
+        fecha_creacion: new Date(),
+        fecha_modificacion: new Date()
+      }];
+
+      jest.spyOn(ordenClausulaModel, 'aggregate').mockReturnValue({
+        exec: jest.fn().mockResolvedValue(mockAggregateResult),
       } as any);
 
       const result = await service.getById('mock_contrato_id');
@@ -148,23 +155,12 @@ describe('ContratoService', () => {
       expect(result.clausulas[0]).toHaveProperty('paragrafos');
     });
 
-    it('should throw NotFoundException if orden clausula is not found', async () => {
-      jest.spyOn(ordenClausulaModel, 'findOne').mockReturnValue({
-        lean: jest.fn().mockResolvedValue(null),
+    it('should throw NotFoundException if contrato is not found', async () => {
+      jest.spyOn(ordenClausulaModel, 'aggregate').mockReturnValue({
+        exec: jest.fn().mockResolvedValue([]),
       } as any);
 
-      await expect(service.getById('mock_contrato_id')).rejects.toThrow(NotFoundException);
-    });
-
-    it('should throw NotFoundException if orden paragrafos are not found', async () => {
-      jest.spyOn(ordenClausulaModel, 'findOne').mockReturnValue({
-        lean: jest.fn().mockResolvedValue(mockOrdenClausula),
-      } as any);
-      jest.spyOn(ordenParagrafoModel, 'find').mockReturnValue({
-        lean: jest.fn().mockResolvedValue([]),
-      } as any);
-
-      await expect(service.getById('mock_contrato_id')).rejects.toThrow(NotFoundException);
+      await expect(service.getById('nonexistent_id')).rejects.toThrow(NotFoundException);
     });
   });
 

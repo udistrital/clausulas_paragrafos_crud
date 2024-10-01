@@ -8,10 +8,10 @@ export class OrdenParagrafo extends Document {
     paragrafo_ids: mongoose.Types.ObjectId[];
 
     @Prop({
-        type: mongoose.Schema.Types.ObjectId,
+        type: Number,
         ref: 'contrato_id',
     })
-    contrato_id: mongoose.Types.ObjectId;
+    contrato_id: number;
 
     @Prop({
         type: mongoose.Schema.Types.ObjectId,

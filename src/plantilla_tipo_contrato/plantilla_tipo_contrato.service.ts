@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreatePlantillaTipoContratoDto } from './dto/create-plantilla_tipo_contrato.dto';
@@ -19,12 +19,12 @@ export class PlantillaTipoContratoService {
     @InjectModel(Clausula.name) private readonly clausulaModel: Model<Clausula>,
     @InjectModel(Paragrafo.name) private readonly paragrafoModel: Model<Paragrafo>,
     private readonly filtersService: FiltersService,
-  ) {}
+  ) { }
 
   async post(plantillaTipoContratoDto: CreatePlantillaTipoContratoDto): Promise<PlantillaTipoContrato> {
     const plantillaTipoContratoData = {
       ...plantillaTipoContratoDto,
-      activo : true,
+      activo: true,
       orden_paragrafo_ids: plantillaTipoContratoDto.orden_paragrafo_ids.map(id => new Types.ObjectId(id)),
       orden_clausula_id: new Types.ObjectId(plantillaTipoContratoDto.orden_clausula_id),
     };
@@ -51,64 +51,162 @@ export class PlantillaTipoContratoService {
   }
 
   async getById(id: string): Promise<any> {
-    const plantilla = await this.plantillaTipoContratoModel.findById(id).lean();
-    if (!plantilla) {
-      throw new Error(`${id} doesn't exist`);
-    }
-    return this.getDetailedPlantilla(plantilla);
-  }
-
-  private async getDetailedPlantilla(plantilla: any): Promise<any> {
-    const ordenClausula = await this.ordenClausulaModel.findById(plantilla.orden_clausula_id).lean();
-    if (!ordenClausula) {
-      throw new Error(`Orden de cláusulas no encontrado para la plantilla ${plantilla._id}`);
-    }
-
-    const clausulasConParagrafos = await Promise.all(
-      ordenClausula.clausula_ids.map(async (clausulaId, index) => {
-        const clausula = await this.clausulaModel.findById(clausulaId).lean();
-        if (!clausula) {
-          throw new Error(`Cláusula con id ${clausulaId} no encontrada`);
+    try {
+      const result = await this.plantillaTipoContratoModel.aggregate([
+        { $match: { _id: new Types.ObjectId(id) } },
+        {
+          $lookup: {
+            from: 'ordenclausulas',
+            localField: 'orden_clausula_id',
+            foreignField: '_id',
+            as: 'ordenClausula'
+          }
+        },
+        { $unwind: '$ordenClausula' },
+        {
+          $lookup: {
+            from: 'clausulas',
+            localField: 'ordenClausula.clausula_ids',
+            foreignField: '_id',
+            as: 'clausulas'
+          }
+        },
+        { $unwind: '$clausulas' },
+        {
+          $lookup: {
+            from: 'ordenparagrafos',
+            let: { contratoId: '$ordenClausula.contrato_id', clausulaId: '$clausulas._id' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ['$contrato_id', '$$contratoId'] },
+                      { $eq: ['$clausula_id', '$$clausulaId'] }
+                    ]
+                  }
+                }
+              }
+            ],
+            as: 'ordenParagrafo'
+          }
+        },
+        { $unwind: { path: '$ordenParagrafo', preserveNullAndEmptyArrays: true } },
+        {
+          $lookup: {
+            from: 'paragrafos',
+            localField: 'ordenParagrafo.paragrafo_ids',
+            foreignField: '_id',
+            as: 'paragrafos'
+          }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            version: { $first: '$version' },
+            version_actual: { $first: '$version_actual' },
+            tipo_contrato_id: { $first: '$tipo_contrato_id' },
+            clausulas: {
+              $push: {
+                _id: '$clausulas._id',
+                nombre: '$clausulas.nombre',
+                descripcion: '$clausulas.descripcion',
+                paragrafos: '$paragrafos'
+              }
+            },
+            fecha_creacion: { $first: '$fecha_creacion' },
+            fecha_modificacion: { $first: '$fecha_modificacion' }
+          }
         }
+      ]).exec();
 
-        const ordenParagrafo = await this.ordenParagrafoModel.findOne({
-          contrato_id: ordenClausula.contrato_id,
-          clausula_id: clausulaId
-        }).lean();
+      if (result.length === 0) {
+        throw new NotFoundException(`Plantilla con id ${id} no encontrada`);
+      }
 
-        let paragrafos = [];
-        if (ordenParagrafo) {
-          paragrafos = await Promise.all(
-            ordenParagrafo.paragrafo_ids.map(async (paragrafoId, pIndex) => {
-              const paragrafo = await this.paragrafoModel.findById(paragrafoId).lean();
-              return {
-                ...paragrafo,
-                order: pIndex + 1
-              };
-            })
-          );
-        }
-
-        return {
-          ...clausula,
-          order: index + 1,
-          paragrafos
-        };
-      })
-    );
-
-    return {
-      ...plantilla,
-      clausulas: clausulasConParagrafos
-    };
+      return result[0];
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new NotFoundException(`Error al buscar la plantilla con id ${id}`);
+    }
   }
 
   async getByTipoContrato(tipoContratoId: number): Promise<any> {
-    const plantillas = await this.plantillaTipoContratoModel.find({ tipo_contrato_id: tipoContratoId }).lean();
-    if (!plantillas || plantillas.length === 0) {
-      throw new Error(`No plantillas found for tipo_contrato_id ${tipoContratoId}`);
+    const result = await this.plantillaTipoContratoModel.aggregate([
+      { $match: { tipo_contrato_id: tipoContratoId } },
+      {
+        $lookup: {
+          from: 'ordenclausulas',
+          localField: 'orden_clausula_id',
+          foreignField: '_id',
+          as: 'ordenClausula'
+        }
+      },
+      { $unwind: '$ordenClausula' },
+      {
+        $lookup: {
+          from: 'clausulas',
+          localField: 'ordenClausula.clausula_ids',
+          foreignField: '_id',
+          as: 'clausulas'
+        }
+      },
+      { $unwind: '$clausulas' },
+      {
+        $lookup: {
+          from: 'ordenparagrafos',
+          let: { contratoId: '$ordenClausula.contrato_id', clausulaId: '$clausulas._id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$contrato_id', '$$contratoId'] },
+                    { $eq: ['$clausula_id', '$$clausulaId'] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: 'ordenParagrafo'
+        }
+      },
+      { $unwind: { path: '$ordenParagrafo', preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: 'paragrafos',
+          localField: 'ordenParagrafo.paragrafo_ids',
+          foreignField: '_id',
+          as: 'paragrafos'
+        }
+      },
+      {
+        $group: {
+          _id: '$_id',
+          version: { $first: '$version' },
+          version_actual: { $first: '$version_actual' },
+          tipo_contrato_id: { $first: '$tipo_contrato_id' },
+          clausulas: {
+            $push: {
+              _id: '$clausulas._id',
+              nombre: '$clausulas.nombre',
+              descripcion: '$clausulas.descripcion',
+              paragrafos: '$paragrafos'
+            }
+          },
+          fecha_creacion: { $first: '$fecha_creacion' },
+          fecha_modificacion: { $first: '$fecha_modificacion' }
+        }
+      }
+    ]).exec();
+
+    if (result.length === 0) {
+      throw new NotFoundException(`No se encontraron plantillas para el tipo de contrato ${tipoContratoId}`);
     }
-    return Promise.all(plantillas.map(plantilla => this.getDetailedPlantilla(plantilla)));
+
+    return result;
   }
 
   async put(
@@ -120,7 +218,7 @@ export class PlantillaTipoContratoService {
       .findByIdAndUpdate(id, plantillaTipoContratoDto, { new: true })
       .exec();
     if (!update) {
-      throw new Error(`${id} doesn't exist`);
+      throw new NotFoundException(`Plantilla con id ${id} no encontrada`);
     }
     return update;
   }
@@ -130,7 +228,7 @@ export class PlantillaTipoContratoService {
       .findByIdAndUpdate(id, { activo: false }, { new: true })
       .exec();
     if (!deleted) {
-      throw new Error(`${id} doesn't exist`);
+      throw new NotFoundException(`Plantilla con id ${id} no encontrada`);
     }
     return deleted;
   }

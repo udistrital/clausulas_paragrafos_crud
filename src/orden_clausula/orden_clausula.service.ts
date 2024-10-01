@@ -18,7 +18,7 @@ export class OrdenClausulaService {
     const ordenClausulaData = {
       ...ordenClausulaDto,
       clausula_ids: ordenClausulaDto.clausula_ids.map(id => new Types.ObjectId(id)),
-      contrato_id: new Types.ObjectId(ordenClausulaDto.contrato_id),
+      contrato_id: ordenClausulaDto.contrato_id,
     };
     return await this.ordenClausulaModel.create(ordenClausulaData);
   }

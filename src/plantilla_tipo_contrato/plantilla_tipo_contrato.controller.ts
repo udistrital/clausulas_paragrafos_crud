@@ -13,21 +13,22 @@ export class PlantillaTipoContratoController {
 
     @Post()
     async post(@Res() res, @Body() plantillaTipoContratoDto: CreatePlantillaTipoContratoDto) {
-        const plantillaTipoContrato = await this.plantillaTipoContratoService.post(plantillaTipoContratoDto);
-        if (!plantillaTipoContrato) {
-            throw new HttpException({
+        try {
+            const plantillaTipoContrato = await this.plantillaTipoContratoService.post(plantillaTipoContratoDto);
+            res.status(HttpStatus.CREATED).json({
+                Success: true,
+                Status: 201,
+                Message: "Registration successful",
+                Data: plantillaTipoContrato
+            });
+        } catch (error) {
+            res.status(HttpStatus.BAD_REQUEST).json({
                 Success: false,
                 Status: 400,
                 Message: "Error service Post: The request contains an incorrect data type or an invalid parameter",
                 Data: null
-            }, HttpStatus.BAD_REQUEST)
+            });
         }
-        res.status(HttpStatus.CREATED).json({
-            Success: true,
-            Status: 201,
-            Message: "Registration successful",
-            Data: plantillaTipoContrato
-        });
     }
 
     @Get()
@@ -41,7 +42,7 @@ export class PlantillaTipoContratoController {
                 Metadata: {
                     count: total
                 },
-                Data: data || []
+                Data: data
             });
         } catch (error) {
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -54,7 +55,6 @@ export class PlantillaTipoContratoController {
         }
     }
 
-
     @Get('/:id')
     async getById(@Res() res, @Param('id') id: string) {
         try {
@@ -66,12 +66,12 @@ export class PlantillaTipoContratoController {
                 Data: plantillaTipoContrato
             });
         } catch (error) {
-            throw new HttpException({
+            res.status(HttpStatus.NOT_FOUND).json({
                 Success: false,
                 Status: 404,
                 Message: error.message,
                 Data: null
-            }, HttpStatus.NOT_FOUND);
+            });
         }
     }
 
@@ -86,52 +86,52 @@ export class PlantillaTipoContratoController {
                 Data: plantillaTipoContrato
             });
         } catch (error) {
-            throw new HttpException({
+            res.status(HttpStatus.NOT_FOUND).json({
                 Success: false,
                 Status: 404,
                 Message: error.message,
                 Data: null
-            }, HttpStatus.NOT_FOUND);
+            });
         }
     }
 
     @Put('/:id')
     async put(@Res() res, @Param('id') id: string, @Body() plantillaTipoContratoDto: CreatePlantillaTipoContratoDto) {
-        const plantillaTipoContrato = await this.plantillaTipoContratoService.put(id, plantillaTipoContratoDto);
-        if (!plantillaTipoContrato) {
-            throw new HttpException({
+        try {
+            const plantillaTipoContrato = await this.plantillaTipoContratoService.put(id, plantillaTipoContratoDto);
+            res.status(HttpStatus.OK).json({
+                Success: true,
+                Status: 200,
+                Message: "Update successful",
+                Data: plantillaTipoContrato
+            });
+        } catch (error) {
+            res.status(HttpStatus.BAD_REQUEST).json({
                 Success: false,
                 Status: 400,
                 Message: "Error service Put: The request contains an incorrect data type or an invalid parameter",
                 Data: null
-            }, HttpStatus.BAD_REQUEST)
+            });
         }
-        res.status(HttpStatus.OK).json({
-            Success: true,
-            Status: 200,
-            Message: "Update successful",
-            Data: plantillaTipoContrato
-        });
     }
 
     @Delete('/:id')
     async delete(@Res() res, @Param('id') id: string) {
-        const plantillaTipoContrato = await this.plantillaTipoContratoService.delete(id);
-        if (!plantillaTipoContrato) {
-            throw new HttpException({
-                Sucess: false,
+        try {
+            const plantillaTipoContrato = await this.plantillaTipoContratoService.delete(id);
+            res.status(HttpStatus.OK).json({
+                Success: true,
+                Status: 200,
+                Message: "Delete successful",
+                Data: { _id: id }
+            });
+        } catch (error) {
+            res.status(HttpStatus.NOT_FOUND).json({
+                Success: false,
                 Status: 404,
                 Message: "Error service Delete: Request contains incorrect parameter",
                 Data: null
-            }, HttpStatus.NOT_FOUND)
+            });
         }
-        res.status(HttpStatus.OK).json({
-            Success: true,
-            Status: 200,
-            Message: "Delete successful",
-            Data: {
-                _id: id
-            }
-        });
     }
 }

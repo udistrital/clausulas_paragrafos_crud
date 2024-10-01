@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ContratoController } from './contrato.controller';
 import { ContratoService } from './contrato.service';
 import { CreateContratoEstructuraDto } from './dto/create-contrato.dto';
-import { ConflictException, HttpStatus } from '@nestjs/common';
+import { ConflictException, HttpStatus, NotFoundException } from '@nestjs/common';
 
 describe('ContratoController', () => {
   let controller: ContratoController;
@@ -19,8 +19,23 @@ describe('ContratoController', () => {
   };
 
   const mockContrato = {
-    ordenClausula: { /* mock data */ },
-    ordenParagrafos: [{ /* mock data */ }],
+    _id: 'mock_id',
+    contrato_id: 'mock_contrato_id',
+    clausulas: [
+      {
+        _id: 'clausula1',
+        nombre: 'Mock Clausula',
+        descripcion: 'Mock descripción',
+        paragrafos: [
+          {
+            _id: 'paragrafo1',
+            descripcion: 'Mock párrafo'
+          }
+        ]
+      }
+    ],
+    fecha_creacion: new Date(),
+    fecha_modificacion: new Date()
   };
 
   beforeEach(async () => {
@@ -126,7 +141,7 @@ describe('ContratoController', () => {
     });
 
     it('should handle not found error', async () => {
-      jest.spyOn(service, 'getById').mockRejectedValue(new Error('Not found'));
+      jest.spyOn(service, 'getById').mockRejectedValue(new NotFoundException());
 
       const mockResponse = {
         status: jest.fn().mockReturnThis(),

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OrdenClausula } from 'src/orden_clausula/schemas/orden_clausula.schema';
@@ -45,63 +45,68 @@ export class ContratoService {
   }
 
   async getById(contratoId: string): Promise<any> {
-    const ordenClausula = await this.ordenClausulaModel.findOne({ contrato_id: contratoId }).lean();
-    if (!ordenClausula) {
-      throw new NotFoundException('No se encontró la estructura de cláusulas para este contrato');
-    }
-
-    const ordenParagrafos = await this.ordenParagrafoModel.find({ contrato_id: contratoId }).lean();
-    if (ordenParagrafos.length === 0) {
-      throw new NotFoundException('No se encontraron estructuras de párrafos para este contrato');
-    }
-
-    return this.getDetailedContrato(ordenClausula, ordenParagrafos);
-  }
-
-  private async getDetailedContrato(ordenClausula: any, ordenParagrafos: any[]): Promise<any> {
-    const clausulasConParagrafos = await Promise.all(
-      ordenClausula.clausula_ids.map(async (clausulaId, index) => {
-        const clausula = await this.clausulaModel.findById(clausulaId).lean();
-        if (!clausula) {
-          throw new Error(`Cláusula con id ${clausulaId} no encontrada`);
+    const result = await this.ordenClausulaModel.aggregate([
+      { $match: { contrato_id: contratoId } },
+      {
+        $lookup: {
+          from: 'clausulas',
+          localField: 'clausula_ids',
+          foreignField: '_id',
+          as: 'clausulas'
         }
-
-        const ordenParagrafo = ordenParagrafos.find(op => 
-          op.clausula_id.toString() === clausulaId.toString()
-        );
-
-        let paragrafos = [];
-        if (ordenParagrafo) {
-          paragrafos = await Promise.all(
-            ordenParagrafo.paragrafo_ids.map(async (paragrafoId, pIndex) => {
-              const paragrafo = await this.paragrafoModel.findById(paragrafoId).lean();
-              if (paragrafo) {
-                return {
-                  ...paragrafo,
-                  order: pIndex + 1
-                };
+      },
+      { $unwind: '$clausulas' },
+      {
+        $lookup: {
+          from: 'ordenparagrafos',
+          let: { contratoId: '$contrato_id', clausulaId: '$clausulas._id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$contrato_id', '$$contratoId'] },
+                    { $eq: ['$clausula_id', '$$clausulaId'] }
+                  ]
+                }
               }
-              return null;
-            })
-          );
-          paragrafos = paragrafos.filter(p => p !== null);
+            }
+          ],
+          as: 'ordenParagrafo'
         }
+      },
+      { $unwind: { path: '$ordenParagrafo', preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: 'paragrafos',
+          localField: 'ordenParagrafo.paragrafo_ids',
+          foreignField: '_id',
+          as: 'paragrafos'
+        }
+      },
+      {
+        $group: {
+          _id: '$_id',
+          contrato_id: { $first: '$contrato_id' },
+          clausulas: {
+            $push: {
+              _id: '$clausulas._id',
+              nombre: '$clausulas.nombre',
+              descripcion: '$clausulas.descripcion',
+              paragrafos: '$paragrafos'
+            }
+          },
+          fecha_creacion: { $first: '$fecha_creacion' },
+          fecha_modificacion: { $first: '$fecha_modificacion' }
+        }
+      }
+    ]).exec();
 
-        return {
-          ...clausula,
-          order: index + 1,
-          paragrafos
-        };
-      })
-    );
+    if (result.length === 0) {
+      throw new NotFoundException('No se encontró la estructura del contrato');
+    }
 
-    return {
-      _id: ordenClausula._id,
-      contrato_id: ordenClausula.contrato_id,
-      clausulas: clausulasConParagrafos,
-      fecha_creacion: ordenClausula.fecha_creacion,
-      fecha_modificacion: ordenClausula.fecha_modificacion
-    };
+    return result[0];
   }
 
   async put(contratoId: string, estructuraDto: CreateContratoEstructuraDto): Promise<any> {

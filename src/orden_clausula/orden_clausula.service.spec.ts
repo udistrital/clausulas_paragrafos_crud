@@ -15,14 +15,14 @@ describe('OrdenClausulaService', () => {
   const mockOrdenClausula = {
     _id: new Types.ObjectId().toHexString(),
     clausula_ids: [new Types.ObjectId().toHexString(), new Types.ObjectId().toHexString()],
-    contrato_id: new Types.ObjectId().toHexString(),
+    contrato_id: 12345,
     fecha_creacion: new Date(),
     fecha_modificacion: new Date(),
   };
 
   const mockCreateDto: CreateOrdenClausulaDto = {
     clausula_ids: [new Types.ObjectId().toHexString(), new Types.ObjectId().toHexString()],
-    contrato_id: new Types.ObjectId().toHexString(),
+    contrato_id: 12345,
     fecha_creacion: new Date(),
     fecha_modificacion: new Date(),
   };
