@@ -9,8 +9,7 @@ import { OrdenClausula } from '../orden_clausula/schemas/orden_clausula.schema';
 import { OrdenParagrafo } from '../orden_paragrafo/schemas/orden_paragrafo.schema';
 import { Clausula } from '../clausula/schemas/clausula.schema';
 import { Paragrafo } from '../paragrafo/schemas/paragrafo.schema';
-import { version } from 'os';
-import { classToPlain } from 'class-transformer';
+
 
 @Injectable()
 export class PlantillaTipoContratoService {
@@ -153,7 +152,6 @@ export class PlantillaTipoContratoService {
   async getByTipoContrato(tipoContratoId: number): Promise<any> {
     console.log(tipoContratoId);
     try {
-      console.log(tipoContratoId);
       const raw = await this.plantillaTipoContratoModel.aggregate([
         {
           $match: {tipo_contrato_id : tipoContratoId}
@@ -195,10 +193,6 @@ export class PlantillaTipoContratoService {
         },
         {
           $project: {
-            _id: 1,
-            version: 1,
-            version_actual: 1,
-            tipo_contrato_id: 1,
             clausulas: 1,
             paragrafos: 1,
             orden_paragrafo: 1,
@@ -207,6 +201,7 @@ export class PlantillaTipoContratoService {
       ]);
 
       console.log(raw);
+
       const clausulasMap = new Map(raw[0].clausulas.map(clausula => [
         clausula._id.toString(),
         {
@@ -242,6 +237,7 @@ export class PlantillaTipoContratoService {
       return result;
 
     } catch (error) {
+      console.log(error);
       if (error instanceof NotFoundException) {
         throw error;
       }

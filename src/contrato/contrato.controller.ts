@@ -11,7 +11,7 @@ export class ContratoController {
     ) {}
 
     @Post('/:id')
-    async post(@Res() res, @Param('id') id: string, @Body() estructuraDto: CreateContratoEstructuraDto) {
+    async post(@Res() res, @Param('id') id: number, @Body() estructuraDto: CreateContratoEstructuraDto) {
         try {
             const contrato = await this.contratoService.post(id, estructuraDto);
             res.status(HttpStatus.CREATED).json({
@@ -40,7 +40,7 @@ export class ContratoController {
     }
 
     @Get('/:id')
-    async getById(@Res() res, @Param('id') id: string) {
+    async getById(@Res() res, @Param('id') id: number) {
         try {
             const contrato = await this.contratoService.getById(id);
             res.status(HttpStatus.OK).json({
@@ -60,7 +60,7 @@ export class ContratoController {
     }
 
     @Put('/:id')
-    async put(@Res() res, @Param('id') id: string, @Body() estructuraDto: CreateContratoEstructuraDto) {
+    async put(@Res() res, @Param('id') id: number, @Body() estructuraDto: CreateContratoEstructuraDto) {
         try {
             const contrato = await this.contratoService.put(id, estructuraDto);
             res.status(HttpStatus.OK).json({
