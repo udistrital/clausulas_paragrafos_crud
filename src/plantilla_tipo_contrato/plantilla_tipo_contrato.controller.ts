@@ -76,9 +76,9 @@ export class PlantillaTipoContratoController {
     }
 
     @Get('/tipo-contrato/:tipo_contrato_id')
-    async getByTipoContrato(@Res() res, @Param('tipo_contrato_id') tipoContratoId: number) {
+    async getByTipoContrato(@Res() res, @Param('tipo_contrato_id') tipoContratoId: string) {
         try {
-            const plantillaTipoContrato = await this.plantillaTipoContratoService.getByTipoContrato(tipoContratoId);
+            const plantillaTipoContrato = await this.plantillaTipoContratoService.getByTipoContrato(+tipoContratoId);
             res.status(HttpStatus.OK).json({
                 Success: true,
                 Status: 200,

@@ -500,7 +500,7 @@ paths:
           required: true
           in: path
           schema:
-            type: number
+            type: string
       responses:
         '200':
           description: ''
@@ -513,7 +513,7 @@ paths:
           required: true
           in: path
           schema:
-            type: number
+            type: string
       requestBody:
         required: true
         content:
@@ -532,7 +532,7 @@ paths:
           required: true
           in: path
           schema:
-            type: number
+            type: string
       responses:
         '200':
           description: ''
@@ -544,7 +544,7 @@ paths:
           required: true
           in: path
           schema:
-            type: number
+            type: string
       requestBody:
         required: true
         content:

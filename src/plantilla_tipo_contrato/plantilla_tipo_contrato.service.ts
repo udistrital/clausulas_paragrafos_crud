@@ -150,11 +150,10 @@ export class PlantillaTipoContratoService {
   }
 
   async getByTipoContrato(tipoContratoId: number): Promise<any> {
-    console.log(tipoContratoId);
     try {
       const raw = await this.plantillaTipoContratoModel.aggregate([
         {
-          $match: {tipo_contrato_id : tipoContratoId}
+          $match: { tipo_contrato_id: tipoContratoId }
         },
         {
           $lookup: {
@@ -193,6 +192,10 @@ export class PlantillaTipoContratoService {
         },
         {
           $project: {
+            _id: 1,
+            version: 1,
+            version_actual: 1,
+            tipo_contrato_id: 1,
             clausulas: 1,
             paragrafos: 1,
             orden_paragrafo: 1,
@@ -200,7 +203,7 @@ export class PlantillaTipoContratoService {
         }
       ]);
 
-      console.log(raw);
+      console.log(raw[0]);
 
       const clausulasMap = new Map(raw[0].clausulas.map(clausula => [
         clausula._id.toString(),
@@ -234,10 +237,10 @@ export class PlantillaTipoContratoService {
           paragrafos: orden ? orden.paragrafos : []
         }
       })
+      
       return result;
 
     } catch (error) {
-      console.log(error);
       if (error instanceof NotFoundException) {
         throw error;
       }
