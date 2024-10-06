@@ -111,26 +111,32 @@ export class ContratoService {
       ]);
 
       const raw = [{
-        paragrafos: ordenParagrafos[0].paragrafos,
-        orden_paragrafo: ordenParagrafos[0].orden_paragrafo,
-        clausulas: ordenClausula[0].clausulas,
-      }]
-
+        paragrafos: ordenParagrafos?.[0]?.paragrafos ?? null,
+        orden_paragrafo: ordenParagrafos?.[0]?.orden_paragrafo ?? [],
+        clausulas: ordenClausula?.[0]?.clausulas ?? [],
+      }];
+      
       const clausulasMap = new Map(raw[0].clausulas.map(clausula => [
         clausula._id.toString(),
         {
-          ...clausula, paragrafos: [],  
+          ...clausula, 
+          paragrafos: [],  
         }
       ]));
-
-      const paragrafosMap = new Map(raw[0].paragrafos.map(paragrafo =>[
-        paragrafo._id.toString(),
-        paragrafo,
-      ]));
-
-      const ordenParagrafoMap = raw[0].orden_paragrafo.map(op =>{
-        const clausula:any = clausulasMap.get(op.clausula_id.toString());
-        const paragrafos = op.paragrafo_ids.map(pid => paragrafosMap.get(pid.toString()));
+      
+      const paragrafosMap = new Map(
+        (raw[0].paragrafos || []).map(paragrafo => [
+          paragrafo._id.toString(),
+          paragrafo,
+        ])
+      );
+      
+      const ordenParagrafoMap = raw[0].orden_paragrafo.map(op => {
+        const clausula: any = clausulasMap.get(op.clausula_id.toString());
+        const paragrafos = op.paragrafo_ids
+          ? op.paragrafo_ids.map(pid => paragrafosMap.get(pid.toString())).filter(Boolean)
+          : null;
+        
         return {
           ...op,
           clausula: clausula ? {
@@ -139,7 +145,7 @@ export class ContratoService {
           } : null,
           paragrafos: paragrafos
         }
-      })
+      });
 
       const result = raw[0].clausulas.map(c => {
         const orden = ordenParagrafoMap.find(op => op.clausula_id.toString() === c._id.toString())
