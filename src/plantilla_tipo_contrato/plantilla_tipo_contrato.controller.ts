@@ -65,7 +65,7 @@ export class PlantillaTipoContratoController {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         Success: false,
         Status: 500,
-        Message: 'An unexpected error occurred',
+        Message: `An unexpected error occurred ${error.message}`,
         Metadata: null,
         Data: null,
       });
@@ -96,12 +96,12 @@ export class PlantillaTipoContratoController {
   @Get('/tipo-contrato/:tipo_contrato_id')
   async getByTipoContrato(
     @Res() res,
-    @Param('tipo_contrato_id') tipoContratoId: number,
+    @Param('tipo_contrato_id') tipoContratoId: string,
   ) {
     try {
       const plantillaTipoContrato =
         await this.plantillaTipoContratoService.getByTipoContrato(
-          tipoContratoId,
+          +tipoContratoId,
         );
       res.status(HttpStatus.OK).json({
         Success: true,
@@ -140,8 +140,7 @@ export class PlantillaTipoContratoController {
       res.status(HttpStatus.BAD_REQUEST).json({
         Success: false,
         Status: 400,
-        Message:
-          'Error service Put: The request contains an incorrect data type or an invalid parameter',
+        Message: `Error service Put: The request contains an incorrect data type or an invalid parameter: ${error.message}`,
         Data: null,
       });
     }

@@ -85,92 +85,108 @@ export class PlantillaTipoContratoService {
   }
 
   async getById(id: string): Promise<any> {
+    const oid = new Types.ObjectId(id);
     try {
-      const oid = new Types.ObjectId(id);
+      const raw = await this.plantillaTipoContratoModel.aggregate([
+        {
+          $match: { _id: oid },
+        },
+        {
+          $lookup: {
+            from: 'orden_clausula',
+            localField: 'orden_clausula_id',
+            foreignField: '_id',
+            as: 'orden_clausula',
+          },
+        },
+        {
+          $unwind: '$orden_clausula',
+        },
+        {
+          $lookup: {
+            from: 'orden_paragrafo',
+            localField: 'orden_paragrafo_ids',
+            foreignField: '_id',
+            as: 'orden_paragrafo',
+          },
+        },
+        {
+          $lookup: {
+            from: 'clausula',
+            localField: 'orden_clausula.clausula_ids',
+            foreignField: '_id',
+            as: 'clausulas',
+          },
+        },
+        {
+          $lookup: {
+            from: 'paragrafo',
+            localField: 'orden_paragrafo.paragrafo_ids',
+            foreignField: '_id',
+            as: 'paragrafos',
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            version: 1,
+            version_actual: 1,
+            tipo_contrato_id: 1,
+            clausulas: 1,
+            paragrafos: 1,
+            orden_paragrafo: 1,
+          },
+        },
+      ]);
 
-      const result = await this.plantillaTipoContratoModel
-        .aggregate([
-          { $match: { _id: oid } },
+      const clausulasMap = new Map(
+        raw[0].clausulas.map((clausula) => [
+          clausula._id.toString(),
           {
-            $lookup: {
-              from: 'ordenclausulas',
-              localField: 'orden_clausula_id',
-              foreignField: '_id',
-              as: 'ordenClausula',
-            },
+            ...clausula,
+            paragrafos: [],
           },
-          { $unwind: '$ordenClausula' },
-          {
-            $lookup: {
-              from: 'clausulas',
-              localField: 'ordenClausula.clausula_ids',
-              foreignField: '_id',
-              as: 'clausulas',
-            },
-          },
-          { $unwind: '$clausulas' },
-          {
-            $lookup: {
-              from: 'ordenparagrafos',
-              let: {
-                contratoId: '$ordenClausula.contrato_id',
-                clausulaId: '$clausulas._id',
-              },
-              pipeline: [
-                {
-                  $match: {
-                    $expr: {
-                      $and: [
-                        { $eq: ['$contrato_id', '$$contratoId'] },
-                        { $eq: ['$clausula_id', '$$clausulaId'] },
-                      ],
-                    },
-                  },
-                },
-              ],
-              as: 'ordenParagrafo',
-            },
-          },
-          {
-            $unwind: {
-              path: '$ordenParagrafo',
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          {
-            $lookup: {
-              from: 'paragrafos',
-              localField: 'ordenParagrafo.paragrafo_ids',
-              foreignField: '_id',
-              as: 'paragrafos',
-            },
-          },
-          {
-            $group: {
-              _id: '$_id',
-              version: { $first: '$version' },
-              version_actual: { $first: '$version_actual' },
-              tipo_contrato_id: { $first: '$tipo_contrato_id' },
-              clausulas: {
-                $push: {
-                  _id: '$clausulas._id',
-                  nombre: '$clausulas.nombre',
-                  descripcion: '$clausulas.descripcion',
-                  paragrafos: '$paragrafos',
-                },
-              },
-              fecha_creacion: { $first: '$fecha_creacion' },
-              fecha_modificacion: { $first: '$fecha_modificacion' },
-            },
-          },
-        ])
-        .exec();
+        ]),
+      );
 
-      if (result.length === 0) {
-        throw new NotFoundException(`Plantilla con id ${id} no encontrada`);
-      }
+      const paragrafosMap = new Map(
+        (raw[0].paragrafos || []).map((paragrafo) => [
+          paragrafo._id.toString(),
+          paragrafo,
+        ]),
+      );
 
-      return result[0];
+      const ordenParagrafoMap = raw[0].orden_paragrafo.map((op) => {
+        const clausula: any = clausulasMap.get(op.clausula_id.toString());
+        const paragrafos = op.paragrafo_ids
+          ? op.paragrafo_ids
+              .map((pid) => paragrafosMap.get(pid.toString()))
+              .filter(Boolean)
+          : null;
+
+        return {
+          ...op,
+          clausula: clausula
+            ? {
+                _id: clausula._id,
+                nombre: clausula.nombre,
+              }
+            : null,
+          paragrafos: paragrafos,
+        };
+      });
+
+      const result = raw[0].clausulas.map((c) => {
+        const orden = ordenParagrafoMap.find(
+          (op) => op.clausula_id.toString() === c._id.toString(),
+        );
+        return {
+          ...c,
+          paragrafos: orden ? orden.paragrafos : [],
+        };
+      });
+
+      return result;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -180,91 +196,115 @@ export class PlantillaTipoContratoService {
   }
 
   async getByTipoContrato(tipoContratoId: number): Promise<any> {
-    const result = await this.plantillaTipoContratoModel
-      .aggregate([
-        { $match: { tipo_contrato_id: tipoContratoId } },
+    try {
+      const raw = await this.plantillaTipoContratoModel.aggregate([
+        {
+          $match: { tipo_contrato_id: tipoContratoId },
+        },
         {
           $lookup: {
-            from: 'ordenclausulas',
+            from: 'orden_clausula',
             localField: 'orden_clausula_id',
             foreignField: '_id',
-            as: 'ordenClausula',
+            as: 'orden_clausula',
           },
         },
-        { $unwind: '$ordenClausula' },
+        {
+          $unwind: '$orden_clausula',
+        },
         {
           $lookup: {
-            from: 'clausulas',
-            localField: 'ordenClausula.clausula_ids',
+            from: 'orden_paragrafo',
+            localField: 'orden_paragrafo_ids',
+            foreignField: '_id',
+            as: 'orden_paragrafo',
+          },
+        },
+        {
+          $lookup: {
+            from: 'clausula',
+            localField: 'orden_clausula.clausula_ids',
             foreignField: '_id',
             as: 'clausulas',
           },
         },
-        { $unwind: '$clausulas' },
         {
           $lookup: {
-            from: 'ordenparagrafos',
-            let: {
-              contratoId: '$ordenClausula.contrato_id',
-              clausulaId: '$clausulas._id',
-            },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      { $eq: ['$contrato_id', '$$contratoId'] },
-                      { $eq: ['$clausula_id', '$$clausulaId'] },
-                    ],
-                  },
-                },
-              },
-            ],
-            as: 'ordenParagrafo',
-          },
-        },
-        {
-          $unwind: {
-            path: '$ordenParagrafo',
-            preserveNullAndEmptyArrays: true,
-          },
-        },
-        {
-          $lookup: {
-            from: 'paragrafos',
-            localField: 'ordenParagrafo.paragrafo_ids',
+            from: 'paragrafo',
+            localField: 'orden_paragrafo.paragrafo_ids',
             foreignField: '_id',
             as: 'paragrafos',
           },
         },
         {
-          $group: {
-            _id: '$_id',
-            version: { $first: '$version' },
-            version_actual: { $first: '$version_actual' },
-            tipo_contrato_id: { $first: '$tipo_contrato_id' },
-            clausulas: {
-              $push: {
-                _id: '$clausulas._id',
-                nombre: '$clausulas.nombre',
-                descripcion: '$clausulas.descripcion',
-                paragrafos: '$paragrafos',
-              },
-            },
-            fecha_creacion: { $first: '$fecha_creacion' },
-            fecha_modificacion: { $first: '$fecha_modificacion' },
+          $project: {
+            _id: 1,
+            version: 1,
+            version_actual: 1,
+            tipo_contrato_id: 1,
+            clausulas: 1,
+            paragrafos: 1,
+            orden_paragrafo: 1,
           },
         },
-      ])
-      .exec();
+      ]);
 
-    if (result.length === 0) {
+      const clausulasMap = new Map(
+        raw[0].clausulas.map((clausula) => [
+          clausula._id.toString(),
+          {
+            ...clausula,
+            paragrafos: [],
+          },
+        ]),
+      );
+
+      const paragrafosMap = new Map(
+        (raw[0].paragrafos || []).map((paragrafo) => [
+          paragrafo._id.toString(),
+          paragrafo,
+        ]),
+      );
+
+      const ordenParagrafoMap = raw[0].orden_paragrafo.map((op) => {
+        const clausula: any = clausulasMap.get(op.clausula_id.toString());
+        const paragrafos = op.paragrafo_ids
+          ? op.paragrafo_ids
+              .map((pid) => paragrafosMap.get(pid.toString()))
+              .filter(Boolean)
+          : null;
+
+        return {
+          ...op,
+          clausula: clausula
+            ? {
+                _id: clausula._id,
+                nombre: clausula.nombre,
+              }
+            : null,
+          paragrafos: paragrafos,
+        };
+      });
+
+      const result = raw[0].clausulas.map((c) => {
+        const orden = ordenParagrafoMap.find(
+          (op) => op.clausula_id.toString() === c._id.toString(),
+        );
+        return {
+          ...c,
+          paragrafos: orden ? orden.paragrafos : [],
+        };
+      });
+
+      return result;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       throw new NotFoundException(
-        `No se encontraron plantillas para el tipo de contrato ${tipoContratoId}`,
+        `Error al buscar la plantilla con id ${tipoContratoId}`,
       );
     }
-
-    return result;
   }
 
   async put(
