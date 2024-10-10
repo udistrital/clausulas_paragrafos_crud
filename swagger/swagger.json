@@ -1047,12 +1047,6 @@
       "CreatePlantillaTipoContratoDto": {
         "type": "object",
         "properties": {
-          "version": {
-            "type": "number"
-          },
-          "version_actual": {
-            "type": "boolean"
-          },
           "tipo_contrato_id": {
             "type": "number"
           },
@@ -1077,8 +1071,6 @@
           }
         },
         "required": [
-          "version",
-          "version_actual",
           "tipo_contrato_id",
           "orden_clausula_id",
           "orden_paragrafo_ids",
