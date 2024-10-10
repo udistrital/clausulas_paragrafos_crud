@@ -181,8 +181,12 @@ export class PlantillaTipoContratoService {
           (op) => op.clausula_id.toString() === c._id.toString(),
         );
         return {
-          ...c,
-          paragrafos: orden ? orden.paragrafos : [],
+          version: raw[0].version,
+          version_actual: raw[0].version_actual,
+          clausulas: {
+            ...c,
+            paragrafos: orden ? orden.paragrafos : [],
+          },
         };
       });
 
