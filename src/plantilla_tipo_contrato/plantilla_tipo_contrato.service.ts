@@ -28,20 +28,25 @@ export class PlantillaTipoContratoService {
   async post(
     plantillaTipoContratoDto: CreatePlantillaTipoContratoDto,
   ): Promise<PlantillaTipoContrato> {
-    //Encontrar version actual
     const versionActual = await this.plantillaTipoContratoModel
-      .findOne({
+      .find({
         tipo_contrato_id: plantillaTipoContratoDto.tipo_contrato_id,
         version_actual: true,
       })
       .exec();
 
-    //Crear nueva versión
+    let currentVersion = 1;
+
+    if (versionActual && versionActual.length > 0) {
+      const versions = versionActual.map((item) => item.version);
+      currentVersion = Math.max(...versions);
+    }
+
     const plantillaTipoContratoData = {
       ...plantillaTipoContratoDto,
       activo: true,
       version_actual: true,
-      version: versionActual ? versionActual.version + 1 : 1,
+      version: currentVersion + 1,
       orden_paragrafo_ids: plantillaTipoContratoDto.orden_paragrafo_ids.map(
         (id) => new Types.ObjectId(id),
       ),
@@ -54,11 +59,13 @@ export class PlantillaTipoContratoService {
       plantillaTipoContratoData,
     );
 
-    //Actualizar version actual
     if (versionActual) {
-      versionActual.version_actual = false;
-      await versionActual.save();
+      versionActual.forEach((item) => {
+        item.version_actual = false;
+        item.save();
+      });
     }
+
     return this.plantillaTipoContratoModel.findById(versionNueva._id);
   }
 
