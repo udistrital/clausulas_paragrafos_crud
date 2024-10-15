@@ -500,7 +500,7 @@ paths:
           required: true
           in: path
           schema:
-            type: number
+            type: string
       responses:
         '200':
           description: ''
