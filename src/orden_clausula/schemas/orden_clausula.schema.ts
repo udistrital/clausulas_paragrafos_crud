@@ -1,24 +1,22 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose'; 
+import mongoose, { Document } from 'mongoose';
 
-@Schema({collection: 'orden_clausula'})
+@Schema({ collection: 'orden_clausula' })
 export class OrdenClausula extends Document {
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Clausula' }] })
+  clausula_ids: mongoose.Types.ObjectId[];
 
-    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Clausula' }] })
-    clausula_ids: mongoose.Types.ObjectId[];
+  @Prop({
+    type: Number,
+    ref: 'contrato_id',
+  })
+  contrato_id: number;
 
-    @Prop({
-        type: Number,
-        ref: 'contrato_id',
-    })
-    contrato_id: number;
+  @Prop({ required: true, default: Date.now })
+  fecha_creacion: Date;
 
-    @Prop({required: true, default: Date.now})
-    fecha_creacion: Date
-
-    @Prop({required: true, default: Date.now})
-    fecha_modificacion: Date
-
+  @Prop({ required: true, default: Date.now })
+  fecha_modificacion: Date;
 }
 
-export const OrdenClausulaSchema = SchemaFactory.createForClass(OrdenClausula)
+export const OrdenClausulaSchema = SchemaFactory.createForClass(OrdenClausula);

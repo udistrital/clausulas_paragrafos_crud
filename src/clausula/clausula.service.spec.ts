@@ -61,10 +61,12 @@ describe('ClausulaService', () => {
 
   describe('post', () => {
     it('should create a new clausula', async () => {
-      jest.spyOn(model, 'create').mockImplementationOnce(() => 
-        Promise.resolve([mockClausula] as Clausula[])
-      );
-      
+      jest
+        .spyOn(model, 'create')
+        .mockImplementationOnce(() =>
+          Promise.resolve([mockClausula] as Clausula[]),
+        );
+
       const result = await service.post(mockClausulaDto);
       expect(result).toBeInstanceOf(Array);
       expect(result).toHaveLength(1);
@@ -81,7 +83,7 @@ describe('ClausulaService', () => {
         limit: jest.fn().mockReturnThis(),
         exec: jest.fn().mockResolvedValueOnce([mockClausula]),
       } as any);
-      
+
       const result = await service.getAll(mockFilterDto);
       expect(result).toBeInstanceOf(Array);
       expect(result).toHaveLength(1);
@@ -94,7 +96,7 @@ describe('ClausulaService', () => {
       jest.spyOn(model, 'findById').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(mockClausula),
       } as any);
-      
+
       const result = await service.getById('a_mock_id');
       expect(result).toEqual(mockClausula);
     });
@@ -103,8 +105,10 @@ describe('ClausulaService', () => {
       jest.spyOn(model, 'findById').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(null),
       } as any);
-      
-      await expect(service.getById('nonexistent_id')).rejects.toThrow("nonexistent_id doesn't exist");
+
+      await expect(service.getById('nonexistent_id')).rejects.toThrow(
+        "nonexistent_id doesn't exist",
+      );
     });
   });
 
@@ -113,7 +117,7 @@ describe('ClausulaService', () => {
       jest.spyOn(model, 'findByIdAndUpdate').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(mockClausula),
       } as any);
-      
+
       const result = await service.put('a_mock_id', mockClausulaDto);
       expect(result).toEqual(mockClausula);
     });
@@ -122,8 +126,10 @@ describe('ClausulaService', () => {
       jest.spyOn(model, 'findByIdAndUpdate').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(null),
       } as any);
-      
-      await expect(service.put('nonexistent_id', mockClausulaDto)).rejects.toThrow("nonexistent_id doesn't exist");
+
+      await expect(
+        service.put('nonexistent_id', mockClausulaDto),
+      ).rejects.toThrow("nonexistent_id doesn't exist");
     });
   });
 
@@ -133,7 +139,7 @@ describe('ClausulaService', () => {
       jest.spyOn(model, 'findByIdAndUpdate').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(inactiveClausula),
       } as any);
-      
+
       const result = await service.delete('a_mock_id');
       expect(result).toEqual(inactiveClausula);
     });
@@ -142,8 +148,10 @@ describe('ClausulaService', () => {
       jest.spyOn(model, 'findByIdAndUpdate').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(null),
       } as any);
-      
-      await expect(service.delete('nonexistent_id')).rejects.toThrow("nonexistent_id doesn't exist");
+
+      await expect(service.delete('nonexistent_id')).rejects.toThrow(
+        "nonexistent_id doesn't exist",
+      );
     });
   });
 });

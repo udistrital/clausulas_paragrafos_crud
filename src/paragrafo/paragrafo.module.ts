@@ -14,6 +14,6 @@ import { FiltersModule } from 'src/filters/filters.module';
   ],
   controllers: [ParagrafoController],
   providers: [ParagrafoService],
-  exports: [ParagrafoService]
+  exports: [ParagrafoService],
 })
 export class ParagrafoModule {}

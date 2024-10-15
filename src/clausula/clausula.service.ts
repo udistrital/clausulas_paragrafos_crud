@@ -11,20 +11,21 @@ export class ClausulaService {
   constructor(
     @InjectModel(Clausula.name)
     private readonly clausulaModel: Model<Clausula>,
-    private readonly filtersService : FiltersService,
+    private readonly filtersService: FiltersService,
   ) {}
 
   async post(clausulaDto: CreateClausulaDto): Promise<Clausula> {
     const clausulaData = {
       ...clausulaDto,
-      activo : true,
+      activo: true,
     };
     return await this.clausulaModel.create(clausulaData);
   }
 
   async getAll(filtersDto: FilterDto): Promise<Clausula[]> {
-    const{offset, limit} = filtersDto;
-    const {queryObject, sortObject}= this.filtersService.createObjects(filtersDto)
+    const { offset, limit } = filtersDto;
+    const { queryObject, sortObject } =
+      this.filtersService.createObjects(filtersDto);
     return await this.clausulaModel
       .find(queryObject)
       .sort(sortObject)
@@ -41,10 +42,7 @@ export class ClausulaService {
     return clausula;
   }
 
-  async put(
-    id: string,
-    clausulaDto: CreateClausulaDto,
-  ): Promise<Clausula> {
+  async put(id: string, clausulaDto: CreateClausulaDto): Promise<Clausula> {
     clausulaDto.fecha_modificacion = new Date();
     const update = await this.clausulaModel
       .findByIdAndUpdate(id, clausulaDto, { new: true })

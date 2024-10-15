@@ -10,31 +10,69 @@ import { OrdenParagrafo } from '../orden_paragrafo/schemas/orden_paragrafo.schem
 import { Clausula } from '../clausula/schemas/clausula.schema';
 import { Paragrafo } from '../paragrafo/schemas/paragrafo.schema';
 
-
 @Injectable()
 export class PlantillaTipoContratoService {
   constructor(
-    @InjectModel(PlantillaTipoContrato.name) private readonly plantillaTipoContratoModel: Model<PlantillaTipoContrato>,
-    @InjectModel(OrdenClausula.name) private readonly ordenClausulaModel: Model<OrdenClausula>,
-    @InjectModel(OrdenParagrafo.name) private readonly ordenParagrafoModel: Model<OrdenParagrafo>,
+    @InjectModel(PlantillaTipoContrato.name)
+    private readonly plantillaTipoContratoModel: Model<PlantillaTipoContrato>,
+    @InjectModel(OrdenClausula.name)
+    private readonly ordenClausulaModel: Model<OrdenClausula>,
+    @InjectModel(OrdenParagrafo.name)
+    private readonly ordenParagrafoModel: Model<OrdenParagrafo>,
     @InjectModel(Clausula.name) private readonly clausulaModel: Model<Clausula>,
-    @InjectModel(Paragrafo.name) private readonly paragrafoModel: Model<Paragrafo>,
+    @InjectModel(Paragrafo.name)
+    private readonly paragrafoModel: Model<Paragrafo>,
     private readonly filtersService: FiltersService,
-  ) { }
+  ) {}
 
-  async post(plantillaTipoContratoDto: CreatePlantillaTipoContratoDto): Promise<PlantillaTipoContrato> {
+  async post(
+    plantillaTipoContratoDto: CreatePlantillaTipoContratoDto,
+  ): Promise<PlantillaTipoContrato> {
+    const versionActual = await this.plantillaTipoContratoModel.find({
+      tipo_contrato_id: plantillaTipoContratoDto.tipo_contrato_id,
+      version_actual: true,
+    });
+
+    let currentVersion = 1;
+
+    if (versionActual && versionActual.length > 0) {
+      const versions = versionActual.map((item) => item.version);
+      currentVersion = Math.max(...versions);
+    }
+
     const plantillaTipoContratoData = {
       ...plantillaTipoContratoDto,
       activo: true,
-      orden_paragrafo_ids: plantillaTipoContratoDto.orden_paragrafo_ids.map(id => new Types.ObjectId(id)),
-      orden_clausula_id: new Types.ObjectId(plantillaTipoContratoDto.orden_clausula_id),
+      version_actual: true,
+      version: currentVersion + 1,
+      orden_paragrafo_ids: plantillaTipoContratoDto.orden_paragrafo_ids.map(
+        (id) => new Types.ObjectId(id),
+      ),
+      orden_clausula_id: new Types.ObjectId(
+        plantillaTipoContratoDto.orden_clausula_id,
+      ),
     };
-    return await this.plantillaTipoContratoModel.create(plantillaTipoContratoData);
+
+    const versionNueva = await this.plantillaTipoContratoModel.create(
+      plantillaTipoContratoData,
+    );
+
+    if (versionActual) {
+      versionActual.forEach((item) => {
+        item.version_actual = false;
+        item.save();
+      });
+    }
+
+    return this.plantillaTipoContratoModel.findById(versionNueva._id);
   }
 
-  async getAll(filtersDto: FilterDto): Promise<{ data: PlantillaTipoContrato[], total: number }> {
+  async getAll(
+    filtersDto: FilterDto,
+  ): Promise<{ data: PlantillaTipoContrato[]; total: number }> {
     const { offset, limit } = filtersDto;
-    const { queryObject, sortObject } = this.filtersService.createObjects(filtersDto);
+    const { queryObject, sortObject } =
+      this.filtersService.createObjects(filtersDto);
 
     const [data, total] = await Promise.all([
       this.plantillaTipoContratoModel
@@ -45,7 +83,7 @@ export class PlantillaTipoContratoService {
         .populate('orden_paragrafo_ids')
         .populate('orden_clausula_id')
         .exec(),
-      this.plantillaTipoContratoModel.countDocuments(queryObject)
+      this.plantillaTipoContratoModel.countDocuments(queryObject),
     ]);
 
     return { data, total };
@@ -56,42 +94,42 @@ export class PlantillaTipoContratoService {
     try {
       const raw = await this.plantillaTipoContratoModel.aggregate([
         {
-          $match: {_id : oid}
+          $match: { _id: oid },
         },
         {
           $lookup: {
             from: 'orden_clausula',
             localField: 'orden_clausula_id',
             foreignField: '_id',
-            as: 'orden_clausula'
-          }
+            as: 'orden_clausula',
+          },
         },
         {
-          $unwind: '$orden_clausula'
+          $unwind: '$orden_clausula',
         },
         {
           $lookup: {
             from: 'orden_paragrafo',
             localField: 'orden_paragrafo_ids',
             foreignField: '_id',
-            as: 'orden_paragrafo'
-          }
+            as: 'orden_paragrafo',
+          },
         },
         {
           $lookup: {
             from: 'clausula',
             localField: 'orden_clausula.clausula_ids',
             foreignField: '_id',
-            as: 'clausulas'
-          }
+            as: 'clausulas',
+          },
         },
         {
           $lookup: {
             from: 'paragrafo',
             localField: 'orden_paragrafo.paragrafo_ids',
             foreignField: '_id',
-            as: 'paragrafos'
-          }
+            as: 'paragrafos',
+          },
         },
         {
           $project: {
@@ -102,51 +140,60 @@ export class PlantillaTipoContratoService {
             clausulas: 1,
             paragrafos: 1,
             orden_paragrafo: 1,
-          }
-        }
+          },
+        },
       ]);
 
-      const clausulasMap = new Map(raw[0].clausulas.map(clausula => [
-        clausula._id.toString(),
-        {
-          ...clausula, 
-          paragrafos: [],  
-        }
-      ]));
-      
+      const clausulasMap = new Map(
+        raw[0].clausulas.map((clausula) => [
+          clausula._id.toString(),
+          {
+            ...clausula,
+            paragrafos: [],
+          },
+        ]),
+      );
+
       const paragrafosMap = new Map(
-        (raw[0].paragrafos || []).map(paragrafo => [
+        (raw[0].paragrafos || []).map((paragrafo) => [
           paragrafo._id.toString(),
           paragrafo,
-        ])
+        ]),
       );
-      
-      const ordenParagrafoMap = raw[0].orden_paragrafo.map(op => {
+
+      const ordenParagrafoMap = raw[0].orden_paragrafo.map((op) => {
         const clausula: any = clausulasMap.get(op.clausula_id.toString());
         const paragrafos = op.paragrafo_ids
-          ? op.paragrafo_ids.map(pid => paragrafosMap.get(pid.toString())).filter(Boolean)
+          ? op.paragrafo_ids
+              .map((pid) => paragrafosMap.get(pid.toString()))
+              .filter(Boolean)
           : null;
-        
+
         return {
           ...op,
-          clausula: clausula ? {
-            _id: clausula._id,
-            nombre: clausula.nombre,
-          } : null,
-          paragrafos: paragrafos
-        }
+          clausula: clausula
+            ? {
+                _id: clausula._id,
+                nombre: clausula.nombre,
+              }
+            : null,
+          paragrafos: paragrafos,
+        };
       });
 
-      const result = raw[0].clausulas.map(c => {
-        const orden = ordenParagrafoMap.find(op => op.clausula_id.toString() === c._id.toString())
+      return raw[0].clausulas.map((c) => {
+        const orden = ordenParagrafoMap.find(
+          (op) => op.clausula_id.toString() === c._id.toString(),
+        );
         return {
-          ...c,
-          paragrafos: orden ? orden.paragrafos : []
-        }
-      })
-      
-      return result;
-
+          version: raw[0].version,
+          version_actual: raw[0].version_actual,
+          clausulas: {
+            ...c,
+            paragrafos: orden ? orden.paragrafos : [],
+          },
+        };
+      });
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -159,42 +206,42 @@ export class PlantillaTipoContratoService {
     try {
       const raw = await this.plantillaTipoContratoModel.aggregate([
         {
-          $match: { tipo_contrato_id: tipoContratoId }
+          $match: { tipo_contrato_id: tipoContratoId },
         },
         {
           $lookup: {
             from: 'orden_clausula',
             localField: 'orden_clausula_id',
             foreignField: '_id',
-            as: 'orden_clausula'
-          }
+            as: 'orden_clausula',
+          },
         },
         {
-          $unwind: '$orden_clausula'
+          $unwind: '$orden_clausula',
         },
         {
           $lookup: {
             from: 'orden_paragrafo',
             localField: 'orden_paragrafo_ids',
             foreignField: '_id',
-            as: 'orden_paragrafo'
-          }
+            as: 'orden_paragrafo',
+          },
         },
         {
           $lookup: {
             from: 'clausula',
             localField: 'orden_clausula.clausula_ids',
             foreignField: '_id',
-            as: 'clausulas'
-          }
+            as: 'clausulas',
+          },
         },
         {
           $lookup: {
             from: 'paragrafo',
             localField: 'orden_paragrafo.paragrafo_ids',
             foreignField: '_id',
-            as: 'paragrafos'
-          }
+            as: 'paragrafos',
+          },
         },
         {
           $project: {
@@ -205,56 +252,63 @@ export class PlantillaTipoContratoService {
             clausulas: 1,
             paragrafos: 1,
             orden_paragrafo: 1,
-          }
-        }
+          },
+        },
       ]);
 
-      const clausulasMap = new Map(raw[0].clausulas.map(clausula => [
-        clausula._id.toString(),
-        {
-          ...clausula, 
-          paragrafos: [],  
-        }
-      ]));
-      
+      const clausulasMap = new Map(
+        raw[0].clausulas.map((clausula) => [
+          clausula._id.toString(),
+          {
+            ...clausula,
+            paragrafos: [],
+          },
+        ]),
+      );
+
       const paragrafosMap = new Map(
-        (raw[0].paragrafos || []).map(paragrafo => [
+        (raw[0].paragrafos || []).map((paragrafo) => [
           paragrafo._id.toString(),
           paragrafo,
-        ])
+        ]),
       );
-      
-      const ordenParagrafoMap = raw[0].orden_paragrafo.map(op => {
+
+      const ordenParagrafoMap = raw[0].orden_paragrafo.map((op) => {
         const clausula: any = clausulasMap.get(op.clausula_id.toString());
         const paragrafos = op.paragrafo_ids
-          ? op.paragrafo_ids.map(pid => paragrafosMap.get(pid.toString())).filter(Boolean)
+          ? op.paragrafo_ids
+              .map((pid) => paragrafosMap.get(pid.toString()))
+              .filter(Boolean)
           : null;
-        
+
         return {
           ...op,
-          clausula: clausula ? {
-            _id: clausula._id,
-            nombre: clausula.nombre,
-          } : null,
-          paragrafos: paragrafos
-        }
+          clausula: clausula
+            ? {
+                _id: clausula._id,
+                nombre: clausula.nombre,
+              }
+            : null,
+          paragrafos: paragrafos,
+        };
       });
 
-      const result = raw[0].clausulas.map(c => {
-        const orden = ordenParagrafoMap.find(op => op.clausula_id.toString() === c._id.toString())
+      return raw[0].clausulas.map((c) => {
+        const orden = ordenParagrafoMap.find(
+          (op) => op.clausula_id.toString() === c._id.toString(),
+        );
         return {
           ...c,
-          paragrafos: orden ? orden.paragrafos : []
-        }
-      })
-      
-      return result;
-
+          paragrafos: orden ? orden.paragrafos : [],
+        };
+      });
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new NotFoundException(`Error al buscar la plantilla con id ${tipoContratoId}`);
+      throw new NotFoundException(
+        `Error al buscar la plantilla con id ${tipoContratoId}`,
+      );
     }
   }
 
@@ -264,8 +318,7 @@ export class PlantillaTipoContratoService {
   ): Promise<PlantillaTipoContrato> {
     plantillaTipoContratoDto.fecha_modificacion = new Date();
     const update = await this.plantillaTipoContratoModel
-      .findByIdAndUpdate(id, plantillaTipoContratoDto, { new: true })
-      .exec();
+      .findByIdAndUpdate(id, plantillaTipoContratoDto, { new: true });
     if (!update) {
       throw new NotFoundException(`Plantilla con id ${id} no encontrada`);
     }
@@ -274,8 +327,7 @@ export class PlantillaTipoContratoService {
 
   async delete(id: string): Promise<PlantillaTipoContrato> {
     const deleted = await this.plantillaTipoContratoModel
-      .findByIdAndUpdate(id, { activo: false }, { new: true })
-      .exec();
+      .findByIdAndUpdate(id, { activo: false }, { new: true });
     if (!deleted) {
       throw new NotFoundException(`Plantilla con id ${id} no encontrada`);
     }

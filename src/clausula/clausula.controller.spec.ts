@@ -23,7 +23,6 @@ describe('ClausulaController', () => {
     $clearModifiedPaths: jest.fn(),
     $clone: jest.fn(),
     $createModifiedPathsSnapshot: jest.fn(),
-
   } as unknown as Clausula;
 
   const mockCreateDto: CreateClausulaDto = {
@@ -32,6 +31,14 @@ describe('ClausulaController', () => {
     predeterminado: true,
     fecha_creacion: new Date(),
     fecha_modificacion: new Date(),
+  };
+
+  const mockFilterDto: FilterDto = {
+    query: 'nombre:Clausula de prueba',
+    sort: 'desc',
+    orderBy: 'fecha_creacion',
+    limit: 10,
+    offset: 0,
   };
 
   beforeEach(async () => {
@@ -74,8 +81,8 @@ describe('ClausulaController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 201,
-        Message: "Registration successful",
-        Data: mockClausula
+        Message: 'Registration successful',
+        Data: mockClausula,
       });
     });
 
@@ -87,12 +94,14 @@ describe('ClausulaController', () => {
         json: jest.fn(),
       };
 
-      await expect(controller.post(mockResponse, mockCreateDto)).rejects.toThrow();
+      await expect(
+        controller.post(mockResponse, mockCreateDto),
+      ).rejects.toThrow();
     });
   });
 
   describe('getAll', () => {
-    it('should get all clausulas', async () => {
+    it('should get all clausulas with filter', async () => {
       jest.spyOn(service, 'getAll').mockResolvedValue([mockClausula]);
 
       const mockResponse = {
@@ -100,37 +109,39 @@ describe('ClausulaController', () => {
         json: jest.fn(),
       };
 
-      const mockFilterDto: FilterDto = { /* mock filter data */ };
-
       await controller.getAll(mockResponse, mockFilterDto);
 
+      expect(service.getAll).toHaveBeenCalledWith(mockFilterDto);
       expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 200,
-        Message: "Request successful",
-        Data: [mockClausula]
+        Message: 'Request successful',
+        Data: [mockClausula],
       });
     });
 
     it('should handle getAll error', async () => {
-      jest.spyOn(service, 'getAll').mockRejectedValue(new Error('Database error'));
+      jest
+        .spyOn(service, 'getAll')
+        .mockRejectedValue(new Error('Database error'));
 
       const mockResponse = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       };
 
-      const mockFilterDto: FilterDto = { /* mock filter data */ };
-
       await controller.getAll(mockResponse, mockFilterDto);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+      expect(service.getAll).toHaveBeenCalledWith(mockFilterDto);
+      expect(mockResponse.status).toHaveBeenCalledWith(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: false,
         Status: 500,
-        Message: "An unexpected error occurred",
-        Data: null
+        Message: 'An unexpected error occurred',
+        Data: null,
       });
     });
   });
@@ -150,8 +161,8 @@ describe('ClausulaController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 200,
-        Message: "Request successful",
-        Data: mockClausula
+        Message: 'Request successful',
+        Data: mockClausula,
       });
     });
 
@@ -163,7 +174,9 @@ describe('ClausulaController', () => {
         json: jest.fn(),
       };
 
-      await expect(controller.getById(mockResponse, 'non_existent_id')).rejects.toThrow(HttpException);
+      await expect(
+        controller.getById(mockResponse, 'non_existent_id'),
+      ).rejects.toThrow(HttpException);
     });
   });
 
@@ -182,8 +195,8 @@ describe('ClausulaController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 200,
-        Message: "Update successful",
-        Data: mockClausula
+        Message: 'Update successful',
+        Data: mockClausula,
       });
     });
 
@@ -195,7 +208,9 @@ describe('ClausulaController', () => {
         json: jest.fn(),
       };
 
-      await expect(controller.put(mockResponse, 'non_existent_id', mockCreateDto)).rejects.toThrow(HttpException);
+      await expect(
+        controller.put(mockResponse, 'non_existent_id', mockCreateDto),
+      ).rejects.toThrow(HttpException);
     });
   });
 
@@ -214,8 +229,8 @@ describe('ClausulaController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 200,
-        Message: "Delete successful",
-        Data: { _id: 'mock_id' }
+        Message: 'Delete successful',
+        Data: { _id: 'mock_id' },
       });
     });
 
@@ -227,7 +242,9 @@ describe('ClausulaController', () => {
         json: jest.fn(),
       };
 
-      await expect(controller.delete(mockResponse, 'non_existent_id')).rejects.toThrow(HttpException);
+      await expect(
+        controller.delete(mockResponse, 'non_existent_id'),
+      ).rejects.toThrow(HttpException);
     });
   });
 });

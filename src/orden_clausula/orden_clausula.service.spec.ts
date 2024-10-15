@@ -14,14 +14,20 @@ describe('OrdenClausulaService', () => {
 
   const mockOrdenClausula = {
     _id: new Types.ObjectId().toHexString(),
-    clausula_ids: [new Types.ObjectId().toHexString(), new Types.ObjectId().toHexString()],
+    clausula_ids: [
+      new Types.ObjectId().toHexString(),
+      new Types.ObjectId().toHexString(),
+    ],
     contrato_id: 12345,
     fecha_creacion: new Date(),
     fecha_modificacion: new Date(),
   };
 
   const mockCreateDto: CreateOrdenClausulaDto = {
-    clausula_ids: [new Types.ObjectId().toHexString(), new Types.ObjectId().toHexString()],
+    clausula_ids: [
+      new Types.ObjectId().toHexString(),
+      new Types.ObjectId().toHexString(),
+    ],
     contrato_id: 12345,
     fecha_creacion: new Date(),
     fecha_modificacion: new Date(),
@@ -58,10 +64,12 @@ describe('OrdenClausulaService', () => {
 
   describe('post', () => {
     it('should create a new orden clausula', async () => {
-      jest.spyOn(model, 'create').mockImplementationOnce(() => 
-        Promise.resolve(mockOrdenClausula as any)
-      );
-      
+      jest
+        .spyOn(model, 'create')
+        .mockImplementationOnce(() =>
+          Promise.resolve(mockOrdenClausula as any),
+        );
+
       const result = await service.post(mockCreateDto);
       expect(result).toEqual(mockOrdenClausula);
     });
@@ -78,7 +86,7 @@ describe('OrdenClausulaService', () => {
         exec: jest.fn().mockResolvedValue([mockOrdenClausula]),
       };
       jest.spyOn(model, 'find').mockReturnValue(mockPopulateQuery as any);
-      
+
       const result = await service.getAll(mockFilterDto);
       expect(result).toEqual([mockOrdenClausula]);
     });
@@ -91,7 +99,7 @@ describe('OrdenClausulaService', () => {
         exec: jest.fn().mockResolvedValue(mockOrdenClausula),
       };
       jest.spyOn(model, 'findById').mockReturnValue(mockPopulateQuery as any);
-      
+
       const result = await service.getById('a_mock_id');
       expect(result).toEqual(mockOrdenClausula);
     });
@@ -102,8 +110,10 @@ describe('OrdenClausulaService', () => {
         exec: jest.fn().mockResolvedValue(null),
       };
       jest.spyOn(model, 'findById').mockReturnValue(mockPopulateQuery as any);
-      
-      await expect(service.getById('nonexistent_id')).rejects.toThrow("nonexistent_id doesn't exist");
+
+      await expect(service.getById('nonexistent_id')).rejects.toThrow(
+        "nonexistent_id doesn't exist",
+      );
     });
   });
 
@@ -112,7 +122,7 @@ describe('OrdenClausulaService', () => {
       jest.spyOn(model, 'findByIdAndUpdate').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(mockOrdenClausula),
       } as any);
-      
+
       const result = await service.put('a_mock_id', mockCreateDto);
       expect(result).toEqual(mockOrdenClausula);
     });
@@ -121,8 +131,10 @@ describe('OrdenClausulaService', () => {
       jest.spyOn(model, 'findByIdAndUpdate').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(null),
       } as any);
-      
-      await expect(service.put('nonexistent_id', mockCreateDto)).rejects.toThrow("nonexistent_id doesn't exist");
+
+      await expect(
+        service.put('nonexistent_id', mockCreateDto),
+      ).rejects.toThrow("nonexistent_id doesn't exist");
     });
   });
 
@@ -132,7 +144,7 @@ describe('OrdenClausulaService', () => {
       jest.spyOn(model, 'findByIdAndUpdate').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(inactiveOrdenClausula),
       } as any);
-      
+
       const result = await service.delete('a_mock_id');
       expect(result).toEqual(inactiveOrdenClausula);
     });
@@ -141,8 +153,10 @@ describe('OrdenClausulaService', () => {
       jest.spyOn(model, 'findByIdAndUpdate').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(null),
       } as any);
-      
-      await expect(service.delete('nonexistent_id')).rejects.toThrow("nonexistent_id doesn't exist");
+
+      await expect(service.delete('nonexistent_id')).rejects.toThrow(
+        "nonexistent_id doesn't exist",
+      );
     });
   });
 });

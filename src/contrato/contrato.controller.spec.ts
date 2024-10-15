@@ -2,40 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ContratoController } from './contrato.controller';
 import { ContratoService } from './contrato.service';
 import { CreateContratoEstructuraDto } from './dto/create-contrato.dto';
-import { ConflictException, HttpStatus, NotFoundException } from '@nestjs/common';
+import { ConflictException } from '@nestjs/common';
 
 describe('ContratoController', () => {
   let controller: ContratoController;
   let service: ContratoService;
 
-  const mockCreateDto: CreateContratoEstructuraDto = {
-    clausula_ids: ['clausula1', 'clausula2'],
-    paragrafos: [
-      {
-        clausula_id: 'clausula1',
-        paragrafo_ids: ['paragrafo1', 'paragrafo2'],
-      },
-    ],
-  };
-
-  const mockContrato = {
-    _id: 'mock_id',
-    contrato_id: 'mock_contrato_id',
-    clausulas: [
-      {
-        _id: 'clausula1',
-        nombre: 'Mock Clausula',
-        descripcion: 'Mock descripción',
-        paragrafos: [
-          {
-            _id: 'paragrafo1',
-            descripcion: 'Mock párrafo'
-          }
-        ]
-      }
-    ],
-    fecha_creacion: new Date(),
-    fecha_modificacion: new Date()
+  const mockResponse: any = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -57,145 +32,191 @@ describe('ContratoController', () => {
     service = module.get<ContratoService>(ContratoService);
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-
   describe('post', () => {
-    it('should create a new contrato', async () => {
-      jest.spyOn(service, 'post').mockResolvedValue(mockContrato);
-
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
+    it('debe crear un nuevo contrato y devolver estado 201', async () => {
+      const dto: CreateContratoEstructuraDto = {
+        clausula_ids: ['1', '2'],
+        paragrafos: [
+          {
+            clausula_id: '1',
+            paragrafo_ids: ['p1', 'p2'],
+          },
+          {
+            clausula_id: '2',
+            paragrafo_ids: ['p3', 'p4'],
+          },
+        ],
       };
+      const mockContrato = { id: 1, ...dto };
+      (service.post as jest.Mock).mockResolvedValue(mockContrato);
 
-      await controller.post(mockResponse, 'mock_id', mockCreateDto);
+      await controller.post(mockResponse, '1', dto);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.CREATED);
+      expect(service.post).toHaveBeenCalledWith(1, dto);
+      expect(mockResponse.status).toHaveBeenCalledWith(201);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 201,
-        Message: "Registration successful",
-        Data: mockContrato
+        Message: 'Registration successful',
+        Data: mockContrato,
       });
     });
 
-    it('should handle ConflictException', async () => {
-      jest.spyOn(service, 'post').mockRejectedValue(new ConflictException('Conflict'));
-
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
+    it('debe manejar ConflictException y devolver estado 409', async () => {
+      const dto: CreateContratoEstructuraDto = {
+        clausula_ids: ['1'],
+        paragrafos: [
+          {
+            clausula_id: '1',
+            paragrafo_ids: ['p1'],
+          },
+        ],
       };
+      (service.post as jest.Mock).mockRejectedValue(
+        new ConflictException('Conflicto al crear contrato'),
+      );
 
-      await controller.post(mockResponse, 'mock_id', mockCreateDto);
+      await controller.post(mockResponse, '1', dto);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.CONFLICT);
+      expect(mockResponse.status).toHaveBeenCalledWith(409);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: false,
         Status: 409,
-        Message: 'Conflict',
-        Data: null
+        Message: 'Conflicto al crear contrato',
+        Data: null,
       });
     });
 
-    it('should handle other errors', async () => {
-      jest.spyOn(service, 'post').mockRejectedValue(new Error('Other error'));
-
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
+    it('debe manejar otros errores y devolver estado 400', async () => {
+      const dto: CreateContratoEstructuraDto = {
+        clausula_ids: ['1'],
+        paragrafos: [
+          {
+            clausula_id: '1',
+            paragrafo_ids: ['p1'],
+          },
+        ],
       };
+      (service.post as jest.Mock).mockRejectedValue(
+        new Error('Error inesperado'),
+      );
 
-      await controller.post(mockResponse, 'mock_id', mockCreateDto);
+      await controller.post(mockResponse, '1', dto);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: false,
         Status: 400,
-        Message: "Error service Post: The request contains an incorrect data type or an invalid parameter",
-        Data: null
+        Message:
+          'Error service Post: The request contains an incorrect data type or an invalid parameter',
+        Data: null,
       });
     });
   });
 
   describe('getById', () => {
-    it('should get a contrato by id', async () => {
-      jest.spyOn(service, 'getById').mockResolvedValue(mockContrato);
-
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
+    it('debe obtener un contrato por id y devolver estado 200', async () => {
+      const mockContrato = {
+        id: 1,
+        clausula_ids: ['1', '2'],
+        paragrafos: [
+          {
+            clausula_id: '1',
+            paragrafo_ids: ['p1', 'p2'],
+          },
+          {
+            clausula_id: '2',
+            paragrafo_ids: ['p3', 'p4'],
+          },
+        ],
       };
+      (service.getById as jest.Mock).mockResolvedValue(mockContrato);
 
-      await controller.getById(mockResponse, 'mock_id');
+      await controller.getById(mockResponse, '1');
 
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
+      expect(service.getById).toHaveBeenCalledWith(1);
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 200,
-        Message: "Request successful",
-        Data: mockContrato
+        Message: 'Request successful',
+        Data: mockContrato,
       });
     });
 
-    it('should handle not found error', async () => {
-      jest.spyOn(service, 'getById').mockRejectedValue(new NotFoundException());
+    it('debe manejar errores y devolver estado 404', async () => {
+      (service.getById as jest.Mock).mockRejectedValue(
+        new Error('Contrato no encontrado'),
+      );
 
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
+      await controller.getById(mockResponse, '1');
 
-      await controller.getById(mockResponse, 'mock_id');
-
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: false,
         Status: 404,
-        Message: "Error service GetOne: The request contains an incorrect parameter or no record exist",
-        Data: null
+        Message: 'Error service GetOne: Contrato no encontrado',
+        Data: null,
       });
     });
   });
 
   describe('put', () => {
-    it('should update a contrato', async () => {
-      jest.spyOn(service, 'put').mockResolvedValue(mockContrato);
-
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
+    it('debe actualizar un contrato y devolver estado 200', async () => {
+      const dto: CreateContratoEstructuraDto = {
+        clausula_ids: ['1', '2', '3'],
+        paragrafos: [
+          {
+            clausula_id: '1',
+            paragrafo_ids: ['p1', 'p2'],
+          },
+          {
+            clausula_id: '2',
+            paragrafo_ids: ['p3', 'p4'],
+          },
+          {
+            clausula_id: '3',
+            paragrafo_ids: ['p5'],
+          },
+        ],
       };
+      const mockUpdatedContrato = { id: 1, ...dto };
+      (service.put as jest.Mock).mockResolvedValue(mockUpdatedContrato);
 
-      await controller.put(mockResponse, 'mock_id', mockCreateDto);
+      await controller.put(mockResponse, '1', dto);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
+      expect(service.put).toHaveBeenCalledWith(1, dto);
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 200,
-        Message: "Update successful",
-        Data: mockContrato
+        Message: 'Update successful',
+        Data: mockUpdatedContrato,
       });
     });
 
-    it('should handle update error', async () => {
-      jest.spyOn(service, 'put').mockRejectedValue(new Error('Update error'));
-
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
+    it('debe manejar errores y devolver estado 400', async () => {
+      const dto: CreateContratoEstructuraDto = {
+        clausula_ids: ['1'],
+        paragrafos: [
+          {
+            clausula_id: '1',
+            paragrafo_ids: ['p1'],
+          },
+        ],
       };
+      (service.put as jest.Mock).mockRejectedValue(
+        new Error('Error al actualizar'),
+      );
 
-      await controller.put(mockResponse, 'mock_id', mockCreateDto);
+      await controller.put(mockResponse, '1', dto);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: false,
         Status: 400,
-        Message: "Error service Put: The request contains an incorrect data type or an invalid parameter",
-        Data: null
+        Message: 'Error service Put: Error al actualizar',
+        Data: null,
       });
     });
   });

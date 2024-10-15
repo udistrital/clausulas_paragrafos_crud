@@ -5,6 +5,6 @@ import { FiltersService } from './filters.service';
   imports: [],
   controllers: [],
   providers: [FiltersService],
-  exports: [FiltersService]
+  exports: [FiltersService],
 })
 export class FiltersModule {}

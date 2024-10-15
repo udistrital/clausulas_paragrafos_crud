@@ -14,7 +14,10 @@ describe('OrdenParagrafoService', () => {
 
   const mockOrdenParagrafo = {
     _id: new Types.ObjectId().toHexString(),
-    paragrafo_ids: [new Types.ObjectId().toHexString(), new Types.ObjectId().toHexString()],
+    paragrafo_ids: [
+      new Types.ObjectId().toHexString(),
+      new Types.ObjectId().toHexString(),
+    ],
     contrato_id: 12345,
     clausula_id: new Types.ObjectId().toHexString(),
     fecha_creacion: new Date(),
@@ -22,7 +25,10 @@ describe('OrdenParagrafoService', () => {
   };
 
   const mockCreateDto: CreateOrdenParagrafoDto = {
-    paragrafo_ids: [new Types.ObjectId().toHexString(), new Types.ObjectId().toHexString()],
+    paragrafo_ids: [
+      new Types.ObjectId().toHexString(),
+      new Types.ObjectId().toHexString(),
+    ],
     contrato_id: 12345,
     clausula_id: new Types.ObjectId().toHexString(),
     fecha_creacion: new Date(),
@@ -50,7 +56,9 @@ describe('OrdenParagrafoService', () => {
     }).compile();
 
     service = module.get<OrdenParagrafoService>(OrdenParagrafoService);
-    model = module.get<Model<OrdenParagrafo>>(getModelToken(OrdenParagrafo.name));
+    model = module.get<Model<OrdenParagrafo>>(
+      getModelToken(OrdenParagrafo.name),
+    );
     filtersService = module.get<FiltersService>(FiltersService);
   });
 
@@ -60,10 +68,12 @@ describe('OrdenParagrafoService', () => {
 
   describe('post', () => {
     it('should create a new orden paragrafo', async () => {
-      jest.spyOn(model, 'create').mockImplementationOnce(() => 
-        Promise.resolve(mockOrdenParagrafo as any)
-      );
-      
+      jest
+        .spyOn(model, 'create')
+        .mockImplementationOnce(() =>
+          Promise.resolve(mockOrdenParagrafo as any),
+        );
+
       const result = await service.post(mockCreateDto);
       expect(result).toEqual(mockOrdenParagrafo);
     });
@@ -80,7 +90,7 @@ describe('OrdenParagrafoService', () => {
         exec: jest.fn().mockResolvedValue([mockOrdenParagrafo]),
       };
       jest.spyOn(model, 'find').mockReturnValue(mockPopulateQuery as any);
-      
+
       const result = await service.getAll(mockFilterDto);
       expect(result).toEqual([mockOrdenParagrafo]);
     });
@@ -93,7 +103,7 @@ describe('OrdenParagrafoService', () => {
         exec: jest.fn().mockResolvedValue(mockOrdenParagrafo),
       };
       jest.spyOn(model, 'findById').mockReturnValue(mockPopulateQuery as any);
-      
+
       const result = await service.getById('a_mock_id');
       expect(result).toEqual(mockOrdenParagrafo);
     });
@@ -104,8 +114,10 @@ describe('OrdenParagrafoService', () => {
         exec: jest.fn().mockResolvedValue(null),
       };
       jest.spyOn(model, 'findById').mockReturnValue(mockPopulateQuery as any);
-      
-      await expect(service.getById('nonexistent_id')).rejects.toThrow("nonexistent_id doesn't exist");
+
+      await expect(service.getById('nonexistent_id')).rejects.toThrow(
+        "nonexistent_id doesn't exist",
+      );
     });
   });
 
@@ -114,7 +126,7 @@ describe('OrdenParagrafoService', () => {
       jest.spyOn(model, 'findByIdAndUpdate').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(mockOrdenParagrafo),
       } as any);
-      
+
       const result = await service.put('a_mock_id', mockCreateDto);
       expect(result).toEqual(mockOrdenParagrafo);
     });
@@ -123,8 +135,10 @@ describe('OrdenParagrafoService', () => {
       jest.spyOn(model, 'findByIdAndUpdate').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(null),
       } as any);
-      
-      await expect(service.put('nonexistent_id', mockCreateDto)).rejects.toThrow("nonexistent_id doesn't exist");
+
+      await expect(
+        service.put('nonexistent_id', mockCreateDto),
+      ).rejects.toThrow("nonexistent_id doesn't exist");
     });
   });
 
@@ -134,7 +148,7 @@ describe('OrdenParagrafoService', () => {
       jest.spyOn(model, 'findByIdAndUpdate').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(inactiveOrdenParagrafo),
       } as any);
-      
+
       const result = await service.delete('a_mock_id');
       expect(result).toEqual(inactiveOrdenParagrafo);
     });
@@ -143,8 +157,10 @@ describe('OrdenParagrafoService', () => {
       jest.spyOn(model, 'findByIdAndUpdate').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(null),
       } as any);
-      
-      await expect(service.delete('nonexistent_id')).rejects.toThrow("nonexistent_id doesn't exist");
+
+      await expect(service.delete('nonexistent_id')).rejects.toThrow(
+        "nonexistent_id doesn't exist",
+      );
     });
   });
 });

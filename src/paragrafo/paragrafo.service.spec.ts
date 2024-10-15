@@ -61,10 +61,10 @@ describe('ParagrafoService', () => {
 
   describe('post', () => {
     it('should create a new paragrafo', async () => {
-      jest.spyOn(model, 'create').mockImplementationOnce(() => 
-        Promise.resolve(mockParagrafo as any)
-      );
-      
+      jest
+        .spyOn(model, 'create')
+        .mockImplementationOnce(() => Promise.resolve(mockParagrafo as any));
+
       const result = await service.post(mockCreateDto);
       expect(result).toEqual(mockParagrafo);
     });
@@ -79,7 +79,7 @@ describe('ParagrafoService', () => {
         limit: jest.fn().mockReturnThis(),
         exec: jest.fn().mockResolvedValueOnce([mockParagrafo]),
       } as any);
-      
+
       const result = await service.getAll(mockFilterDto);
       expect(result).toEqual([mockParagrafo]);
     });
@@ -90,7 +90,7 @@ describe('ParagrafoService', () => {
       jest.spyOn(model, 'findById').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(mockParagrafo),
       } as any);
-      
+
       const result = await service.getById('a_mock_id');
       expect(result).toEqual(mockParagrafo);
     });
@@ -99,8 +99,10 @@ describe('ParagrafoService', () => {
       jest.spyOn(model, 'findById').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(null),
       } as any);
-      
-      await expect(service.getById('nonexistent_id')).rejects.toThrow("nonexistent_id doesn't exist");
+
+      await expect(service.getById('nonexistent_id')).rejects.toThrow(
+        "nonexistent_id doesn't exist",
+      );
     });
   });
 
@@ -109,7 +111,7 @@ describe('ParagrafoService', () => {
       jest.spyOn(model, 'findByIdAndUpdate').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(mockParagrafo),
       } as any);
-      
+
       const result = await service.put('a_mock_id', mockCreateDto);
       expect(result).toEqual(mockParagrafo);
     });
@@ -118,8 +120,10 @@ describe('ParagrafoService', () => {
       jest.spyOn(model, 'findByIdAndUpdate').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(null),
       } as any);
-      
-      await expect(service.put('nonexistent_id', mockCreateDto)).rejects.toThrow("nonexistent_id doesn't exist");
+
+      await expect(
+        service.put('nonexistent_id', mockCreateDto),
+      ).rejects.toThrow("nonexistent_id doesn't exist");
     });
   });
 
@@ -129,7 +133,7 @@ describe('ParagrafoService', () => {
       jest.spyOn(model, 'findByIdAndUpdate').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(inactiveParagrafo),
       } as any);
-      
+
       const result = await service.delete('a_mock_id');
       expect(result).toEqual(inactiveParagrafo);
     });
@@ -138,8 +142,10 @@ describe('ParagrafoService', () => {
       jest.spyOn(model, 'findByIdAndUpdate').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(null),
       } as any);
-      
-      await expect(service.delete('nonexistent_id')).rejects.toThrow("nonexistent_id doesn't exist");
+
+      await expect(service.delete('nonexistent_id')).rejects.toThrow(
+        "nonexistent_id doesn't exist",
+      );
     });
   });
 });

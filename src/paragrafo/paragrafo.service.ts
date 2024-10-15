@@ -11,20 +11,21 @@ export class ParagrafoService {
   constructor(
     @InjectModel(Paragrafo.name)
     private readonly paragrafoModel: Model<Paragrafo>,
-    private readonly filtersService : FiltersService,
+    private readonly filtersService: FiltersService,
   ) {}
 
   async post(paragrafoDto: CreateParagrafoDto): Promise<Paragrafo> {
     const paragrafoData = {
       ...paragrafoDto,
-      activo : true,
+      activo: true,
     };
     return await this.paragrafoModel.create(paragrafoData);
   }
 
   async getAll(filtersDto: FilterDto): Promise<Paragrafo[]> {
-    const{offset, limit} = filtersDto;
-    const {queryObject, sortObject}= this.filtersService.createObjects(filtersDto)
+    const { offset, limit } = filtersDto;
+    const { queryObject, sortObject } =
+      this.filtersService.createObjects(filtersDto);
     return await this.paragrafoModel
       .find(queryObject)
       .sort(sortObject)
@@ -41,10 +42,7 @@ export class ParagrafoService {
     return paragrafo;
   }
 
-  async put(
-    id: string,
-    paragrafoDto: CreateParagrafoDto,
-  ): Promise<Paragrafo> {
+  async put(id: string, paragrafoDto: CreateParagrafoDto): Promise<Paragrafo> {
     paragrafoDto.fecha_modificacion = new Date();
     const update = await this.paragrafoModel
       .findByIdAndUpdate(id, paragrafoDto, { new: true })

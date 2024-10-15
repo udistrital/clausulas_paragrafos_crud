@@ -14,6 +14,6 @@ import { FiltersModule } from 'src/filters/filters.module';
   ],
   controllers: [ClausulaController],
   providers: [ClausulaService],
-  exports: [ClausulaService]
+  exports: [ClausulaService],
 })
 export class ClausulaModule {}

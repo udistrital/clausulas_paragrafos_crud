@@ -72,8 +72,8 @@ describe('OrdenParagrafoController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 201,
-        Message: "Registration successful",
-        Data: mockOrdenParagrafo
+        Message: 'Registration successful',
+        Data: mockOrdenParagrafo,
       });
     });
 
@@ -85,7 +85,9 @@ describe('OrdenParagrafoController', () => {
         json: jest.fn(),
       };
 
-      await expect(controller.post(mockResponse, mockCreateDto)).rejects.toThrow(HttpException);
+      await expect(
+        controller.post(mockResponse, mockCreateDto),
+      ).rejects.toThrow(HttpException);
       expect(mockResponse.status).not.toHaveBeenCalled();
       expect(mockResponse.json).not.toHaveBeenCalled();
     });
@@ -100,7 +102,9 @@ describe('OrdenParagrafoController', () => {
         json: jest.fn(),
       };
 
-      const mockFilterDto: FilterDto = { /* mock filter data */ };
+      const mockFilterDto: FilterDto = {
+        /* mock filter data */
+      };
 
       await controller.getAll(mockResponse, mockFilterDto);
 
@@ -108,29 +112,35 @@ describe('OrdenParagrafoController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 200,
-        Message: "Request successful",
-        Data: [mockOrdenParagrafo]
+        Message: 'Request successful',
+        Data: [mockOrdenParagrafo],
       });
     });
 
     it('should handle getAll error', async () => {
-      jest.spyOn(service, 'getAll').mockRejectedValue(new Error('Database error'));
+      jest
+        .spyOn(service, 'getAll')
+        .mockRejectedValue(new Error('Database error'));
 
       const mockResponse = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       };
 
-      const mockFilterDto: FilterDto = { /* mock filter data */ };
+      const mockFilterDto: FilterDto = {
+        /* mock filter data */
+      };
 
       await controller.getAll(mockResponse, mockFilterDto);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+      expect(mockResponse.status).toHaveBeenCalledWith(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: false,
         Status: 500,
-        Message: "An unexpected error occurred",
-        Data: null
+        Message: 'An unexpected error occurred Database error',
+        Data: null,
       });
     });
   });
@@ -150,8 +160,8 @@ describe('OrdenParagrafoController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 200,
-        Message: "Request successful",
-        Data: mockOrdenParagrafo
+        Message: 'Request successful',
+        Data: mockOrdenParagrafo,
       });
     });
 
@@ -163,7 +173,9 @@ describe('OrdenParagrafoController', () => {
         json: jest.fn(),
       };
 
-      await expect(controller.getById(mockResponse, 'non_existent_id')).rejects.toThrow(HttpException);
+      await expect(
+        controller.getById(mockResponse, 'non_existent_id'),
+      ).rejects.toThrow(HttpException);
       expect(mockResponse.status).not.toHaveBeenCalled();
       expect(mockResponse.json).not.toHaveBeenCalled();
     });
@@ -184,8 +196,8 @@ describe('OrdenParagrafoController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 200,
-        Message: "Update successful",
-        Data: mockOrdenParagrafo
+        Message: 'Update successful',
+        Data: mockOrdenParagrafo,
       });
     });
 
@@ -197,7 +209,9 @@ describe('OrdenParagrafoController', () => {
         json: jest.fn(),
       };
 
-      await expect(controller.put(mockResponse, 'non_existent_id', mockCreateDto)).rejects.toThrow(HttpException);
+      await expect(
+        controller.put(mockResponse, 'non_existent_id', mockCreateDto),
+      ).rejects.toThrow(HttpException);
       expect(mockResponse.status).not.toHaveBeenCalled();
       expect(mockResponse.json).not.toHaveBeenCalled();
     });
@@ -218,8 +232,8 @@ describe('OrdenParagrafoController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 200,
-        Message: "Delete successful",
-        Data: { _id: 'mock_id' }
+        Message: 'Delete successful',
+        Data: { _id: 'mock_id' },
       });
     });
 
@@ -231,7 +245,9 @@ describe('OrdenParagrafoController', () => {
         json: jest.fn(),
       };
 
-      await expect(controller.delete(mockResponse, 'non_existent_id')).rejects.toThrow(HttpException);
+      await expect(
+        controller.delete(mockResponse, 'non_existent_id'),
+      ).rejects.toThrow(HttpException);
       expect(mockResponse.status).not.toHaveBeenCalled();
       expect(mockResponse.json).not.toHaveBeenCalled();
     });
