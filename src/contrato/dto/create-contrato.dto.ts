@@ -22,9 +22,9 @@ export class CreateContratoEstructuraDto {
   @IsString({ each: true })
   clausula_ids: string[];
 
-  @ApiProperty({ 
-    type: [ParagrafoEstructuraDto], 
-    description: 'Estructura de párrafos por cláusula'
+  @ApiProperty({
+    type: [ParagrafoEstructuraDto],
+    description: 'Estructura de párrafos por cláusula',
   })
   @IsNotEmpty()
   @IsArray()

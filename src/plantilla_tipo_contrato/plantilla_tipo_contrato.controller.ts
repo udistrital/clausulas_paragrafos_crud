@@ -14,7 +14,6 @@ import { PlantillaTipoContratoService } from './plantilla_tipo_contrato.service'
 import { CreatePlantillaTipoContratoDto } from './dto/create-plantilla_tipo_contrato.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { FilterDto } from 'src/filters/dto/filters.dto';
-import { Response } from 'express';
 
 @ApiTags('plantilla-tipo-contratos')
 @Controller('plantilla-tipo-contratos')
@@ -25,7 +24,7 @@ export class PlantillaTipoContratoController {
 
   @Post()
   async post(
-    @Res() res: Response,
+    @Res() res,
     @Body() plantillaTipoContratoDto: CreatePlantillaTipoContratoDto,
   ) {
     try {

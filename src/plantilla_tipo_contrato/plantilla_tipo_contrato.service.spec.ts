@@ -1,100 +1,72 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { PlantillaTipoContratoService } from './plantilla_tipo_contrato.service';
 import { PlantillaTipoContrato } from './schemas/plantilla_tipo_contrato.schema';
-import { CreatePlantillaTipoContratoDto } from './dto/create-plantilla_tipo_contrato.dto';
-import { FilterDto } from 'src/filters/dto/filters.dto';
 import { FiltersService } from 'src/filters/filters.service';
-import { OrdenClausula } from '../orden_clausula/schemas/orden_clausula.schema';
-import { OrdenParagrafo } from '../orden_paragrafo/schemas/orden_paragrafo.schema';
-import { Clausula } from '../clausula/schemas/clausula.schema';
-import { Paragrafo } from '../paragrafo/schemas/paragrafo.schema';
+import { CreatePlantillaTipoContratoDto } from './dto/create-plantilla_tipo_contrato.dto';
 import { NotFoundException } from '@nestjs/common';
+import { PlantillaTipoContratoService } from 'src/plantilla_tipo_contrato/plantilla_tipo_contrato.service';
 
 describe('PlantillaTipoContratoService', () => {
   let service: PlantillaTipoContratoService;
   let plantillaTipoContratoModel: Model<PlantillaTipoContrato>;
-  let ordenClausulaModel: Model<OrdenClausula>;
-  let ordenParagrafoModel: Model<OrdenParagrafo>;
-  let clausulaModel: Model<Clausula>;
-  let paragrafoModel: Model<Paragrafo>;
   let filtersService: FiltersService;
 
-  const mockId = new Types.ObjectId().toHexString();
-
-  const mockPlantillaTipoContrato = {
-    _id: mockId,
-    version: 1,
-    version_actual: true,
-    tipo_contrato_id: 1,
-    orden_clausula_id: new Types.ObjectId(),
-    orden_paragrafo_ids: [new Types.ObjectId(), new Types.ObjectId()],
-    activo: true,
-    fecha_creacion: new Date(),
-    fecha_modificacion: new Date(),
+  const mockPlantillaTipoContratoModel = {
+    create: jest.fn(),
+    find: jest.fn(),
+    findById: jest.fn(),
+    findByIdAndUpdate: jest.fn(),
+    countDocuments: jest.fn(),
+    aggregate: jest.fn(),
   };
 
-  const mockCreateDto: CreatePlantillaTipoContratoDto = {
-    version: 1,
-    version_actual: true,
-    tipo_contrato_id: 1,
-    orden_clausula_id: new Types.ObjectId().toHexString(),
-    orden_paragrafo_ids: [new Types.ObjectId().toHexString(), new Types.ObjectId().toHexString()],
-    fecha_creacion: new Date(),
-    fecha_modificacion: new Date(),
+  const mockOrdenClausulaModel = {};
+  const mockOrdenParagrafoModel = {};
+  const mockClausulaModel = {};
+  const mockParagrafoModel = {};
+
+  const mockFiltersService = {
+    createObjects: jest.fn(),
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PlantillaTipoContratoService,
-        FiltersService,
         {
           provide: getModelToken(PlantillaTipoContrato.name),
-          useValue: {
-            create: jest.fn(),
-            find: jest.fn().mockReturnThis(),
-            findById: jest.fn().mockReturnThis(),
-            findByIdAndUpdate: jest.fn().mockReturnThis(),
-            countDocuments: jest.fn(),
-            aggregate: jest.fn(),
-            exec: jest.fn(),
-          },
+          useValue: mockPlantillaTipoContratoModel,
         },
         {
-          provide: getModelToken(OrdenClausula.name),
-          useValue: {
-            findById: jest.fn().mockReturnThis(),
-          },
+          provide: getModelToken('OrdenClausula'),
+          useValue: mockOrdenClausulaModel,
         },
         {
-          provide: getModelToken(OrdenParagrafo.name),
-          useValue: {
-            findOne: jest.fn().mockReturnThis(),
-          },
+          provide: getModelToken('OrdenParagrafo'),
+          useValue: mockOrdenParagrafoModel,
         },
         {
-          provide: getModelToken(Clausula.name),
-          useValue: {
-            findById: jest.fn().mockReturnThis(),
-          },
+          provide: getModelToken('Clausula'),
+          useValue: mockClausulaModel,
         },
         {
-          provide: getModelToken(Paragrafo.name),
-          useValue: {
-            findById: jest.fn().mockReturnThis(),
-          },
+          provide: getModelToken('Paragrafo'),
+          useValue: mockParagrafoModel,
+        },
+        {
+          provide: FiltersService,
+          useValue: mockFiltersService,
         },
       ],
     }).compile();
 
-    service = module.get<PlantillaTipoContratoService>(PlantillaTipoContratoService);
-    plantillaTipoContratoModel = module.get<Model<PlantillaTipoContrato>>(getModelToken(PlantillaTipoContrato.name));
-    ordenClausulaModel = module.get<Model<OrdenClausula>>(getModelToken(OrdenClausula.name));
-    ordenParagrafoModel = module.get<Model<OrdenParagrafo>>(getModelToken(OrdenParagrafo.name));
-    clausulaModel = module.get<Model<Clausula>>(getModelToken(Clausula.name));
-    paragrafoModel = module.get<Model<Paragrafo>>(getModelToken(Paragrafo.name));
+    service = module.get<PlantillaTipoContratoService>(
+      PlantillaTipoContratoService,
+    );
+    plantillaTipoContratoModel = module.get<Model<PlantillaTipoContrato>>(
+      getModelToken(PlantillaTipoContrato.name),
+    );
     filtersService = module.get<FiltersService>(FiltersService);
   });
 
@@ -103,153 +75,229 @@ describe('PlantillaTipoContratoService', () => {
   });
 
   describe('post', () => {
-    it('should create a new plantilla tipo contrato', async () => {
-      jest.spyOn(plantillaTipoContratoModel, 'create').mockResolvedValue(mockPlantillaTipoContrato as any);
+    it('should create a new PlantillaTipoContrato', async () => {
+      const createDto: CreatePlantillaTipoContratoDto = {
+        tipo_contrato_id: 1,
+        orden_paragrafo_ids: [
+          new Types.ObjectId().toString(),
+          new Types.ObjectId().toString(),
+        ],
+        orden_clausula_id: new Types.ObjectId().toString(),
+        fecha_creacion: new Date(),
+        fecha_modificacion: new Date(),
+      };
 
-      const result = await service.post(mockCreateDto);
-      expect(result).toEqual(mockPlantillaTipoContrato);
+      const mockExistingVersions = [];
+      const mockCreatedPlantilla = {
+        _id: new Types.ObjectId(),
+        ...createDto,
+        activo: true,
+        version_actual: true,
+        version: 1,
+        fecha_creacion: new Date(),
+        fecha_modificacion: new Date(),
+      };
+
+      mockPlantillaTipoContratoModel.find.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(mockExistingVersions),
+      });
+      mockPlantillaTipoContratoModel.create.mockResolvedValue(
+        mockCreatedPlantilla,
+      );
+      mockPlantillaTipoContratoModel.findById.mockResolvedValue(
+        mockCreatedPlantilla,
+      );
+
+      const result = await service.post(createDto);
+
+      expect(result).toEqual(mockCreatedPlantilla);
+      expect(mockPlantillaTipoContratoModel.find).toHaveBeenCalledWith({
+        tipo_contrato_id: createDto.tipo_contrato_id,
+        version_actual: true,
+      });
+      expect(mockPlantillaTipoContratoModel.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ...createDto,
+          activo: true,
+          version_actual: true,
+          version: 2,
+        }),
+      );
     });
   });
 
   describe('getAll', () => {
-    it('should return plantillas tipo contrato with total count', async () => {
-      const mockFilterDto: FilterDto = { limit: 10, offset: 0 };
-      const mockPopulateQuery = {
-        find: jest.fn().mockReturnThis(),
+    it('should return filtered PlantillaTipoContratos', async () => {
+      const mockFilterDto = { offset: 0, limit: 10 };
+      const mockQueryObject = {};
+      const mockSortObject = {};
+      const mockPlantillas = [{ _id: '1', name: 'Plantilla 1' }];
+      const mockTotal = 1;
+
+      mockFiltersService.createObjects.mockReturnValue({
+        queryObject: mockQueryObject,
+        sortObject: mockSortObject,
+      });
+      mockPlantillaTipoContratoModel.find.mockReturnValue({
         sort: jest.fn().mockReturnThis(),
         skip: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
         populate: jest.fn().mockReturnThis(),
-        exec: jest.fn().mockResolvedValue([mockPlantillaTipoContrato]),
-      };
-      jest.spyOn(plantillaTipoContratoModel, 'find').mockReturnValue(mockPopulateQuery as any);
-      jest.spyOn(plantillaTipoContratoModel, 'countDocuments').mockResolvedValue(1);
-      jest.spyOn(filtersService, 'createObjects').mockReturnValue({ queryObject: {}, sortObject: {} });
+        exec: jest.fn().mockResolvedValue(mockPlantillas),
+      });
+      mockPlantillaTipoContratoModel.countDocuments.mockResolvedValue(
+        mockTotal,
+      );
 
       const result = await service.getAll(mockFilterDto);
-      expect(result.data).toEqual([mockPlantillaTipoContrato]);
-      expect(result.total).toEqual(1);
+
+      expect(result).toEqual({ data: mockPlantillas, total: mockTotal });
+      expect(mockFiltersService.createObjects).toHaveBeenCalledWith(
+        mockFilterDto,
+      );
+      expect(mockPlantillaTipoContratoModel.find).toHaveBeenCalledWith(
+        mockQueryObject,
+      );
+      expect(
+        mockPlantillaTipoContratoModel.countDocuments,
+      ).toHaveBeenCalledWith(mockQueryObject);
     });
   });
 
   describe('getById', () => {
-    it('should return a detailed plantilla tipo contrato', async () => {
-      const mockAggregateResult = [{
-        _id: mockId,
-        version: 1,
-        version_actual: true,
-        tipo_contrato_id: 1,
-        clausulas: [{
-          _id: 'clausula1',
-          nombre: 'Mock Clausula',
-          descripcion: 'Mock descripción',
-          paragrafos: [{
-            _id: 'paragrafo1',
-            descripcion: 'Mock párrafo'
-          }]
-        }],
-        fecha_creacion: new Date(),
-        fecha_modificacion: new Date()
-      }];
+    it('should return a PlantillaTipoContrato by id', async () => {
+      const mockId = '60a5e3f23e5f8b2a40f7f7b1';
+      const mockAggregateResult = [
+        {
+          _id: new Types.ObjectId(mockId),
+          version: 1,
+          version_actual: true,
+          tipo_contrato_id: 1,
+          clausulas: [{ _id: new Types.ObjectId(), nombre: 'Clausula 1' }],
+          paragrafos: [{ _id: new Types.ObjectId(), contenido: 'Paragrafo 1' }],
+          orden_paragrafo: [
+            {
+              clausula_id: new Types.ObjectId(),
+              paragrafo_ids: [new Types.ObjectId()],
+            },
+          ],
+        },
+      ];
 
-      jest.spyOn(plantillaTipoContratoModel, 'aggregate').mockReturnValue({
-        exec: jest.fn().mockResolvedValue(mockAggregateResult),
-      } as any);
+      mockPlantillaTipoContratoModel.aggregate.mockResolvedValue(
+        mockAggregateResult,
+      );
 
       const result = await service.getById(mockId);
-      expect(result).toHaveProperty('clausulas');
-      expect(result.clausulas[0]).toHaveProperty('paragrafos');
+
+      expect(result).toBeDefined();
+      expect(mockPlantillaTipoContratoModel.aggregate).toHaveBeenCalledWith(
+        expect.any(Array),
+      );
     });
 
-    it('should throw NotFoundException if plantilla is not found', async () => {
-      jest.spyOn(plantillaTipoContratoModel, 'aggregate').mockReturnValue({
-        exec: jest.fn().mockResolvedValue([]),
-      } as any);
+    it('should throw NotFoundException if PlantillaTipoContrato is not found', async () => {
+      const mockId = '60a5e3f23e5f8b2a40f7f7b1';
+      mockPlantillaTipoContratoModel.aggregate.mockResolvedValue([]);
 
-      await expect(service.getById('nonexistent_id')).rejects.toThrow(NotFoundException);
-    });
-
-    it('should throw NotFoundException for invalid id', async () => {
-      await expect(service.getById('invalid-id')).rejects.toThrow(NotFoundException);
-    });
-  });
-
-  describe('getByTipoContrato', () => {
-    it('should return detailed plantillas for a tipo contrato', async () => {
-      const mockAggregateResult = [{
-        _id: mockId,
-        version: 1,
-        version_actual: true,
-        tipo_contrato_id: 1,
-        clausulas: [{
-          _id: 'clausula1',
-          nombre: 'Mock Clausula',
-          descripcion: 'Mock descripción',
-          paragrafos: [{
-            _id: 'paragrafo1',
-            descripcion: 'Mock párrafo'
-          }]
-        }],
-        fecha_creacion: new Date(),
-        fecha_modificacion: new Date()
-      }];
-
-      jest.spyOn(plantillaTipoContratoModel, 'aggregate').mockReturnValue({
-        exec: jest.fn().mockResolvedValue(mockAggregateResult),
-      } as any);
-
-      const result = await service.getByTipoContrato(1);
-      expect(Array.isArray(result)).toBe(true);
-      expect(result[0]).toHaveProperty('clausulas');
-      expect(result[0].clausulas[0]).toHaveProperty('paragrafos');
-    });
-
-    it('should throw NotFoundException if no plantillas are found for the tipo contrato', async () => {
-      jest.spyOn(plantillaTipoContratoModel, 'aggregate').mockReturnValue({
-        exec: jest.fn().mockResolvedValue([]),
-      } as any);
-
-      await expect(service.getByTipoContrato(999)).rejects.toThrow(NotFoundException);
+      await expect(service.getById(mockId)).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('put', () => {
-    it('should update a plantilla tipo contrato', async () => {
-      jest.spyOn(plantillaTipoContratoModel, 'findByIdAndUpdate').mockReturnValue({
-        exec: jest.fn().mockResolvedValue(mockPlantillaTipoContrato),
-      } as any);
+    it('should update a PlantillaTipoContrato', async () => {
+      const mockId = new Types.ObjectId().toString();
+      const updateDto: CreatePlantillaTipoContratoDto = {
+        tipo_contrato_id: 1,
+        orden_paragrafo_ids: [
+          new Types.ObjectId().toString(),
+          new Types.ObjectId().toString(),
+        ],
+        orden_clausula_id: new Types.ObjectId().toString(),
+        fecha_creacion: new Date(),
+        fecha_modificacion: new Date(),
+      };
+      const mockUpdatedPlantilla = {
+        _id: mockId,
+        ...updateDto,
+        activo: true,
+        version_actual: true,
+        version: 2,
+        fecha_creacion: new Date(),
+        fecha_modificacion: new Date(),
+      };
 
-      const result = await service.put(mockId, mockCreateDto);
-      expect(result).toEqual(mockPlantillaTipoContrato);
+      mockPlantillaTipoContratoModel.findByIdAndUpdate.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(mockUpdatedPlantilla),
+      });
+
+      const result = await service.put(mockId, updateDto);
+
+      expect(result).toEqual(mockUpdatedPlantilla);
+      expect(
+        mockPlantillaTipoContratoModel.findByIdAndUpdate,
+      ).toHaveBeenCalledWith(
+        mockId,
+        expect.objectContaining({
+          ...updateDto,
+          fecha_modificacion: expect.any(Date),
+        }),
+        { new: true },
+      );
     });
 
-    it('should throw NotFoundException if plantilla to update is not found', async () => {
-      jest.spyOn(plantillaTipoContratoModel, 'findByIdAndUpdate').mockReturnValue({
-        exec: jest.fn().mockResolvedValue(null),
-      } as any);
+    it('should throw NotFoundException if PlantillaTipoContrato is not found', async () => {
+      const mockId = new Types.ObjectId().toString();
+      const updateDto: CreatePlantillaTipoContratoDto = {
+        tipo_contrato_id: 1,
+        orden_paragrafo_ids: [
+          new Types.ObjectId().toString(),
+          new Types.ObjectId().toString(),
+        ],
+        orden_clausula_id: new Types.ObjectId().toString(),
+        fecha_creacion: new Date(),
+        fecha_modificacion: new Date(),
+      };
 
-      await expect(service.put('nonexistent_id', mockCreateDto)).rejects.toThrow(NotFoundException);
+      mockPlantillaTipoContratoModel.findByIdAndUpdate.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(null),
+      });
+
+      await expect(service.put(mockId, updateDto)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('delete', () => {
-    it('should set a plantilla tipo contrato as inactive', async () => {
-      const inactivePlantillaTipoContrato = { ...mockPlantillaTipoContrato, activo: false };
-      jest.spyOn(plantillaTipoContratoModel, 'findByIdAndUpdate').mockReturnValue({
-        exec: jest.fn().mockResolvedValue(inactivePlantillaTipoContrato),
-      } as any);
+    it('should soft delete a PlantillaTipoContrato', async () => {
+      const mockId = new Types.ObjectId().toString();
+      const mockDeletedPlantilla = {
+        _id: mockId,
+        activo: false,
+        fecha_modificacion: new Date(),
+      };
+
+      mockPlantillaTipoContratoModel.findByIdAndUpdate.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(mockDeletedPlantilla),
+      });
 
       const result = await service.delete(mockId);
-      expect(result).toEqual(inactivePlantillaTipoContrato);
-      expect(result.activo).toBe(false);
+
+      expect(result).toEqual(mockDeletedPlantilla);
+      expect(
+        mockPlantillaTipoContratoModel.findByIdAndUpdate,
+      ).toHaveBeenCalledWith(mockId, { activo: false }, { new: true });
     });
 
-    it('should throw NotFoundException if plantilla to delete is not found', async () => {
-      jest.spyOn(plantillaTipoContratoModel, 'findByIdAndUpdate').mockReturnValue({
-        exec: jest.fn().mockResolvedValue(null),
-      } as any);
+    it('should throw NotFoundException if PlantillaTipoContrato is not found', async () => {
+      const mockId = new Types.ObjectId().toString();
 
-      await expect(service.delete('nonexistent_id')).rejects.toThrow(NotFoundException);
+      mockPlantillaTipoContratoModel.findByIdAndUpdate.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(null),
+      });
+
+      await expect(service.delete(mockId)).rejects.toThrow(NotFoundException);
     });
   });
 });

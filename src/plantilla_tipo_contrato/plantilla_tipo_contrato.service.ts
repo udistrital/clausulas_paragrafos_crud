@@ -183,7 +183,7 @@ export class PlantillaTipoContratoService {
         };
       });
 
-      const result = raw[0].clausulas.map((c) => {
+      return raw[0].clausulas.map((c) => {
         const orden = ordenParagrafoMap.find(
           (op) => op.clausula_id.toString() === c._id.toString(),
         );
@@ -196,8 +196,6 @@ export class PlantillaTipoContratoService {
           },
         };
       });
-
-      return result;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -297,7 +295,7 @@ export class PlantillaTipoContratoService {
         };
       });
 
-      const result = raw[0].clausulas.map((c) => {
+      return raw[0].clausulas.map((c) => {
         const orden = ordenParagrafoMap.find(
           (op) => op.clausula_id.toString() === c._id.toString(),
         );
@@ -306,8 +304,6 @@ export class PlantillaTipoContratoService {
           paragrafos: orden ? orden.paragrafos : [],
         };
       });
-
-      return result;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;

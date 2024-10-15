@@ -2,44 +2,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PlantillaTipoContratoController } from './plantilla_tipo_contrato.controller';
 import { PlantillaTipoContratoService } from './plantilla_tipo_contrato.service';
 import { CreatePlantillaTipoContratoDto } from './dto/create-plantilla_tipo_contrato.dto';
-import { HttpException, HttpStatus } from '@nestjs/common';
 import { FilterDto } from 'src/filters/dto/filters.dto';
-import { PlantillaTipoContrato } from './schemas/plantilla_tipo_contrato.schema';
+import { PlantillaTipoContrato } from 'src/plantilla_tipo_contrato/schemas/plantilla_tipo_contrato.schema';
 
 describe('PlantillaTipoContratoController', () => {
   let controller: PlantillaTipoContratoController;
   let service: PlantillaTipoContratoService;
 
-  const mockPlantillaTipoContrato = {
-    _id: 'mock_id',
-    version: 1,
-    version_actual: true,
-    tipo_contrato_id: 1,
-    clausulas: [
-      {
-        _id: 'clausula1',
-        nombre: 'Mock Clausula',
-        descripcion: 'Mock descripción',
-        paragrafos: [
-          {
-            _id: 'paragrafo1',
-            descripcion: 'Mock párrafo'
-          }
-        ]
-      }
-    ],
-    fecha_creacion: new Date(),
-    fecha_modificacion: new Date(),
-  } as unknown as PlantillaTipoContrato;
-
-  const mockCreateDto: CreatePlantillaTipoContratoDto = {
-    version: 1,
-    version_actual: true,
-    tipo_contrato_id: 1,
-    orden_clausula_id: 'orden_clausula1',
-    orden_paragrafo_ids: ['orden_paragrafo1', 'orden_paragrafo2'],
-    fecha_creacion: new Date(),
-    fecha_modificacion: new Date(),
+  const mockResponse = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -60,259 +32,267 @@ describe('PlantillaTipoContratoController', () => {
       ],
     }).compile();
 
-    controller = module.get<PlantillaTipoContratoController>(PlantillaTipoContratoController);
-    service = module.get<PlantillaTipoContratoService>(PlantillaTipoContratoService);
+    controller = module.get<PlantillaTipoContratoController>(
+      PlantillaTipoContratoController,
+    );
+    service = module.get<PlantillaTipoContratoService>(
+      PlantillaTipoContratoService,
+    );
   });
 
-  it('should be defined', () => {
+  it('debería estar definido', () => {
     expect(controller).toBeDefined();
   });
 
   describe('post', () => {
-    it('should create a new plantilla tipo contrato', async () => {
-      jest.spyOn(service, 'post').mockResolvedValue(mockPlantillaTipoContrato);
-
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
+    it('debería crear una nueva plantilla de tipo contrato', async () => {
+      const dto: CreatePlantillaTipoContratoDto = {
+        tipo_contrato_id: 1,
+        orden_clausula_id: 'OC001',
+        orden_paragrafo_ids: ['OP001', 'OP002'],
+        fecha_creacion: new Date(),
+        fecha_modificacion: new Date(),
       };
+      const result = { id: '1', ...dto };
+      jest.spyOn(service, 'post').mockResolvedValue(result);
 
-      await controller.post(mockResponse, mockCreateDto);
+      await controller.post(mockResponse, dto);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.CREATED);
+      expect(service.post).toHaveBeenCalledWith(dto);
+      expect(mockResponse.status).toHaveBeenCalledWith(201);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 201,
-        Message: "Registration successful",
-        Data: mockPlantillaTipoContrato
+        Message: 'Registration successful',
+        Data: result,
       });
     });
 
-    it('should handle creation error', async () => {
-      jest.spyOn(service, 'post').mockRejectedValue(new Error('Creation error'));
-
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
+    it('debería manejar errores al crear una plantilla de tipo contrato', async () => {
+      const dto: CreatePlantillaTipoContratoDto = {
+        tipo_contrato_id: 1,
+        orden_clausula_id: 'OC001',
+        orden_paragrafo_ids: ['OP001', 'OP002'],
+        fecha_creacion: new Date(),
+        fecha_modificacion: new Date(),
       };
+      const error = new Error('Error de prueba');
+      jest.spyOn(service, 'post').mockRejectedValue(error);
 
-      await controller.post(mockResponse, mockCreateDto);
+      await controller.post(mockResponse, dto);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+      expect(service.post).toHaveBeenCalledWith(dto);
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: false,
         Status: 400,
-        Message: "Error service Post: The request contains an incorrect data type or an invalid parameter",
-        Data: null
+        Message: `Error service Post: The request contains an incorrect data type or an invalid parameter: ${error.message}`,
+        Data: null,
       });
     });
   });
 
   describe('getAll', () => {
-    it('should get all plantillas tipo contrato', async () => {
-      const mockResult = { data: [mockPlantillaTipoContrato], total: 1 };
-      jest.spyOn(service, 'getAll').mockResolvedValue(mockResult);
-
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
+    it('debería obtener todas las plantillas de tipo contrato', async () => {
+      const filterDto: FilterDto = { /* ... */ };
+      const result: { data: PlantillaTipoContrato[]; total: number } = {
+        data: [
+          {
+            id: '1',
+            tipo_contrato_id: 1,
+            orden_clausula_id: 'OC001',
+            orden_paragrafo_ids: ['OP001', 'OP002'],
+            fecha_creacion: new Date(),
+            fecha_modificacion: new Date(),
+          } as unknown as PlantillaTipoContrato, // Usamos 'as PlantillaTipoContrato' para asegurar el tipo correcto
+        ],
+        total: 1,
       };
+      jest.spyOn(service, 'getAll').mockResolvedValue(result);
 
-      const mockFilterDto: FilterDto = { /* mock filter data */ };
+      await controller.getAll(mockResponse, filterDto);
 
-      await controller.getAll(mockResponse, mockFilterDto);
-
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
+      expect(service.getAll).toHaveBeenCalledWith(filterDto);
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 200,
-        Message: "Request successful",
-        Metadata: {
-          count: 1
-        },
-        Data: [mockPlantillaTipoContrato]
+        Message: 'Request successful',
+        Metadata: { count: result.total },
+        Data: result.data,
       });
     });
 
-    it('should handle getAll error', async () => {
-      jest.spyOn(service, 'getAll').mockRejectedValue(new Error('Database error'));
-
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
-
-      const mockFilterDto: FilterDto = { /* mock filter data */ };
-
-      await controller.getAll(mockResponse, mockFilterDto);
-
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        Success: false,
-        Status: 500,
-        Message: "An unexpected error occurred",
-        Metadata: null,
-        Data: null
-      });
-    });
-  });
 
   describe('getById', () => {
-    it('should get a plantilla tipo contrato by id', async () => {
-      jest.spyOn(service, 'getById').mockResolvedValue(mockPlantillaTipoContrato);
-
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
+    it('debería obtener una plantilla de tipo contrato por ID', async () => {
+      const id = '1';
+      const result = {
+        id,
+        tipo_contrato_id: 1,
+        orden_clausula_id: 'OC001',
+        orden_paragrafo_ids: ['OP001', 'OP002'],
+        fecha_creacion: new Date(),
+        fecha_modificacion: new Date(),
       };
+      jest.spyOn(service, 'getById').mockResolvedValue(result);
 
-      await controller.getById(mockResponse, 'mock_id');
+      await controller.getById(mockResponse, id);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
+      expect(service.getById).toHaveBeenCalledWith(id);
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 200,
-        Message: "Request successful",
-        Data: mockPlantillaTipoContrato
+        Message: 'Request successful',
+        Data: result,
       });
     });
 
-    it('should handle getById error', async () => {
-      jest.spyOn(service, 'getById').mockRejectedValue(new Error("mock_id doesn't exist"));
+    it('debería manejar errores al obtener una plantilla de tipo contrato por ID', async () => {
+      const id = '1';
+      const error = new Error('No encontrado');
+      jest.spyOn(service, 'getById').mockRejectedValue(error);
 
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
+      await controller.getById(mockResponse, id);
 
-      await controller.getById(mockResponse, 'mock_id');
-
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
+      expect(service.getById).toHaveBeenCalledWith(id);
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: false,
         Status: 404,
-        Message: "mock_id doesn't exist",
-        Data: null
+        Message: error.message,
+        Data: null,
       });
     });
   });
 
   describe('getByTipoContrato', () => {
-    it('should get plantillas by tipo contrato', async () => {
-      jest.spyOn(service, 'getByTipoContrato').mockResolvedValue([mockPlantillaTipoContrato]);
+    it('debería obtener plantillas de tipo contrato por tipo de contrato ID', async () => {
+      const tipoContratoId = '1';
+      const result = [
+        {
+          id: '1',
+          tipo_contrato_id: 1,
+          orden_clausula_id: 'OC001',
+          orden_paragrafo_ids: ['OP001', 'OP002'],
+          fecha_creacion: new Date(),
+          fecha_modificacion: new Date(),
+        },
+      ];
+      jest.spyOn(service, 'getByTipoContrato').mockResolvedValue(result);
 
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
+      await controller.getByTipoContrato(mockResponse, tipoContratoId);
 
-      await controller.getByTipoContrato(mockResponse, 1);
-
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
+      expect(service.getByTipoContrato).toHaveBeenCalledWith(+tipoContratoId);
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 200,
-        Message: "Request successful",
-        Data: [mockPlantillaTipoContrato]
+        Message: 'Request successful',
+        Data: result,
       });
     });
 
-    it('should handle getByTipoContrato error', async () => {
-      jest.spyOn(service, 'getByTipoContrato').mockRejectedValue(new Error("No plantillas found"));
+    it('debería manejar errores al obtener plantillas de tipo contrato por tipo de contrato ID', async () => {
+      const tipoContratoId = '1';
+      const error = new Error('No encontrado');
+      jest.spyOn(service, 'getByTipoContrato').mockRejectedValue(error);
 
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
+      await controller.getByTipoContrato(mockResponse, tipoContratoId);
 
-      await controller.getByTipoContrato(mockResponse, 1);
-
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
+      expect(service.getByTipoContrato).toHaveBeenCalledWith(+tipoContratoId);
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: false,
         Status: 404,
-        Message: "No plantillas found",
-        Data: null
+        Message: error.message,
+        Data: null,
       });
     });
   });
 
   describe('put', () => {
-    it('should update a plantilla tipo contrato', async () => {
-      jest.spyOn(service, 'put').mockResolvedValue(mockPlantillaTipoContrato);
-
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
+    it('debería actualizar una plantilla de tipo contrato', async () => {
+      const id = '1';
+      const dto: CreatePlantillaTipoContratoDto = {
+        tipo_contrato_id: 1,
+        orden_clausula_id: 'OC001',
+        orden_paragrafo_ids: ['OP001', 'OP002'],
+        fecha_creacion: new Date(),
+        fecha_modificacion: new Date(),
       };
+      const result = { id, ...dto };
+      jest.spyOn(service, 'put').mockResolvedValue(result);
 
-      await controller.put(mockResponse, 'mock_id', mockCreateDto);
+      await controller.put(mockResponse, id, dto);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
+      expect(service.put).toHaveBeenCalledWith(id, dto);
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 200,
-        Message: "Update successful",
-        Data: mockPlantillaTipoContrato
+        Message: 'Update successful',
+        Data: result,
       });
     });
 
-    it('should handle update error', async () => {
-      jest.spyOn(service, 'put').mockRejectedValue(new Error('Update error'));
-
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
+    it('debería manejar errores al actualizar una plantilla de tipo contrato', async () => {
+      const id = '1';
+      const dto: CreatePlantillaTipoContratoDto = {
+        tipo_contrato_id: 1,
+        orden_clausula_id: 'OC001',
+        orden_paragrafo_ids: ['OP001', 'OP002'],
+        fecha_creacion: new Date(),
+        fecha_modificacion: new Date(),
       };
+      const error = new Error('Error de prueba');
+      jest.spyOn(service, 'put').mockRejectedValue(error);
 
-      await controller.put(mockResponse, 'mock_id', mockCreateDto);
+      await controller.put(mockResponse, id, dto);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+      expect(service.put).toHaveBeenCalledWith(id, dto);
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: false,
         Status: 400,
-        Message: "Error service Put: The request contains an incorrect data type or an invalid parameter",
-        Data: null
+        Message: `Error service Put: The request contains an incorrect data type or an invalid parameter: ${error.message}`,
+        Data: null,
       });
     });
   });
 
   describe('delete', () => {
-    it('should delete a plantilla tipo contrato', async () => {
-      jest.spyOn(service, 'delete').mockResolvedValue({ _id: 'mock_id' } as PlantillaTipoContrato);
+    it('debería eliminar una plantilla de tipo contrato', async () => {
+      const id = '1';
+      jest.spyOn(service, 'delete').mockResolvedValue(undefined);
 
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
+      await controller.delete(mockResponse, id);
 
-      await controller.delete(mockResponse, 'mock_id');
-
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
+      expect(service.delete).toHaveBeenCalledWith(id);
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
         Status: 200,
-        Message: "Delete successful",
-        Data: { _id: 'mock_id' }
+        Message: 'Delete successful',
+        Data: { _id: id },
       });
     });
 
-    it('should handle delete error', async () => {
-      jest.spyOn(service, 'delete').mockRejectedValue(new Error('Delete error'));
+    it('debería manejar errores al eliminar una plantilla de tipo contrato', async () => {
+      const id = '1';
+      const error = new Error('No encontrado');
+      jest.spyOn(service, 'delete').mockRejectedValue(error);
 
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
+      await controller.delete(mockResponse, id);
 
-      await controller.delete(mockResponse, 'mock_id');
-
-      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
+      expect(service.delete).toHaveBeenCalledWith(id);
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: false,
         Status: 404,
-        Message: "Error service Delete: Request contains incorrect parameter",
-        Data: null
+        Message: `Error service Delete: Request contains incorrect parameter ${error.message}`,
+        Data: null,
       });
     });
   });

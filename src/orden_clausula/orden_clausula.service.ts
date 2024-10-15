@@ -11,23 +11,26 @@ export class OrdenClausulaService {
   constructor(
     @InjectModel(OrdenClausula.name)
     private readonly ordenClausulaModel: Model<OrdenClausula>,
-    private readonly filtersService : FiltersService,
-  ) { }
+    private readonly filtersService: FiltersService,
+  ) {}
 
   async post(ordenClausulaDto: CreateOrdenClausulaDto): Promise<OrdenClausula> {
     const ordenClausulaData = {
       ...ordenClausulaDto,
-      clausula_ids: ordenClausulaDto.clausula_ids.map(id => new Types.ObjectId(id)),
+      clausula_ids: ordenClausulaDto.clausula_ids.map(
+        (id) => new Types.ObjectId(id),
+      ),
       contrato_id: ordenClausulaDto.contrato_id,
     };
     return await this.ordenClausulaModel.create(ordenClausulaData);
   }
 
   async getAll(filtersDto: FilterDto): Promise<OrdenClausula[]> {
-    const{offset, limit} = filtersDto;
-    const {queryObject, sortObject}= this.filtersService.createObjects(filtersDto)
+    const { offset, limit } = filtersDto;
+    const { queryObject, sortObject } =
+      this.filtersService.createObjects(filtersDto);
     return await this.ordenClausulaModel
-    .find(queryObject)
+      .find(queryObject)
       .sort(sortObject)
       .skip(offset)
       .limit(limit)
@@ -36,7 +39,8 @@ export class OrdenClausulaService {
   }
 
   async getById(id: string): Promise<OrdenClausula> {
-    const ordenClausula = await this.ordenClausulaModel.findById(id)
+    const ordenClausula = await this.ordenClausulaModel
+      .findById(id)
       .populate('clausula_ids')
       .exec();
     if (!ordenClausula) {

@@ -11,22 +11,27 @@ export class OrdenParagrafoService {
   constructor(
     @InjectModel(OrdenParagrafo.name)
     private readonly ordenParagrafoModel: Model<OrdenParagrafo>,
-    private readonly filtersService : FiltersService,
-  ) { }
+    private readonly filtersService: FiltersService,
+  ) {}
 
-  async post(ordenParagrafoDto: CreateOrdenParagrafoDto): Promise<OrdenParagrafo> {
+  async post(
+    ordenParagrafoDto: CreateOrdenParagrafoDto,
+  ): Promise<OrdenParagrafo> {
     const ordenParagrafoData = {
       ...ordenParagrafoDto,
-      paragrafo_ids: ordenParagrafoDto.paragrafo_ids.map(id => new Types.ObjectId(id)),
+      paragrafo_ids: ordenParagrafoDto.paragrafo_ids.map(
+        (id) => new Types.ObjectId(id),
+      ),
       clausula_id: new Types.ObjectId(ordenParagrafoDto.clausula_id),
-      contrato_id: ordenParagrafoDto.contrato_id
+      contrato_id: ordenParagrafoDto.contrato_id,
     };
     return await this.ordenParagrafoModel.create(ordenParagrafoData);
   }
 
   async getAll(filtersDto: FilterDto): Promise<OrdenParagrafo[]> {
-    const{offset, limit} = filtersDto;
-    const {queryObject, sortObject}= this.filtersService.createObjects(filtersDto)
+    const { offset, limit } = filtersDto;
+    const { queryObject, sortObject } =
+      this.filtersService.createObjects(filtersDto);
     return await this.ordenParagrafoModel
       .find(queryObject)
       .sort(sortObject)
@@ -38,7 +43,8 @@ export class OrdenParagrafoService {
   }
 
   async getById(id: string): Promise<OrdenParagrafo> {
-    const ordenParagrafo = await this.ordenParagrafoModel.findById(id)
+    const ordenParagrafo = await this.ordenParagrafoModel
+      .findById(id)
       .populate('paragrafo_ids')
       .populate('clausula_id')
       .exec();
