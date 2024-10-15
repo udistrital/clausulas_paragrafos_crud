@@ -28,12 +28,10 @@ export class PlantillaTipoContratoService {
   async post(
     plantillaTipoContratoDto: CreatePlantillaTipoContratoDto,
   ): Promise<PlantillaTipoContrato> {
-    const versionActual = await this.plantillaTipoContratoModel
-      .find({
-        tipo_contrato_id: plantillaTipoContratoDto.tipo_contrato_id,
-        version_actual: true,
-      })
-      .exec();
+    const versionActual = await this.plantillaTipoContratoModel.find({
+      tipo_contrato_id: plantillaTipoContratoDto.tipo_contrato_id,
+      version_actual: true,
+    });
 
     let currentVersion = 1;
 
@@ -320,8 +318,7 @@ export class PlantillaTipoContratoService {
   ): Promise<PlantillaTipoContrato> {
     plantillaTipoContratoDto.fecha_modificacion = new Date();
     const update = await this.plantillaTipoContratoModel
-      .findByIdAndUpdate(id, plantillaTipoContratoDto, { new: true })
-      .exec();
+      .findByIdAndUpdate(id, plantillaTipoContratoDto, { new: true });
     if (!update) {
       throw new NotFoundException(`Plantilla con id ${id} no encontrada`);
     }
@@ -330,8 +327,7 @@ export class PlantillaTipoContratoService {
 
   async delete(id: string): Promise<PlantillaTipoContrato> {
     const deleted = await this.plantillaTipoContratoModel
-      .findByIdAndUpdate(id, { activo: false }, { new: true })
-      .exec();
+      .findByIdAndUpdate(id, { activo: false }, { new: true });
     if (!deleted) {
       throw new NotFoundException(`Plantilla con id ${id} no encontrada`);
     }

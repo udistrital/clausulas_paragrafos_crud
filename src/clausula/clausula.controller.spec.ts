@@ -33,6 +33,14 @@ describe('ClausulaController', () => {
     fecha_modificacion: new Date(),
   };
 
+  const mockFilterDto: FilterDto = {
+    query: 'nombre:Clausula de prueba',
+    sort: 'desc',
+    orderBy: 'fecha_creacion',
+    limit: 10,
+    offset: 0,
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ClausulaController],
@@ -93,7 +101,7 @@ describe('ClausulaController', () => {
   });
 
   describe('getAll', () => {
-    it('should get all clausulas', async () => {
+    it('should get all clausulas with filter', async () => {
       jest.spyOn(service, 'getAll').mockResolvedValue([mockClausula]);
 
       const mockResponse = {
@@ -101,12 +109,9 @@ describe('ClausulaController', () => {
         json: jest.fn(),
       };
 
-      const mockFilterDto: FilterDto = {
-        /* mock filter data */
-      };
-
       await controller.getAll(mockResponse, mockFilterDto);
 
+      expect(service.getAll).toHaveBeenCalledWith(mockFilterDto);
       expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
       expect(mockResponse.json).toHaveBeenCalledWith({
         Success: true,
@@ -126,12 +131,9 @@ describe('ClausulaController', () => {
         json: jest.fn(),
       };
 
-      const mockFilterDto: FilterDto = {
-        /* mock filter data */
-      };
-
       await controller.getAll(mockResponse, mockFilterDto);
 
+      expect(service.getAll).toHaveBeenCalledWith(mockFilterDto);
       expect(mockResponse.status).toHaveBeenCalledWith(
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
