@@ -26,6 +26,9 @@ export class ContratoService {
     const ordenClausula = await this.ordenClausulaModel.create({
       clausula_ids: estructuraDto.clausula_ids,
       contrato_id: contratoId,
+      activo: true,
+      creado_por: estructuraDto.creado_por,
+      actualizado_por: estructuraDto.actualizado_por,
       fecha_creacion: new Date(),
       fecha_modificacion: new Date(),
     });
@@ -36,6 +39,9 @@ export class ContratoService {
           paragrafo_ids: paragrafo.paragrafo_ids,
           contrato_id: contratoId,
           clausula_id: paragrafo.clausula_id,
+          activo: true,
+          creado_por: estructuraDto.creado_por,
+          actualizado_por: estructuraDto.actualizado_por,
           fecha_creacion: new Date(),
           fecha_modificacion: new Date(),
         });

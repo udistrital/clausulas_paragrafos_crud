@@ -1154,11 +1154,21 @@
             "items": {
               "$ref": "#/components/schemas/ParagrafoEstructuraDto"
             }
+          },
+          "creado_por": {
+            "type": "number",
+            "description": "ID del usuario que crea la estructura"
+          },
+          "actualizado_por": {
+            "type": "number",
+            "description": "ID del usuario que actualiza la estructura"
           }
         },
         "required": [
           "clausula_ids",
-          "paragrafos"
+          "paragrafos",
+          "creado_por",
+          "actualizado_por"
         ]
       }
     }
