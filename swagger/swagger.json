@@ -933,6 +933,12 @@
           "predeterminado": {
             "type": "boolean"
           },
+          "creado_por": {
+            "type": "number"
+          },
+          "actualizado_por": {
+            "type": "number"
+          },
           "fecha_creacion": {
             "format": "date-time",
             "type": "string"
@@ -946,6 +952,8 @@
           "nombre",
           "descripcion",
           "predeterminado",
+          "creado_por",
+          "actualizado_por",
           "fecha_creacion",
           "fecha_modificacion"
         ]
@@ -962,6 +970,12 @@
           "predeterminado": {
             "type": "boolean"
           },
+          "creado_por": {
+            "type": "number"
+          },
+          "actualizado_por": {
+            "type": "number"
+          },
           "fecha_creacion": {
             "format": "date-time",
             "type": "string"
@@ -975,6 +989,8 @@
           "nombre",
           "descripcion",
           "predeterminado",
+          "creado_por",
+          "actualizado_por",
           "fecha_creacion",
           "fecha_modificacion"
         ]
@@ -993,6 +1009,12 @@
             "type": "number",
             "description": "Contrato ID"
           },
+          "creado_por": {
+            "type": "number"
+          },
+          "actualizado_por": {
+            "type": "number"
+          },
           "fecha_creacion": {
             "format": "date-time",
             "type": "string"
@@ -1005,6 +1027,8 @@
         "required": [
           "clausula_ids",
           "contrato_id",
+          "creado_por",
+          "actualizado_por",
           "fecha_creacion",
           "fecha_modificacion"
         ]
@@ -1027,6 +1051,12 @@
             "type": "string",
             "description": "Clausula ID"
           },
+          "creado_por": {
+            "type": "number"
+          },
+          "actualizado_por": {
+            "type": "number"
+          },
           "fecha_creacion": {
             "format": "date-time",
             "type": "string"
@@ -1040,6 +1070,8 @@
           "paragrafo_ids",
           "contrato_id",
           "clausula_id",
+          "creado_por",
+          "actualizado_por",
           "fecha_creacion",
           "fecha_modificacion"
         ]
@@ -1061,6 +1093,12 @@
               "type": "string"
             }
           },
+          "creado_por": {
+            "type": "number"
+          },
+          "actualizado_por": {
+            "type": "number"
+          },
           "fecha_creacion": {
             "format": "date-time",
             "type": "string"
@@ -1074,6 +1112,8 @@
           "tipo_contrato_id",
           "orden_clausula_id",
           "orden_paragrafo_ids",
+          "creado_por",
+          "actualizado_por",
           "fecha_creacion",
           "fecha_modificacion"
         ]
