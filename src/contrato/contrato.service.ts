@@ -1,27 +1,16 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OrdenClausula } from 'src/orden_clausula/schemas/orden_clausula.schema';
 import { OrdenParagrafo } from 'src/orden_paragrafo/schemas/orden_paragrafo.schema';
 import { CreateContratoEstructuraDto } from './dto/create-contrato.dto';
-import { Clausula } from 'src/clausula/schemas/clausula.schema';
-import { Paragrafo } from 'src/paragrafo/schemas/paragrafo.schema';
 
 @Injectable()
 export class ContratoService {
   constructor(
-    @InjectModel(OrdenClausula.name)
-    private readonly ordenClausulaModel: Model<OrdenClausula>,
-    @InjectModel(OrdenParagrafo.name)
-    private readonly ordenParagrafoModel: Model<OrdenParagrafo>,
-    @InjectModel(Clausula.name) private readonly clausulaModel: Model<Clausula>,
-    @InjectModel(Paragrafo.name)
-    private readonly paragrafoModel: Model<Paragrafo>,
-  ) {}
+    @InjectModel(OrdenClausula.name) private readonly ordenClausulaModel: Model<OrdenClausula>,
+    @InjectModel(OrdenParagrafo.name) private readonly ordenParagrafoModel: Model<OrdenParagrafo>,
+  ) { }
 
   async post(
     contratoId: number,
@@ -59,7 +48,7 @@ export class ContratoService {
   async getById(contratoId: number): Promise<any> {
     try {
       const ordenClausula = await this.ordenClausulaModel.aggregate([
-        { $match: { contrato_id: contratoId } },
+        { $match: { contrato_id: contratoId, activo: true } },
         {
           $lookup: {
             from: 'clausula',
@@ -92,7 +81,7 @@ export class ContratoService {
       ]);
 
       const ordenParagrafos = await this.ordenParagrafoModel.aggregate([
-        { $match: { contrato_id: contratoId } },
+        { $match: { contrato_id: contratoId, activo: true } },
         {
           $lookup: {
             from: 'paragrafo',
@@ -152,17 +141,17 @@ export class ContratoService {
         const clausula: any = clausulasMap.get(op.clausula_id.toString());
         const paragrafos = op.paragrafo_ids
           ? op.paragrafo_ids
-              .map((pid) => paragrafosMap.get(pid.toString()))
-              .filter(Boolean)
+            .map((pid) => paragrafosMap.get(pid.toString()))
+            .filter(Boolean)
           : null;
 
         return {
           ...op,
           clausula: clausula
             ? {
-                _id: clausula._id,
-                nombre: clausula.nombre,
-              }
+              _id: clausula._id,
+              nombre: clausula.nombre,
+            }
             : null,
           paragrafos: paragrafos,
         };
