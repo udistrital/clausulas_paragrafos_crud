@@ -18,6 +18,15 @@ export class OrdenParagrafo extends Document {
   })
   clausula_id: mongoose.Types.ObjectId;
 
+  @Prop({ required: true })
+  activo: boolean;
+
+  @Prop({required: true})
+  creado_por: number;
+
+  @Prop({required: true})
+  actualizado_por: number;
+
   @Prop({ required: true, default: Date.now })
   fecha_creacion: Date;
 

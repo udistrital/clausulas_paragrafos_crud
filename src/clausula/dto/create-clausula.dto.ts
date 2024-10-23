@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {IsNotEmpty,IsOptional,IsString,IsBoolean,IsDate,} from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsBoolean, IsDate, IsNumber, } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateClausulaDto {
@@ -18,6 +18,17 @@ export class CreateClausulaDto {
     @IsNotEmpty()
     @IsBoolean()
     predeterminado: boolean;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsNumber()
+    creado_por: Number;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsNumber()
+    actualizado_por: Number;
+
 
     @ApiProperty()
     @IsDate()

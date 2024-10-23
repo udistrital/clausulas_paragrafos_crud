@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsNumber,
-  IsDate,
-  IsArray,
-} from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsNumber, IsDate, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreatePlantillaTipoContratoDto {
@@ -25,6 +18,16 @@ export class CreatePlantillaTipoContratoDto {
   @IsArray()
   @IsString({ each: true })
   orden_paragrafo_ids: string[];
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  creado_por: Number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  actualizado_por: Number;
 
   @ApiProperty()
   @IsOptional()

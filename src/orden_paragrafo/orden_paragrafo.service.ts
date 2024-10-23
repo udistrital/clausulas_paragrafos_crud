@@ -24,6 +24,7 @@ export class OrdenParagrafoService {
       ),
       clausula_id: new Types.ObjectId(ordenParagrafoDto.clausula_id),
       contrato_id: ordenParagrafoDto.contrato_id,
+      activo: true,
     };
     return await this.ordenParagrafoModel.create(ordenParagrafoData);
   }

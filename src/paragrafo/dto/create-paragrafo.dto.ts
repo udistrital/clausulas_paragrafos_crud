@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsBoolean,
-  IsDate,
-} from 'class-validator';
+import { IsNotEmpty, IsString, IsDate, IsNumber, IsOptional, IsBoolean} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateParagrafoDto {
@@ -23,6 +17,16 @@ export class CreateParagrafoDto {
   @IsNotEmpty()
   @IsBoolean()
   predeterminado: boolean;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  creado_por: Number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  actualizado_por: Number;
 
   @ApiProperty()
   @IsDate()

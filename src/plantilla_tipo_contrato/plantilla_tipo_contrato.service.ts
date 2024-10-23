@@ -5,25 +5,13 @@ import { CreatePlantillaTipoContratoDto } from './dto/create-plantilla_tipo_cont
 import { PlantillaTipoContrato } from './schemas/plantilla_tipo_contrato.schema';
 import { FilterDto } from 'src/filters/dto/filters.dto';
 import { FiltersService } from 'src/filters/filters.service';
-import { OrdenClausula } from '../orden_clausula/schemas/orden_clausula.schema';
-import { OrdenParagrafo } from '../orden_paragrafo/schemas/orden_paragrafo.schema';
-import { Clausula } from '../clausula/schemas/clausula.schema';
-import { Paragrafo } from '../paragrafo/schemas/paragrafo.schema';
 
 @Injectable()
 export class PlantillaTipoContratoService {
   constructor(
-    @InjectModel(PlantillaTipoContrato.name)
-    private readonly plantillaTipoContratoModel: Model<PlantillaTipoContrato>,
-    @InjectModel(OrdenClausula.name)
-    private readonly ordenClausulaModel: Model<OrdenClausula>,
-    @InjectModel(OrdenParagrafo.name)
-    private readonly ordenParagrafoModel: Model<OrdenParagrafo>,
-    @InjectModel(Clausula.name) private readonly clausulaModel: Model<Clausula>,
-    @InjectModel(Paragrafo.name)
-    private readonly paragrafoModel: Model<Paragrafo>,
+    @InjectModel(PlantillaTipoContrato.name) private readonly plantillaTipoContratoModel: Model<PlantillaTipoContrato>,
     private readonly filtersService: FiltersService,
-  ) {}
+  ) { }
 
   async post(
     plantillaTipoContratoDto: CreatePlantillaTipoContratoDto,
@@ -165,17 +153,17 @@ export class PlantillaTipoContratoService {
         const clausula: any = clausulasMap.get(op.clausula_id.toString());
         const paragrafos = op.paragrafo_ids
           ? op.paragrafo_ids
-              .map((pid) => paragrafosMap.get(pid.toString()))
-              .filter(Boolean)
+            .map((pid) => paragrafosMap.get(pid.toString()))
+            .filter(Boolean)
           : null;
 
         return {
           ...op,
           clausula: clausula
             ? {
-                _id: clausula._id,
-                nombre: clausula.nombre,
-              }
+              _id: clausula._id,
+              nombre: clausula.nombre,
+            }
             : null,
           paragrafos: paragrafos,
         };
@@ -277,17 +265,17 @@ export class PlantillaTipoContratoService {
         const clausula: any = clausulasMap.get(op.clausula_id.toString());
         const paragrafos = op.paragrafo_ids
           ? op.paragrafo_ids
-              .map((pid) => paragrafosMap.get(pid.toString()))
-              .filter(Boolean)
+            .map((pid) => paragrafosMap.get(pid.toString()))
+            .filter(Boolean)
           : null;
 
         return {
           ...op,
           clausula: clausula
             ? {
-                _id: clausula._id,
-                nombre: clausula.nombre,
-              }
+              _id: clausula._id,
+              nombre: clausula.nombre,
+            }
             : null,
           paragrafos: paragrafos,
         };

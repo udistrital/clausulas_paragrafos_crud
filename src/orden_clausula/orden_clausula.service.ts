@@ -21,6 +21,7 @@ export class OrdenClausulaService {
         (id) => new Types.ObjectId(id),
       ),
       contrato_id: ordenClausulaDto.contrato_id,
+      activo: true,
     };
     return await this.ordenClausulaModel.create(ordenClausulaData);
   }

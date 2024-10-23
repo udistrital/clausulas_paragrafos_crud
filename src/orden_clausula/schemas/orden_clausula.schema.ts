@@ -12,6 +12,15 @@ export class OrdenClausula extends Document {
   })
   contrato_id: number;
 
+  @Prop({ required: true })
+  activo: boolean;
+
+  @Prop({required: true})
+  creado_por: number;
+
+  @Prop({required: true})
+  actualizado_por: number;
+
   @Prop({ required: true, default: Date.now })
   fecha_creacion: Date;
 
