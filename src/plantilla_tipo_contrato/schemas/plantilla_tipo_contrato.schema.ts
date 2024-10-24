@@ -24,6 +24,9 @@ export class PlantillaTipoContrato extends Document {
   orden_paragrafo_ids: mongoose.Types.ObjectId[];
 
   @Prop({ required: true })
+  reversion_saldo: boolean;
+
+  @Prop({ required: true })
   activo: boolean;
 
   @Prop({required: true})
