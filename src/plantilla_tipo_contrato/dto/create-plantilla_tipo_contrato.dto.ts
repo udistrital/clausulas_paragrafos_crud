@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString, IsNumber, IsDate, IsArray } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsNumber, IsDate, IsArray, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreatePlantillaTipoContratoDto {
@@ -23,6 +23,11 @@ export class CreatePlantillaTipoContratoDto {
   @IsNotEmpty()
   @IsNumber()
   creado_por: Number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsBoolean()
+  reversion_saldo: boolean;
 
   @ApiProperty()
   @IsNotEmpty()

@@ -20,7 +20,7 @@ import { FilterDto } from 'src/filters/dto/filters.dto';
 export class PlantillaTipoContratoController {
   constructor(
     private plantillaTipoContratoService: PlantillaTipoContratoService,
-  ) {}
+  ) { }
 
   @Post()
   async post(
@@ -96,11 +96,13 @@ export class PlantillaTipoContratoController {
   async getByTipoContrato(
     @Res() res,
     @Param('tipo_contrato_id') tipoContratoId: string,
+    @Query() filterDto: FilterDto
   ) {
     try {
       const plantillaTipoContrato =
         await this.plantillaTipoContratoService.getByTipoContrato(
           +tipoContratoId,
+          filterDto
         );
       res.status(HttpStatus.OK).json({
         Success: true,

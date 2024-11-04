@@ -190,11 +190,24 @@ export class PlantillaTipoContratoService {
     }
   }
 
-  async getByTipoContrato(tipoContratoId: number): Promise<any> {
+  async getByTipoContrato(
+    tipoContratoId: number,
+    filtersDto?: FilterDto,
+  ): Promise<any> {
     try {
+      const { queryObject } = filtersDto
+        ? this.filtersService.createObjects(filtersDto)
+        : { queryObject: {} };
+      const processedQueryObject = 'reversion_saldo' in queryObject
+        ? { ...queryObject, reversion_saldo: Boolean(queryObject.reversion_saldo === 'true') }
+        : queryObject;
+      const combinedQuery = {
+        ...processedQueryObject,
+        tipo_contrato_id: tipoContratoId,
+      };
       const raw = await this.plantillaTipoContratoModel.aggregate([
         {
-          $match: { tipo_contrato_id: tipoContratoId },
+          $match: combinedQuery,
         },
         {
           $lookup: {
@@ -234,6 +247,7 @@ export class PlantillaTipoContratoService {
         {
           $project: {
             _id: 1,
+            reversion_saldo: 1,
             version: 1,
             version_actual: 1,
             tipo_contrato_id: 1,

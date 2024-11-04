@@ -808,6 +808,51 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "query",
+            "required": false,
+            "in": "query",
+            "description": "query - Filter. e.g. col1:v1,col2:v2 …",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "description": "sort - Sorted-by corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc …",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderBy",
+            "required": false,
+            "in": "query",
+            "description": "orderBy - OrderBy fields. e.g. col1,col2 …",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "limit - Limit the size of result set. Must be an integer",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "description": "offset - Start position of result set. Must be an integer",
+            "schema": {
+              "type": "number"
+            }
           }
         ],
         "responses": {
@@ -1096,6 +1141,9 @@
           "creado_por": {
             "type": "number"
           },
+          "reversion_saldo": {
+            "type": "boolean"
+          },
           "actualizado_por": {
             "type": "number"
           },
@@ -1113,6 +1161,7 @@
           "orden_clausula_id",
           "orden_paragrafo_ids",
           "creado_por",
+          "reversion_saldo",
           "actualizado_por",
           "fecha_creacion",
           "fecha_modificacion"
