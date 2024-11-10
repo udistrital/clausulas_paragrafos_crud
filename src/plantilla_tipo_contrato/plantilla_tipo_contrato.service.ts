@@ -195,16 +195,34 @@ export class PlantillaTipoContratoService {
     filtersDto?: FilterDto,
   ): Promise<any> {
     try {
+      interface FilterQueryObject {
+        [key: string]: any;
+      }
+      
+      const BOOLEAN_FIELDS = ['reversion_saldo', 'aplica_poliza'] as const;
+      
+      const processBooleanFields = (obj: FilterQueryObject, booleanFields: readonly string[]) => {
+        return {
+          ...obj,
+          ...Object.fromEntries(
+            Object.entries(obj)
+              .filter(([key]) => booleanFields.includes(key))
+              .map(([key, value]) => [key, Boolean(value === 'true')])
+          )
+        };
+      };
+      
       const { queryObject } = filtersDto
         ? this.filtersService.createObjects(filtersDto)
-        : { queryObject: {} };
-      const processedQueryObject = 'reversion_saldo' in queryObject
-        ? { ...queryObject, reversion_saldo: Boolean(queryObject.reversion_saldo === 'true') }
-        : queryObject;
+        : { queryObject: {} as FilterQueryObject };
+      
+      const processedQueryObject = processBooleanFields(queryObject, BOOLEAN_FIELDS);
+      
       const combinedQuery = {
         ...processedQueryObject,
         tipo_contrato_id: tipoContratoId,
       };
+      
       const raw = await this.plantillaTipoContratoModel.aggregate([
         {
           $match: combinedQuery,
