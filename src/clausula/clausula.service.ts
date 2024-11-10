@@ -17,6 +17,7 @@ export class ClausulaService {
   async post(clausulaDto: CreateClausulaDto): Promise<Clausula> {
     const clausulaData = {
       ...clausulaDto,
+      es_editable: true,
       activo: true,
     };
     return await this.clausulaModel.create(clausulaData);

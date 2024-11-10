@@ -17,6 +17,7 @@ export class ParagrafoService {
   async post(paragrafoDto: CreateParagrafoDto): Promise<Paragrafo> {
     const paragrafoData = {
       ...paragrafoDto,
+      es_editable: true,
       activo: true,
     };
     return await this.paragrafoModel.create(paragrafoData);

@@ -190,21 +190,36 @@ export class PlantillaTipoContratoService {
     }
   }
 
-  async getByTipoContrato(
-    tipoContratoId: number,
-    filtersDto?: FilterDto,
-  ): Promise<any> {
+  async getByTipoContrato(tipoContratoId: number,filtersDto?: FilterDto,): Promise<any> {
     try {
+      interface FilterQueryObject {
+        [key: string]: any;
+      }
+      
+      const BOOLEAN_FIELDS = ['reversion_saldo', 'aplica_poliza'] as const;
+      
+      const processBooleanFields = (obj: FilterQueryObject, booleanFields: readonly string[]) => {
+        return {
+          ...obj,
+          ...Object.fromEntries(
+            Object.entries(obj)
+              .filter(([key]) => booleanFields.includes(key))
+              .map(([key, value]) => [key, Boolean(value === 'true')])
+          )
+        };
+      };
+      
       const { queryObject } = filtersDto
         ? this.filtersService.createObjects(filtersDto)
-        : { queryObject: {} };
-      const processedQueryObject = 'reversion_saldo' in queryObject
-        ? { ...queryObject, reversion_saldo: Boolean(queryObject.reversion_saldo === 'true') }
-        : queryObject;
+        : { queryObject: {} as FilterQueryObject };
+      
+      const processedQueryObject = processBooleanFields(queryObject, BOOLEAN_FIELDS);
+      
       const combinedQuery = {
         ...processedQueryObject,
         tipo_contrato_id: tipoContratoId,
       };
+
       const raw = await this.plantillaTipoContratoModel.aggregate([
         {
           $match: combinedQuery,
@@ -254,9 +269,12 @@ export class PlantillaTipoContratoService {
             clausulas: 1,
             paragrafos: 1,
             orden_paragrafo: 1,
+            orden_clausula: 1
           },
         },
       ]);
+
+      const ordenOriginal = raw[0].orden_clausula.clausula_ids;
 
       const clausulasMap = new Map(
         raw[0].clausulas.map((clausula) => [
@@ -295,15 +313,24 @@ export class PlantillaTipoContratoService {
         };
       });
 
-      return raw[0].clausulas.map((c) => {
+      return raw[0].orden_clausula.clausula_ids.map((clausulaId: any) => {
+        const clausula: any = clausulasMap.get(clausulaId.toString());
+        
+        if (!clausula) {
+          console.log('No se encontró la cláusula:', clausulaId.toString());
+          return null;
+        }
+  
         const orden = ordenParagrafoMap.find(
-          (op) => op.clausula_id.toString() === c._id.toString(),
+          (op) => op.clausula_id.toString() === clausulaId.toString()
         );
+  
         return {
-          ...c,
+          ...clausula,
           paragrafos: orden ? orden.paragrafos : [],
         };
-      });
+      }).filter(Boolean);
+
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
