@@ -19,7 +19,9 @@ import { ContratoModule } from './contrato/contrato.module';
     }),
     MongooseModule.forRootAsync({
       useFactory: async (configService : ConfigService) => ({
-        uri: `mongodb://${configService.get('DB_HOST')}:${configService.get('DB_PORT')}/${configService.get('DB_NAME')}`
+        uri: `mongodb://${configService.get('CLAUSUAS_PARAGRAFOS_DB_USER')}:${configService.get('CLAUSUAS_PARAGRAFOS_DB_PASS')}@` +
+        `${configService.get('CLAUSUAS_PARAGRAFOS_DB_HOST')}:${configService.get('CLAUSUAS_PARAGRAFOS_DB_PORT')}/${configService.get('CLAUSUAS_PARAGRAFOS_DB_NAME')}` +
+        `?authSource=${configService.get('CLAUSUAS_PARAGRAFOS_DB_AUTH')}`
       }),
       inject: [ConfigService]
     }),

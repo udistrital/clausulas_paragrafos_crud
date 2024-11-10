@@ -15,9 +15,12 @@ API CRUD desarrollada en NestJS para la gestión de base de datos no relacional 
 ## Variables de Entorno
 
 ```shell
-DB_HOST=CLAUSUAS_PARAGRAFOS_HOST
-DB_PORT=CLAUSUAS_PARAGRAFOS_PORT
-DB_NAME=CLAUSUAS_PARAGRAFOS_NAME
+CLAUSUAS_PARAGRAFOS_DB_USER=[usuario con acceso a la base de datos]
+CLAUSUAS_PARAGRAFOS_DB_PASS=[password del usuario]
+CLAUSUAS_PARAGRAFOS_DB_HOST=[Host de la base de datos]
+CLAUSUAS_PARAGRAFOS_DB_PORT=[Puerto de conexión con la base de datos]
+CLAUSUAS_PARAGRAFOS_DB_NAME=[nombre de la base de datos]
+CLAUSUAS_PARAGRAFOS_DB_AUTH=[nombre de la base de datos de credenciales]
 ```
 
 **NOTA:** Las variables se asignan en una archivo privado .env
@@ -57,6 +60,11 @@ npm test
 # Se ejecutará jest, validando los casos de prueba en los archivos .spec.ts
 ```
 
+# Estado CI
+
+| Develop | Relese 0.0.1 | Master |
+| -- | -- | -- |
+| [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/clausulas_paragrafos_crud/status.svg?ref=refs/heads/develop)](https://hubci.portaloas.udistrital.edu.co/udistrital/espacios_academicos_crud) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/clausulas_paragrafos_crud/status.svg?ref=refs/heads/release/0.0.1)](https://hubci.portaloas.udistrital.edu.co/udistrital/espacios_academicos_crud) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/clausulas_paragrafos_crud/status.svg)](https://hubci.portaloas.udistrital.edu.co/udistrital/espacios_academicos_crud) |
 
 # Modelo de Datos
 
