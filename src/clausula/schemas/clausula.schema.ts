@@ -13,6 +13,9 @@ export class Clausula extends Document {
   predeterminado: boolean;
 
   @Prop({ required: true })
+  es_editable: boolean;
+
+  @Prop({ required: true })
   activo: boolean;
 
   @Prop({required: true})
