@@ -31,6 +31,11 @@ export class CreatePlantillaTipoContratoDto {
 
   @ApiProperty()
   @IsNotEmpty()
+  @IsBoolean()
+  aplica_poliza: boolean;
+
+  @ApiProperty()
+  @IsNotEmpty()
   @IsNumber()
   actualizado_por: Number;
 

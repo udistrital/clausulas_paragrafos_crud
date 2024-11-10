@@ -27,6 +27,9 @@ export class PlantillaTipoContrato extends Document {
   reversion_saldo: boolean;
 
   @Prop({ required: true })
+  aplica_poliza: boolean;
+
+  @Prop({ required: true })
   activo: boolean;
 
   @Prop({required: true})

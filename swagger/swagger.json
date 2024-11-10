@@ -1144,6 +1144,9 @@
           "reversion_saldo": {
             "type": "boolean"
           },
+          "aplica_poliza": {
+            "type": "boolean"
+          },
           "actualizado_por": {
             "type": "number"
           },
@@ -1162,6 +1165,7 @@
           "orden_paragrafo_ids",
           "creado_por",
           "reversion_saldo",
+          "aplica_poliza",
           "actualizado_por",
           "fecha_creacion",
           "fecha_modificacion"
