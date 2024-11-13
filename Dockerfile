@@ -1,8 +1,8 @@
-FROM node:current-alpine
+FROM node:16.5.0-alpine
 RUN apk update && apk add bash
 RUN apk add python3
 RUN apk add py3-pip
-RUN apk add --no-cache aws-cli
+RUN pip3 install awscli
 
 WORKDIR /
 COPY dist dist
