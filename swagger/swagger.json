@@ -1127,6 +1127,9 @@
           "tipo_contrato_id": {
             "type": "number"
           },
+          "unidad_ejecutora_id": {
+            "type": "number"
+          },
           "orden_clausula_id": {
             "type": "string",
             "description": "Orden Clausula ID"
@@ -1161,6 +1164,7 @@
         },
         "required": [
           "tipo_contrato_id",
+          "unidad_ejecutora_id",
           "orden_clausula_id",
           "orden_paragrafo_ids",
           "creado_por",
