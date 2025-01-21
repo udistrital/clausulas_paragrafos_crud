@@ -197,6 +197,7 @@ export class PlantillaTipoContratoService {
       }
       
       const BOOLEAN_FIELDS = ['reversion_saldo', 'aplica_poliza'] as const;
+      const NUMERIC_FIELDS = ['unidad_ejecutora_id'] as const;
       
       const processBooleanFields = (obj: FilterQueryObject, booleanFields: readonly string[]) => {
         return {
@@ -205,7 +206,18 @@ export class PlantillaTipoContratoService {
             Object.entries(obj)
               .filter(([key]) => booleanFields.includes(key))
               .map(([key, value]) => [key, Boolean(value === 'true')])
-          )
+          ),
+        };
+      };
+      
+      const processNumericFields = (obj: FilterQueryObject, numericFields: readonly string[]) => {
+        return {
+          ...obj,
+          ...Object.fromEntries(
+            Object.entries(obj)
+              .filter(([key]) => numericFields.includes(key))
+              .map(([key, value]) => [key, Number(value)])
+          ),
         };
       };
       
@@ -213,7 +225,10 @@ export class PlantillaTipoContratoService {
         ? this.filtersService.createObjects(filtersDto)
         : { queryObject: {} as FilterQueryObject };
       
-      const processedQueryObject = processBooleanFields(queryObject, BOOLEAN_FIELDS);
+      const processedQueryObject = processNumericFields(
+        processBooleanFields(queryObject, BOOLEAN_FIELDS),
+        NUMERIC_FIELDS
+      );
       
       const combinedQuery = {
         ...processedQueryObject,

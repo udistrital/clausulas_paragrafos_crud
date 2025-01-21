@@ -12,6 +12,9 @@ export class PlantillaTipoContrato extends Document {
   @Prop({ required: true })
   tipo_contrato_id: number;
 
+  @Prop({ required: true })
+  unidad_ejecutora_id: number;
+
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'OrdenClausula',

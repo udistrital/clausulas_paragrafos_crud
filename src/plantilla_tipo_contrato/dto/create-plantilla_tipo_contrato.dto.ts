@@ -8,6 +8,11 @@ export class CreatePlantillaTipoContratoDto {
   @IsNumber()
   tipo_contrato_id: number;
 
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  unidad_ejecutora_id: number;
+
   @ApiProperty({ type: String, description: 'Orden Clausula ID' })
   @IsNotEmpty()
   @IsString()
