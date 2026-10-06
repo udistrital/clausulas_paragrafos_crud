@@ -79,6 +79,11 @@ describe('PlantillaTipoContratoService', () => {
   describe('post', () => {
     it('should create a new plantillaTipoContrato', async () => {
       const plantillaTipoContratoDto = {
+        unidad_ejecutora_id: 1,
+        creado_por: 1,
+        reversion_saldo: false,
+        aplica_poliza: false,
+        actualizado_por: 1,
         tipo_contrato_id: 1,
         orden_paragrafo_ids: [new Types.ObjectId().toString()], // Convertir ObjectId a string
         orden_clausula_id: new Types.ObjectId().toString(), // Convertir ObjectId a string
@@ -225,6 +230,11 @@ describe('PlantillaTipoContratoService', () => {
       const id = 'some_id';
 
       const plantillaTipoContratoDto = {
+        unidad_ejecutora_id: 1,
+        creado_por: 1,
+        reversion_saldo: false,
+        aplica_poliza: false,
+        actualizado_por: 1,
         tipo_contrato_id: 1,
         orden_clausula_id: new Types.ObjectId().toString(), // Convertir ObjectId a string
         orden_paragrafo_ids: [new Types.ObjectId().toString()], // Convertir ObjectId a string
@@ -250,6 +260,11 @@ describe('PlantillaTipoContratoService', () => {
 
       await expect(
         service.put(id, {
+          unidad_ejecutora_id: 1,
+          creado_por: 1,
+          reversion_saldo: false,
+          aplica_poliza: false,
+          actualizado_por: 1,
           tipo_contrato_id: 1,
           orden_clausula_id: new Types.ObjectId().toString(), // Convertir ObjectId a string
           orden_paragrafo_ids: [new Types.ObjectId().toString()], // Convertir ObjectId a string

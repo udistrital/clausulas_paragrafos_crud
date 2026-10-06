@@ -18,9 +18,11 @@ describe('ParagrafoController', () => {
     activo: true,
     fecha_creacion: new Date(),
     fecha_modificacion: new Date(),
-  } as Paragrafo;
+  } as unknown as Paragrafo;
 
   const mockCreateDto: CreateParagrafoDto = {
+    creado_por: 1,
+    actualizado_por: 1,
     nombre: 'Paragrafo de prueba',
     descripcion: 'Este es un paragrafo de prueba',
     predeterminado: true,
@@ -98,9 +100,7 @@ describe('ParagrafoController', () => {
         json: jest.fn(),
       };
 
-      const mockFilterDto: FilterDto = {
-        /* mock filter data */
-      };
+      const mockFilterDto: FilterDto = {/* mock filter data */};
 
       await controller.getAll(mockResponse, mockFilterDto);
 
@@ -123,9 +123,7 @@ describe('ParagrafoController', () => {
         json: jest.fn(),
       };
 
-      const mockFilterDto: FilterDto = {
-        /* mock filter data */
-      };
+      const mockFilterDto: FilterDto = {/* mock filter data */};
 
       await controller.getAll(mockResponse, mockFilterDto);
 

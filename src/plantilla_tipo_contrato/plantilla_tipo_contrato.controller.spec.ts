@@ -48,6 +48,11 @@ describe('PlantillaTipoContratoController', () => {
   describe('post', () => {
     it('debería crear una nueva plantilla de tipo contrato', async () => {
       const dto: CreatePlantillaTipoContratoDto = {
+        unidad_ejecutora_id: 1,
+        creado_por: 1,
+        reversion_saldo: false,
+        aplica_poliza: false,
+        actualizado_por: 1,
         tipo_contrato_id: 1,
         orden_clausula_id: new mongoose.Types.ObjectId().toHexString(),
         orden_paragrafo_ids: [
@@ -87,6 +92,11 @@ describe('PlantillaTipoContratoController', () => {
 
     it('debería manejar errores al crear una plantilla de tipo contrato', async () => {
       const dto: CreatePlantillaTipoContratoDto = {
+        unidad_ejecutora_id: 1,
+        creado_por: 1,
+        reversion_saldo: false,
+        aplica_poliza: false,
+        actualizado_por: 1,
         tipo_contrato_id: 1,
         orden_clausula_id: 'OC001',
         orden_paragrafo_ids: ['OP001', 'OP002'],
@@ -111,9 +121,7 @@ describe('PlantillaTipoContratoController', () => {
 
   describe('getAll', () => {
     it('debería obtener todas las plantillas de tipo contrato', async () => {
-      const filterDto: FilterDto = {
-        /* ... */
-      };
+      const filterDto: FilterDto = {/* ... */};
       const result: { data: PlantillaTipoContrato[]; total: number } = {
         data: [
           {
@@ -186,6 +194,7 @@ describe('PlantillaTipoContratoController', () => {
     });
 
     describe('getByTipoContrato', () => {
+      const mockFilterDto: FilterDto = {};
       it('debería obtener plantillas de tipo contrato por tipo de contrato ID', async () => {
         const tipoContratoId = '1';
         const result = [
@@ -200,9 +209,16 @@ describe('PlantillaTipoContratoController', () => {
         ];
         jest.spyOn(service, 'getByTipoContrato').mockResolvedValue(result);
 
-        await controller.getByTipoContrato(mockResponse, tipoContratoId);
+        await controller.getByTipoContrato(
+          mockResponse,
+          tipoContratoId,
+          mockFilterDto,
+        );
 
-        expect(service.getByTipoContrato).toHaveBeenCalledWith(+tipoContratoId);
+        expect(service.getByTipoContrato).toHaveBeenCalledWith(
+          +tipoContratoId,
+          mockFilterDto,
+        );
         expect(mockResponse.status).toHaveBeenCalledWith(200);
         expect(mockResponse.json).toHaveBeenCalledWith({
           Success: true,
@@ -217,9 +233,16 @@ describe('PlantillaTipoContratoController', () => {
         const error = new Error('No encontrado');
         jest.spyOn(service, 'getByTipoContrato').mockRejectedValue(error);
 
-        await controller.getByTipoContrato(mockResponse, tipoContratoId);
+        await controller.getByTipoContrato(
+          mockResponse,
+          tipoContratoId,
+          mockFilterDto,
+        );
 
-        expect(service.getByTipoContrato).toHaveBeenCalledWith(+tipoContratoId);
+        expect(service.getByTipoContrato).toHaveBeenCalledWith(
+          +tipoContratoId,
+          mockFilterDto,
+        );
         expect(mockResponse.status).toHaveBeenCalledWith(404);
         expect(mockResponse.json).toHaveBeenCalledWith({
           Success: false,
@@ -234,6 +257,11 @@ describe('PlantillaTipoContratoController', () => {
       it('debería actualizar una plantilla de tipo contrato', async () => {
         const id = new mongoose.Types.ObjectId().toHexString();
         const dto: CreatePlantillaTipoContratoDto = {
+          unidad_ejecutora_id: 1,
+          creado_por: 1,
+          reversion_saldo: false,
+          aplica_poliza: false,
+          actualizado_por: 1,
           tipo_contrato_id: 1,
           orden_clausula_id: new mongoose.Types.ObjectId().toHexString(),
           orden_paragrafo_ids: [
@@ -274,6 +302,11 @@ describe('PlantillaTipoContratoController', () => {
       it('debería manejar errores al actualizar una plantilla de tipo contrato', async () => {
         const id = '1';
         const dto: CreatePlantillaTipoContratoDto = {
+          unidad_ejecutora_id: 1,
+          creado_por: 1,
+          reversion_saldo: false,
+          aplica_poliza: false,
+          actualizado_por: 1,
           tipo_contrato_id: 1,
           orden_clausula_id: 'OC001',
           orden_paragrafo_ids: ['OP001', 'OP002'],

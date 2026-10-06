@@ -26,6 +26,8 @@ describe('ClausulaController', () => {
   } as unknown as Clausula;
 
   const mockCreateDto: CreateClausulaDto = {
+    creado_por: 1,
+    actualizado_por: 1,
     nombre: 'Clausula de prueba',
     descripcion: 'Esta es una clausula de prueba',
     predeterminado: true,

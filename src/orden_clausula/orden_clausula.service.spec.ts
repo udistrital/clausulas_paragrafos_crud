@@ -24,6 +24,8 @@ describe('OrdenClausulaService', () => {
   };
 
   const mockCreateDto: CreateOrdenClausulaDto = {
+    creado_por: 1,
+    actualizado_por: 1,
     clausula_ids: [
       new Types.ObjectId().toHexString(),
       new Types.ObjectId().toHexString(),

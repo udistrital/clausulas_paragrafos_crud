@@ -23,6 +23,8 @@ describe('ClausulaService', () => {
   };
 
   const mockClausulaDto: CreateClausulaDto = {
+    creado_por: 1,
+    actualizado_por: 1,
     nombre: 'Cláusula de prueba',
     descripcion: 'Esta es una cláusula de prueba',
     predeterminado: true,
@@ -63,9 +65,7 @@ describe('ClausulaService', () => {
     it('should create a new clausula', async () => {
       jest
         .spyOn(model, 'create')
-        .mockImplementationOnce(() =>
-          Promise.resolve([mockClausula] as Clausula[]),
-        );
+        .mockImplementationOnce(() => Promise.resolve([mockClausula] as any));
 
       const result = await service.post(mockClausulaDto);
       expect(result).toBeInstanceOf(Array);
