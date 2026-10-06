@@ -46,7 +46,7 @@ export class ClausulaService {
   async put(id: string, clausulaDto: CreateClausulaDto): Promise<Clausula> {
     clausulaDto.fecha_modificacion = new Date();
     const update = await this.clausulaModel
-      .findByIdAndUpdate(id, clausulaDto, { new: true })
+      .findByIdAndUpdate(id, clausulaDto, { returnDocument: 'after' })
       .exec();
     if (!update) {
       throw new Error(`${id} doesn't exist`);
@@ -56,7 +56,7 @@ export class ClausulaService {
 
   async delete(id: string): Promise<Clausula> {
     const deleted = await this.clausulaModel
-      .findByIdAndUpdate(id, { activo: false }, { new: true })
+      .findByIdAndUpdate(id, { activo: false }, { returnDocument: 'after' })
       .exec();
     if (!deleted) {
       throw new Error(`${id} doesn't exist`);

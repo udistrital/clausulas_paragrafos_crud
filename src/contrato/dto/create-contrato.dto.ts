@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsArray, ValidateNested, IsNumber } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsArray,
+  ValidateNested,
+  IsNumber,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 class ParagrafoEstructuraDto {
@@ -22,19 +28,28 @@ export class CreateContratoEstructuraDto {
   @IsString({ each: true })
   clausula_ids: string[];
 
-  @ApiProperty({ type: [ParagrafoEstructuraDto], description: 'Estructura de párrafos por cláusula' })
+  @ApiProperty({
+    type: [ParagrafoEstructuraDto],
+    description: 'Estructura de párrafos por cláusula',
+  })
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ParagrafoEstructuraDto)
   paragrafos: ParagrafoEstructuraDto[];
 
-  @ApiProperty({ type: Number, description: 'ID del usuario que crea la estructura' })
+  @ApiProperty({
+    type: Number,
+    description: 'ID del usuario que crea la estructura',
+  })
   @IsNotEmpty()
   @IsNumber()
   creado_por: number;
 
-  @ApiProperty({ type: Number, description: 'ID del usuario que actualiza la estructura' })
+  @ApiProperty({
+    type: Number,
+    description: 'ID del usuario que actualiza la estructura',
+  })
   @IsNotEmpty()
   @IsNumber()
   actualizado_por: number;

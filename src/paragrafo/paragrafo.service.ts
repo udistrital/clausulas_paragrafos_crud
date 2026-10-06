@@ -46,7 +46,7 @@ export class ParagrafoService {
   async put(id: string, paragrafoDto: CreateParagrafoDto): Promise<Paragrafo> {
     paragrafoDto.fecha_modificacion = new Date();
     const update = await this.paragrafoModel
-      .findByIdAndUpdate(id, paragrafoDto, { new: true })
+      .findByIdAndUpdate(id, paragrafoDto, { returnDocument: 'after' })
       .exec();
     if (!update) {
       throw new Error(`${id} doesn't exist`);
@@ -56,7 +56,7 @@ export class ParagrafoService {
 
   async delete(id: string): Promise<Paragrafo> {
     const deleted = await this.paragrafoModel
-      .findByIdAndUpdate(id, { activo: false }, { new: true })
+      .findByIdAndUpdate(id, { activo: false }, { returnDocument: 'after' })
       .exec();
     if (!deleted) {
       throw new Error(`${id} doesn't exist`);

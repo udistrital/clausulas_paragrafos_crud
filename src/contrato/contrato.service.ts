@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OrdenClausula } from 'src/orden_clausula/schemas/orden_clausula.schema';
@@ -8,9 +12,11 @@ import { CreateContratoEstructuraDto } from './dto/create-contrato.dto';
 @Injectable()
 export class ContratoService {
   constructor(
-    @InjectModel(OrdenClausula.name) private readonly ordenClausulaModel: Model<OrdenClausula>,
-    @InjectModel(OrdenParagrafo.name) private readonly ordenParagrafoModel: Model<OrdenParagrafo>,
-  ) { }
+    @InjectModel(OrdenClausula.name)
+    private readonly ordenClausulaModel: Model<OrdenClausula>,
+    @InjectModel(OrdenParagrafo.name)
+    private readonly ordenParagrafoModel: Model<OrdenParagrafo>,
+  ) {}
 
   async post(
     contratoId: number,
@@ -147,17 +153,17 @@ export class ContratoService {
         const clausula: any = clausulasMap.get(op.clausula_id.toString());
         const paragrafos = op.paragrafo_ids
           ? op.paragrafo_ids
-            .map((pid) => paragrafosMap.get(pid.toString()))
-            .filter(Boolean)
+              .map((pid) => paragrafosMap.get(pid.toString()))
+              .filter(Boolean)
           : null;
 
         return {
           ...op,
           clausula: clausula
             ? {
-              _id: clausula._id,
-              nombre: clausula.nombre,
-            }
+                _id: clausula._id,
+                nombre: clausula.nombre,
+              }
             : null,
           paragrafos: paragrafos,
         };
@@ -194,7 +200,7 @@ export class ContratoService {
           clausula_ids: estructuraDto.clausula_ids,
           fecha_modificacion: new Date(),
         },
-        { new: true, upsert: true },
+        { returnDocument: 'after', upsert: true },
       )
       .exec();
 
@@ -207,7 +213,7 @@ export class ContratoService {
               paragrafo_ids: paragrafo.paragrafo_ids,
               fecha_modificacion: new Date(),
             },
-            { new: true, upsert: true },
+            { returnDocument: 'after', upsert: true },
           )
           .exec();
       }),

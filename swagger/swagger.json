@@ -9,7 +9,10 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "tags": [
+          "App"
+        ]
       }
     },
     "/clausulas": {

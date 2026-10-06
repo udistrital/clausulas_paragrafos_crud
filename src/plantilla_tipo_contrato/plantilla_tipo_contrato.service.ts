@@ -9,9 +9,10 @@ import { FiltersService } from 'src/filters/filters.service';
 @Injectable()
 export class PlantillaTipoContratoService {
   constructor(
-    @InjectModel(PlantillaTipoContrato.name) private readonly plantillaTipoContratoModel: Model<PlantillaTipoContrato>,
+    @InjectModel(PlantillaTipoContrato.name)
+    private readonly plantillaTipoContratoModel: Model<PlantillaTipoContrato>,
     private readonly filtersService: FiltersService,
-  ) { }
+  ) {}
 
   async post(
     plantillaTipoContratoDto: CreatePlantillaTipoContratoDto,
@@ -153,17 +154,17 @@ export class PlantillaTipoContratoService {
         const clausula: any = clausulasMap.get(op.clausula_id.toString());
         const paragrafos = op.paragrafo_ids
           ? op.paragrafo_ids
-            .map((pid) => paragrafosMap.get(pid.toString()))
-            .filter(Boolean)
+              .map((pid) => paragrafosMap.get(pid.toString()))
+              .filter(Boolean)
           : null;
 
         return {
           ...op,
           clausula: clausula
             ? {
-              _id: clausula._id,
-              nombre: clausula.nombre,
-            }
+                _id: clausula._id,
+                nombre: clausula.nombre,
+              }
             : null,
           paragrafos: paragrafos,
         };
@@ -190,46 +191,55 @@ export class PlantillaTipoContratoService {
     }
   }
 
-  async getByTipoContrato(tipoContratoId: number,filtersDto?: FilterDto,): Promise<any> {
+  async getByTipoContrato(
+    tipoContratoId: number,
+    filtersDto?: FilterDto,
+  ): Promise<any> {
     try {
       interface FilterQueryObject {
         [key: string]: any;
       }
-      
+
       const BOOLEAN_FIELDS = ['reversion_saldo', 'aplica_poliza'] as const;
       const NUMERIC_FIELDS = ['unidad_ejecutora_id'] as const;
-      
-      const processBooleanFields = (obj: FilterQueryObject, booleanFields: readonly string[]) => {
+
+      const processBooleanFields = (
+        obj: FilterQueryObject,
+        booleanFields: readonly string[],
+      ) => {
         return {
           ...obj,
           ...Object.fromEntries(
             Object.entries(obj)
               .filter(([key]) => booleanFields.includes(key))
-              .map(([key, value]) => [key, Boolean(value === 'true')])
+              .map(([key, value]) => [key, Boolean(value === 'true')]),
           ),
         };
       };
-      
-      const processNumericFields = (obj: FilterQueryObject, numericFields: readonly string[]) => {
+
+      const processNumericFields = (
+        obj: FilterQueryObject,
+        numericFields: readonly string[],
+      ) => {
         return {
           ...obj,
           ...Object.fromEntries(
             Object.entries(obj)
               .filter(([key]) => numericFields.includes(key))
-              .map(([key, value]) => [key, Number(value)])
+              .map(([key, value]) => [key, Number(value)]),
           ),
         };
       };
-      
+
       const { queryObject } = filtersDto
         ? this.filtersService.createObjects(filtersDto)
         : { queryObject: {} as FilterQueryObject };
-      
+
       const processedQueryObject = processNumericFields(
         processBooleanFields(queryObject, BOOLEAN_FIELDS),
-        NUMERIC_FIELDS
+        NUMERIC_FIELDS,
       );
-      
+
       const combinedQuery = {
         ...processedQueryObject,
         tipo_contrato_id: tipoContratoId,
@@ -284,7 +294,7 @@ export class PlantillaTipoContratoService {
             clausulas: 1,
             paragrafos: 1,
             orden_paragrafo: 1,
-            orden_clausula: 1
+            orden_clausula: 1,
           },
         },
       ]);
@@ -312,40 +322,41 @@ export class PlantillaTipoContratoService {
         const clausula: any = clausulasMap.get(op.clausula_id.toString());
         const paragrafos = op.paragrafo_ids
           ? op.paragrafo_ids
-            .map((pid) => paragrafosMap.get(pid.toString()))
-            .filter(Boolean)
+              .map((pid) => paragrafosMap.get(pid.toString()))
+              .filter(Boolean)
           : null;
 
         return {
           ...op,
           clausula: clausula
             ? {
-              _id: clausula._id,
-              nombre: clausula.nombre,
-            }
+                _id: clausula._id,
+                nombre: clausula.nombre,
+              }
             : null,
           paragrafos: paragrafos,
         };
       });
 
-      return raw[0].orden_clausula.clausula_ids.map((clausulaId: any) => {
-        const clausula: any = clausulasMap.get(clausulaId.toString());
-        
-        if (!clausula) {
-          console.log('No se encontró la cláusula:', clausulaId.toString());
-          return null;
-        }
-  
-        const orden = ordenParagrafoMap.find(
-          (op) => op.clausula_id.toString() === clausulaId.toString()
-        );
-  
-        return {
-          ...clausula,
-          paragrafos: orden ? orden.paragrafos : [],
-        };
-      }).filter(Boolean);
+      return raw[0].orden_clausula.clausula_ids
+        .map((clausulaId: any) => {
+          const clausula: any = clausulasMap.get(clausulaId.toString());
 
+          if (!clausula) {
+            console.log('No se encontró la cláusula:', clausulaId.toString());
+            return null;
+          }
+
+          const orden = ordenParagrafoMap.find(
+            (op) => op.clausula_id.toString() === clausulaId.toString(),
+          );
+
+          return {
+            ...clausula,
+            paragrafos: orden ? orden.paragrafos : [],
+          };
+        })
+        .filter(Boolean);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -361,8 +372,11 @@ export class PlantillaTipoContratoService {
     plantillaTipoContratoDto: CreatePlantillaTipoContratoDto,
   ): Promise<PlantillaTipoContrato> {
     plantillaTipoContratoDto.fecha_modificacion = new Date();
-    const update = await this.plantillaTipoContratoModel
-      .findByIdAndUpdate(id, plantillaTipoContratoDto, { new: true });
+    const update = await this.plantillaTipoContratoModel.findByIdAndUpdate(
+      id,
+      plantillaTipoContratoDto,
+      { returnDocument: 'after' },
+    );
     if (!update) {
       throw new NotFoundException(`Plantilla con id ${id} no encontrada`);
     }
@@ -370,8 +384,11 @@ export class PlantillaTipoContratoService {
   }
 
   async delete(id: string): Promise<PlantillaTipoContrato> {
-    const deleted = await this.plantillaTipoContratoModel
-      .findByIdAndUpdate(id, { activo: false }, { new: true });
+    const deleted = await this.plantillaTipoContratoModel.findByIdAndUpdate(
+      id,
+      { activo: false },
+      { returnDocument: 'after' },
+    );
     if (!deleted) {
       throw new NotFoundException(`Plantilla con id ${id} no encontrada`);
     }

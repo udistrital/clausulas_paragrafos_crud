@@ -56,7 +56,7 @@ export class OrdenClausulaService {
   ): Promise<OrdenClausula> {
     ordenClausulaDto.fecha_modificacion = new Date();
     const update = await this.ordenClausulaModel
-      .findByIdAndUpdate(id, ordenClausulaDto, { new: true })
+      .findByIdAndUpdate(id, ordenClausulaDto, { returnDocument: 'after' })
       .exec();
     if (!update) {
       throw new Error(`${id} doesn't exist`);
@@ -66,7 +66,7 @@ export class OrdenClausulaService {
 
   async delete(id: string): Promise<OrdenClausula> {
     const deleted = await this.ordenClausulaModel
-      .findByIdAndUpdate(id, { activo: false }, { new: true })
+      .findByIdAndUpdate(id, { activo: false }, { returnDocument: 'after' })
       .exec();
     if (!deleted) {
       throw new Error(`${id} doesn't exist`);

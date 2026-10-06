@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsDate, IsArray, IsNumber} from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsDate,
+  IsArray,
+  IsNumber,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateOrdenParagrafoDto {
@@ -22,12 +28,12 @@ export class CreateOrdenParagrafoDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  creado_por: Number;
+  creado_por: number;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  actualizado_por: Number;
+  actualizado_por: number;
 
   @ApiProperty()
   @IsDate()
