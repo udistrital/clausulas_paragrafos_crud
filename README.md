@@ -6,11 +6,20 @@ API CRUD desarrollada en NestJS para la gestión de base de datos no relacional 
 
 ## Tecnologías Implementadas y Versiones
 
-- [NestJS](https://github.com/nestjs/nest): 20.17.0
-- Nest CLI: 10.4.5
-- [MongoDB](https://github.com/mongodb/mongo): 7.0.14
-- NPM: 10.8.2
+- [Node.js](https://nodejs.org/): 24.21.0 (LTS Krypton)
+- [NestJS](https://github.com/nestjs/nest): 12.1.2
+- Nest CLI: 12.0.8
+- [TypeScript](https://www.typescriptlang.org/): 6.0.3
+- [Mongoose](https://mongoosejs.com/): 9.10.4
+- [MongoDB](https://github.com/mongodb/mongo): 8.3.4
+- [pnpm](https://pnpm.io/): 12.9.1
 
+## Prerrequisitos
+
+- Node.js >= 24.21.0
+- pnpm >= 12.9.1, habilitado con `corepack enable pnpm`
+- Una instancia de MongoDB >= 8.0 accesible
+- Docker (opcional, para levantar MongoDB en local)
 
 ## Variables de Entorno
 
@@ -21,9 +30,14 @@ CLAUSUAS_PARAGRAFOS_DB_HOST=[Host de la base de datos]
 CLAUSUAS_PARAGRAFOS_DB_PORT=[Puerto de conexión con la base de datos]
 CLAUSUAS_PARAGRAFOS_DB_NAME=[nombre de la base de datos]
 CLAUSUAS_PARAGRAFOS_DB_AUTH=[nombre de la base de datos de credenciales]
+PORT=[puerto en el que expone el servicio, 8080 por defecto]
 ```
 
-**NOTA:** Las variables se asignan en una archivo privado .env
+**NOTA:** Las variables se asignan en un archivo privado .env
+
+**NOTA:** El prefijo `CLAUSUAS_` (sin la `L` de «CLAUSULAS») es el nombre real de las variables en
+el código y en los parámetros del AWS SSM Parameter Store. No se renombra para no romper el
+despliegue.
 
 ## Ejecución del Proyecto
 
@@ -39,32 +53,116 @@ cd clausulas_paragrafos_crud
 #3. Moverse a la rama **develop**
 git pull origin develop && git checkout develop
 
-#4. Instalar dependencias
-npm install
+#4. Habilitar pnpm e instalar dependencias
+corepack enable pnpm
+pnpm install --frozen-lockfile
 
-# Si no se instalan en su totalidad, ejecutar:
-npm install --save @nestjs/mongoose mongoose
-npm install --save @nestjs/swagger swagger-ui-express
-
-# 5. Crear el archivo .env y asignar las variables de entorno
+#5. Crear el archivo .env y asignar las variables de entorno
 touch .env
+
+#6. Levantar el servicio
+pnpm run start:dev
+```
+
+La documentación OpenAPI queda disponible en `http://localhost:8080/swagger` y se regenera en
+`swagger/swagger.json` y `swagger/swagger.yaml` en cada arranque.
+
+### MongoDB local con Docker (opcional)
+
+```shell
+docker run -d --name mongo-clausulas -p 27017:27017 \
+  -e MONGO_INITDB_ROOT_USERNAME=admin \
+  -e MONGO_INITDB_ROOT_PASSWORD=admin \
+  mongo:8.3.4
 ```
 
 ### Ejecución Pruebas
 
-Pruebas unitarias
 ```shell
-# Test
-npm test
+# Pruebas unitarias: ejecuta jest sobre los archivos .spec.ts
+pnpm test
 
-# Se ejecutará jest, validando los casos de prueba en los archivos .spec.ts
+# Pruebas unitarias con reporte de cobertura (carpeta coverage/)
+pnpm run test:cov
+
+# Prueba e2e del endpoint de salud (no requiere MongoDB ni .env)
+pnpm run test:e2e
+
+# Análisis estático y formato
+pnpm run lint
+pnpm run format
 ```
+
+**NOTA:** Jest se ejecuta con `node --experimental-vm-modules` (ya incluido en los scripts) porque
+`@nestjs/testing` 12 se publica como ESM. Use siempre `pnpm test` y no `jest` directamente. Node
+muestra un `ExperimentalWarning` inofensivo.
+
+### Análisis de Calidad (SonarQube)
+
+El pipeline de Drone ejecuta `pnpm run test:cov` y después `sonar-scanner` en las ramas `feature/*`,
+`develop`, `release/*`, `hotfix/*` y `master`. La configuración está en `sonar-project.properties` y la
+cobertura se toma de `coverage/lcov.info`. Requiere los secrets `SONAR_HOST` y `SONAR_TOKEN` en Drone.
+
+### Compilación
+
+```shell
+pnpm run build       # genera dist/
+pnpm run start:prod  # ejecuta dist/main
+```
+
+## Parches de Seguridad Aplicados
+
+Actualización técnica de la issue
+[udistrital/argo_documentacion#364](https://github.com/udistrital/argo_documentacion/issues/364):
+atención de alertas de Dependabot y subida de dependencias a versiones estables.
+
+Resultado de `pnpm audit` sobre la rama `develop` sin cambios y sobre esta rama:
+
+| Severidad | Antes (`develop`) | Después |
+| -- | -- | -- |
+| Crítica | 2 | 0 |
+| Alta | 46 | 0 |
+| Moderada | 23 | 0 |
+| Baja | 11 | 0 |
+| **Total** | **82** | **0** |
+
+Alertas críticas resueltas:
+
+- `mongoose` 8.x: [GHSA-vg7j-7cwx-8wgw](https://github.com/advisories/GHSA-vg7j-7cwx-8wgw), resuelta con Mongoose 9.10.4.
+- `form-data` 4.0.0 a 4.0.5 (dependencia transitiva): [GHSA-fjxv-7rqg-78g4](https://github.com/advisories/GHSA-fjxv-7rqg-78g4).
+
+Otras alertas relevantes resueltas: `@nestjs/common` ([GHSA-cj7v-w2c7-cp7c](https://github.com/advisories/GHSA-cj7v-w2c7-cp7c)),
+`@nestjs/core` ([GHSA-36xv-jgw5-4q75](https://github.com/advisories/GHSA-36xv-jgw5-4q75)), `multer`, `path-to-regexp`, `qs`,
+`js-yaml`, `lodash`, `minimatch`, `brace-expansion` y `validator`.
+
+| Área | Antes | Después | Motivo |
+| -- | -- | -- | -- |
+| Runtime | Node `current` (sin fijar) | Node 24.21.0 LTS | Imagen base reproducible en Docker y Drone |
+| Framework | NestJS 10.4.4 | NestJS 12.1.2 | Corrige alertas de `@nestjs/common` y `@nestjs/core`; Express 5 y paquetes ESM |
+| ODM | Mongoose 8.7.0 | Mongoose 9.10.4 | Corrige la alerta crítica y 3 más de `mongoose`; retiro de APIs deprecadas |
+| Lenguaje | TypeScript 5.6.2 | TypeScript 6.0.3 | Máxima versión dentro del peer range de `@nestjs/swagger` 12 |
+| Lint | ESLint 8.57.1 (`.eslintrc.js`) | ESLint 10 (flat config) | El formato `.eslintrc` fue retirado en ESLint 10 |
+| Pruebas | Jest 29.7.0 | Jest 30.5.2 | Actualiza dependencias transitivas con alertas (`glob`, `minimatch`, `brace-expansion`) |
+| Validación | class-validator 0.14.1 | class-validator 0.15.1 | Corrige `validator` ([GHSA-vghf-hv5q-vc2g](https://github.com/advisories/GHSA-vghf-hv5q-vc2g)) |
+| Gestor | pnpm 9.11.0 + doble lockfile | pnpm 12.9.1, lockfile único | `package-lock.json` y `pnpm-lock.yaml` coexistían con grafos de dependencias distintos |
+| Dependabot | Sin configuración | `.github/dependabot.yml` | Actualizaciones semanales agrupadas para npm y Docker |
+
+Paquetes retirados por quedar obsoletos o redundantes:
+
+- `swagger-ui-express`: `@nestjs/swagger` 12 ya empaqueta `swagger-ui-dist`.
+- `@nestjs/mapped-types`: `PartialType` se consume desde `@nestjs/swagger`, que lo incluye.
+- `@typescript-eslint/eslint-plugin` y `@typescript-eslint/parser`: reemplazados por el
+  meta-paquete `typescript-eslint`.
+
+TypeScript permanece en la rama 6.x de forma intencional: `@nestjs/swagger` 12 declara el peer
+`typescript ^5.5.0 || ^6.0.0` y `typescript-eslint` 8 declara `>=4.8.4 <6.1.0`, por lo que
+TypeScript 7 queda fuera de ambos rangos.
 
 # Estado CI
 
-| Develop | Relese 0.0.1 | Master |
+| Develop | Release 0.0.1 | Master |
 | -- | -- | -- |
-| [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/clausulas_paragrafos_crud/status.svg?ref=refs/heads/develop)](https://hubci.portaloas.udistrital.edu.co/udistrital/espacios_academicos_crud) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/clausulas_paragrafos_crud/status.svg?ref=refs/heads/release/0.0.1)](https://hubci.portaloas.udistrital.edu.co/udistrital/espacios_academicos_crud) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/clausulas_paragrafos_crud/status.svg)](https://hubci.portaloas.udistrital.edu.co/udistrital/espacios_academicos_crud) |
+| [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/clausulas_paragrafos_crud/status.svg?ref=refs/heads/develop)](https://hubci.portaloas.udistrital.edu.co/udistrital/clausulas_paragrafos_crud) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/clausulas_paragrafos_crud/status.svg?ref=refs/heads/release/0.0.1)](https://hubci.portaloas.udistrital.edu.co/udistrital/clausulas_paragrafos_crud) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/clausulas_paragrafos_crud/status.svg)](https://hubci.portaloas.udistrital.edu.co/udistrital/clausulas_paragrafos_crud) |
 
 # Modelo de Datos
 
