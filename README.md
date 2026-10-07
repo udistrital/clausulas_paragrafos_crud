@@ -88,6 +88,9 @@ pnpm run test:cov
 # Prueba e2e del endpoint de salud (no requiere MongoDB ni .env)
 pnpm run test:e2e
 
+# Pruebas de integración contra MongoDB real (ver sección siguiente)
+pnpm run test:integration
+
 # Análisis estático y formato
 pnpm run lint
 pnpm run format
@@ -96,6 +99,50 @@ pnpm run format
 **NOTA:** Jest se ejecuta con `node --experimental-vm-modules` (ya incluido en los scripts) porque
 `@nestjs/testing` 12 se publica como ESM. Use siempre `pnpm test` y no `jest` directamente. Node
 muestra un `ExperimentalWarning` inofensivo.
+
+### Pruebas de integración
+
+Levantan la aplicación completa (`AppModule`) contra una **MongoDB real** y llaman a los endpoints con
+Supertest. No requieren VPN ni otros servicios: este CRUD no consume ningún servicio externo, solo MongoDB.
+Son opt-in: `pnpm test` y el pipeline no las ejecutan.
+
+Requisitos:
+
+```shell
+# MongoDB local (si el contenedor ya existe: docker start mongo-clausulas)
+docker run -d --name mongo-clausulas -p 27017:27017 \
+  -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin mongo:8.3.4
+```
+
+El `.env` debe tener las variables `CLAUSUAS_PARAGRAFOS_DB_*` apuntando a esa instancia (usuario, clave,
+host, puerto y base de autenticación). El nombre de la base **se ignora**: las pruebas usan
+`clausulas_integration` (o `INTEGRATION_DB_NAME`) para no tocar otros datos, y la **eliminan al terminar**.
+Por seguridad, si el nombre no contiene `test` o `integration` las pruebas se niegan a correr.
+
+```shell
+pnpm run test:integration
+```
+
+| Archivo (`test/`) | Qué valida |
+|---|---|
+| `clausulas.integration-spec.ts`, `paragrafos.integration-spec.ts` | CRUD, filtros (`query`), paginación (`limit`/`offset`), orden (`orderBy`/`sort`), `PUT` que devuelve el documento actualizado (`returnDocument: 'after'` de Mongoose 9) y borrado lógico |
+| `ordenes.integration-spec.ts` | `orden-clausulas` y `orden-paragrafos`: el orden de los ids se conserva |
+| `plantilla-tipo-contratos.integration-spec.ts` | Versionado, `$lookup` de cláusulas y parágrafos, filtros de `tipo-contrato/:id`, 404 |
+| `contratos.integration-spec.ts` | `POST` (201/409), `GET` con cláusulas y parágrafos ordenados y anidados, `PUT` |
+| `flujo-consumidores.integration-spec.ts` | La secuencia exacta de llamadas de `gestion_contractual_mf` y la forma de respuesta que consume `minuta_contractual_mid` |
+
+Las pruebas marcadas `HALLAZGO` fijan el comportamiento **actual** de comportamientos dudosos, para que
+un cambio futuro sea deliberado:
+
+- `GET`, `PUT` y `DELETE` con un id inexistente o mal formado responden `500` (no `404`): los services lanzan
+  `Error` y los controllers de cláusulas, parágrafos y órdenes no lo capturan.
+- `main.ts` no registra un `ValidationPipe` global: los DTO no se validan; solo el esquema de Mongoose frena
+  datos incompletos (con `500`).
+- La primera versión de una plantilla por tipo de contrato queda numerada `2`.
+- `GET plantilla-tipo-contratos/tipo-contrato/:id` no filtra por `version_actual`: con dos versiones sirve la
+  más antigua.
+- `PUT /contratos/:id` sobre un contrato sin estructura hace *upsert* y crea documentos sin `activo`, que
+  `GET /contratos/:id` no devuelve. Para crear hay que usar `POST`.
 
 ### Análisis de Calidad (SonarQube)
 
