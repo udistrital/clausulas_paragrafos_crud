@@ -6,11 +6,12 @@ steps:
   - name: install_dependencies
     image: node:24.21-alpine
     commands:
-      - corepack enable pnpm
+      - npm i -g pnpm@12.9.1
       - pnpm install --frozen-lockfile
     when:
       branch:
         - develop
+        - feature/*
         - release/*
         - master
       event:
@@ -19,12 +20,13 @@ steps:
   - name: build
     image: node:24.21-alpine
     commands:
-      - corepack enable pnpm
+      - npm i -g pnpm@12.9.1
       - pnpm install --frozen-lockfile
       - pnpm run build
     when:
       branch:
         - develop
+        - feature/*
         - release/*
         - master
       event:
@@ -33,7 +35,7 @@ steps:
   - name: unit_tests
     image: node:24.21-alpine
     commands:
-      - corepack enable pnpm
+      - npm i -g pnpm@12.9.1
       - pnpm install --frozen-lockfile
       - pnpm run test:cov
     when:
