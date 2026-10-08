@@ -23,6 +23,8 @@ describe('ParagrafoService', () => {
   };
 
   const mockCreateDto: CreateParagrafoDto = {
+    creado_por: 1,
+    actualizado_por: 1,
     nombre: 'Párrafo de prueba',
     descripcion: 'Este es un párrafo de prueba',
     predeterminado: true,

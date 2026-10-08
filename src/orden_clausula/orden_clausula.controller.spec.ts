@@ -34,6 +34,8 @@ describe('OrdenClausulaController', () => {
   describe('post', () => {
     it('debería crear una nueva orden de cláusula', async () => {
       const dto: CreateOrdenClausulaDto = {
+        creado_por: 1,
+        actualizado_por: 1,
         clausula_ids: ['1', '2', '3'],
         contrato_id: 1,
         fecha_creacion: new Date(),
@@ -61,6 +63,8 @@ describe('OrdenClausulaController', () => {
 
     it('debería lanzar una excepción si el servicio falla', async () => {
       const dto: CreateOrdenClausulaDto = {
+        creado_por: 1,
+        actualizado_por: 1,
         clausula_ids: ['1', '2', '3'],
         contrato_id: 1,
         fecha_creacion: new Date(),
@@ -168,6 +172,8 @@ describe('OrdenClausulaController', () => {
     it('debería actualizar una orden de cláusula', async () => {
       const id = '1';
       const dto: CreateOrdenClausulaDto = {
+        creado_por: 1,
+        actualizado_por: 1,
         clausula_ids: ['1', '2', '3'],
         contrato_id: 1,
         fecha_creacion: new Date(),
@@ -196,6 +202,8 @@ describe('OrdenClausulaController', () => {
     it('debería lanzar una excepción si la actualización falla', async () => {
       const id = '1';
       const dto: CreateOrdenClausulaDto = {
+        creado_por: 1,
+        actualizado_por: 1,
         clausula_ids: ['1', '2', '3'],
         contrato_id: 1,
         fecha_creacion: new Date(),

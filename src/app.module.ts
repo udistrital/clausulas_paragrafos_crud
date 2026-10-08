@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MongooseModule } from "@nestjs/mongoose";
+import { MongooseModule } from '@nestjs/mongoose';
 import { ClausulaModule } from './clausula/clausula.module';
 import { ParagrafoModule } from './paragrafo/paragrafo.module';
 import { OrdenParagrafoModule } from './orden_paragrafo/orden_paragrafo.module';
@@ -11,19 +11,19 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { FiltersModule } from './filters/filters.module';
 import { ContratoModule } from './contrato/contrato.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
     MongooseModule.forRootAsync({
-      useFactory: async (configService : ConfigService) => ({
-        uri: `mongodb://${configService.get('CLAUSUAS_PARAGRAFOS_DB_USER')}:${configService.get('CLAUSUAS_PARAGRAFOS_DB_PASS')}@` +
-        `${configService.get('CLAUSUAS_PARAGRAFOS_DB_HOST')}:${configService.get('CLAUSUAS_PARAGRAFOS_DB_PORT')}/${configService.get('CLAUSUAS_PARAGRAFOS_DB_NAME')}` +
-        `?authSource=${configService.get('CLAUSUAS_PARAGRAFOS_DB_AUTH')}`
+      useFactory: async (configService: ConfigService) => ({
+        uri:
+          `mongodb://${configService.get('CLAUSUAS_PARAGRAFOS_DB_USER')}:${configService.get('CLAUSUAS_PARAGRAFOS_DB_PASS')}@` +
+          `${configService.get('CLAUSUAS_PARAGRAFOS_DB_HOST')}:${configService.get('CLAUSUAS_PARAGRAFOS_DB_PORT')}/${configService.get('CLAUSUAS_PARAGRAFOS_DB_NAME')}` +
+          `?authSource=${configService.get('CLAUSUAS_PARAGRAFOS_DB_AUTH')}`,
       }),
-      inject: [ConfigService]
+      inject: [ConfigService],
     }),
     ClausulaModule,
     ParagrafoModule,
@@ -36,4 +36,4 @@ import { ContratoModule } from './contrato/contrato.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

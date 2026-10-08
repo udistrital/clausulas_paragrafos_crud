@@ -25,6 +25,8 @@ describe('OrdenParagrafoController', () => {
   } as unknown as OrdenParagrafo;
 
   const mockCreateDto: CreateOrdenParagrafoDto = {
+    creado_por: 1,
+    actualizado_por: 1,
     paragrafo_ids: ['paragrafo1', 'paragrafo2'],
     contrato_id: 12345,
     clausula_id: 'clausula1',
@@ -102,9 +104,7 @@ describe('OrdenParagrafoController', () => {
         json: jest.fn(),
       };
 
-      const mockFilterDto: FilterDto = {
-        /* mock filter data */
-      };
+      const mockFilterDto: FilterDto = {/* mock filter data */};
 
       await controller.getAll(mockResponse, mockFilterDto);
 
@@ -127,9 +127,7 @@ describe('OrdenParagrafoController', () => {
         json: jest.fn(),
       };
 
-      const mockFilterDto: FilterDto = {
-        /* mock filter data */
-      };
+      const mockFilterDto: FilterDto = {/* mock filter data */};
 
       await controller.getAll(mockResponse, mockFilterDto);
 

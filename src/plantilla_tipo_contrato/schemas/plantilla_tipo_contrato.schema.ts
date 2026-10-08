@@ -35,10 +35,10 @@ export class PlantillaTipoContrato extends Document {
   @Prop({ required: true })
   activo: boolean;
 
-  @Prop({required: true})
+  @Prop({ required: true })
   creado_por: number;
 
-  @Prop({required: true})
+  @Prop({ required: true })
   actualizado_por: number;
 
   @Prop({ required: true, default: Date.now })

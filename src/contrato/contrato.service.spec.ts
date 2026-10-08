@@ -75,6 +75,8 @@ describe('ContratoService', () => {
     it('should create new orden clausula and orden paragrafos', async () => {
       const mockContratoId = 1;
       const mockCreateDto: CreateContratoEstructuraDto = {
+        creado_por: 1,
+        actualizado_por: 1,
         clausula_ids: ['1', '2'],
         paragrafos: [
           { clausula_id: '1', paragrafo_ids: ['1', '2'] },
@@ -106,6 +108,8 @@ describe('ContratoService', () => {
     it('should throw ConflictException if orden clausula already exists', async () => {
       const mockContratoId = 1;
       const mockCreateDto: CreateContratoEstructuraDto = {
+        creado_por: 1,
+        actualizado_por: 1,
         clausula_ids: ['1', '2'],
         paragrafos: [],
       };
@@ -167,6 +171,8 @@ describe('ContratoService', () => {
     it('should update orden clausula and orden paragrafos', async () => {
       const mockContratoId = 1;
       const mockUpdateDto: CreateContratoEstructuraDto = {
+        creado_por: 1,
+        actualizado_por: 1,
         clausula_ids: ['1', '2'],
         paragrafos: [{ clausula_id: '1', paragrafo_ids: ['1', '2'] }],
       };

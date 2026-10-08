@@ -1,0 +1,30 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    target-branch: develop
+    commit-message:
+      prefix: 'fix'
+      prefix-development: 'chore'
+      include: scope
+    groups:
+      nestjs:
+        patterns:
+          - '@nestjs/*'
+      types:
+        patterns:
+          - '@types/*'
+      linting:
+        patterns:
+          - 'eslint*'
+          - 'typescript-eslint'
+          - 'prettier'
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    target-branch: develop

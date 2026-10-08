@@ -25,6 +25,8 @@ describe('OrdenParagrafoService', () => {
   };
 
   const mockCreateDto: CreateOrdenParagrafoDto = {
+    creado_por: 1,
+    actualizado_por: 1,
     paragrafo_ids: [
       new Types.ObjectId().toHexString(),
       new Types.ObjectId().toHexString(),

@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsDate, IsNumber, IsOptional, IsBoolean} from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsDate,
+  IsNumber,
+  IsOptional,
+  IsBoolean,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateParagrafoDto {
@@ -21,12 +28,12 @@ export class CreateParagrafoDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  creado_por: Number;
+  creado_por: number;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  actualizado_por: Number;
+  actualizado_por: number;
 
   @ApiProperty()
   @IsDate()

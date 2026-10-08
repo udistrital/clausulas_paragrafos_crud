@@ -35,6 +35,8 @@ describe('ContratoController', () => {
   describe('post', () => {
     it('debe crear un nuevo contrato y devolver estado 201', async () => {
       const dto: CreateContratoEstructuraDto = {
+        creado_por: 1,
+        actualizado_por: 1,
         clausula_ids: ['1', '2'],
         paragrafos: [
           {
@@ -64,6 +66,8 @@ describe('ContratoController', () => {
 
     it('debe manejar ConflictException y devolver estado 409', async () => {
       const dto: CreateContratoEstructuraDto = {
+        creado_por: 1,
+        actualizado_por: 1,
         clausula_ids: ['1'],
         paragrafos: [
           {
@@ -89,6 +93,8 @@ describe('ContratoController', () => {
 
     it('debe manejar otros errores y devolver estado 400', async () => {
       const dto: CreateContratoEstructuraDto = {
+        creado_por: 1,
+        actualizado_por: 1,
         clausula_ids: ['1'],
         paragrafos: [
           {
@@ -164,6 +170,8 @@ describe('ContratoController', () => {
   describe('put', () => {
     it('debe actualizar un contrato y devolver estado 200', async () => {
       const dto: CreateContratoEstructuraDto = {
+        creado_por: 1,
+        actualizado_por: 1,
         clausula_ids: ['1', '2', '3'],
         paragrafos: [
           {
@@ -197,6 +205,8 @@ describe('ContratoController', () => {
 
     it('debe manejar errores y devolver estado 400', async () => {
       const dto: CreateContratoEstructuraDto = {
+        creado_por: 1,
+        actualizado_por: 1,
         clausula_ids: ['1'],
         paragrafos: [
           {

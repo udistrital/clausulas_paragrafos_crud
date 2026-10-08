@@ -5,7 +5,6 @@ import { join } from 'path';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder()
